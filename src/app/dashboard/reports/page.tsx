@@ -272,6 +272,11 @@ function NewReportForm({
   const [saveError, setSaveError] = useState('');
   const [images, setImages] = useState<{ url: string; base64: string }[]>([]);
 
+  // Helpers states to align exactly with the Single Date + Start/End time requested by Word
+  const [reportDate, setReportDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+
   useEffect(() => {
     if (editingReport) {
       setForm({
@@ -292,6 +297,33 @@ function NewReportForm({
         detalletrabajo: editingReport.diagnosis || "",
         resumenTrabajo: editingReport.solution || "",
       });
+
+      if (editingReport.fechaInicio) {
+        const parts = editingReport.fechaInicio.split('T');
+        if (parts.length === 2) {
+          setReportDate(parts[0]);
+          setStartTime(parts[1].slice(0, 5));
+        } else {
+          // Fallback if not in ISO format
+          setReportDate(editingReport.fechaInicio.slice(0, 10));
+          setStartTime("08:00");
+        }
+      } else {
+        setReportDate(new Date().toISOString().slice(0, 10));
+        setStartTime("09:00");
+      }
+
+      if (editingReport.fechaFin) {
+        const parts = editingReport.fechaFin.split('T');
+        if (parts.length === 2) {
+          setEndTime(parts[1].slice(0, 5));
+        } else {
+          setEndTime("18:00");
+        }
+      } else {
+        setEndTime("18:00");
+      }
+
       if (editingReport.images && editingReport.images.length > 0) {
         setImages(editingReport.images.map(img => ({ url: img, base64: img })));
       } else {
@@ -299,6 +331,10 @@ function NewReportForm({
       }
     } else {
       setForm(EMPTY_FORM);
+      const today = new Date().toISOString().slice(0, 10);
+      setReportDate(today);
+      setStartTime("09:00");
+      setEndTime("18:00");
       setImages([]);
     }
   }, [editingReport]);
@@ -313,6 +349,9 @@ function NewReportForm({
     const matchedOrder = mockWorkOrders.find(o => o.otNumber === form.otNumber);
     const clientName = matchedOrder ? matchedOrder.clientName : (form.solicitante || "Cliente General");
     const workOrderId = editingReport ? editingReport.workOrderId : (matchedOrder ? matchedOrder.id : `wo-${Date.now()}`);
+
+    const finalFechaInicio = reportDate && startTime ? `${reportDate}T${startTime}:00` : form.fechaInicio;
+    const finalFechaFin = reportDate && endTime ? `${reportDate}T${endTime}:00` : form.fechaFin;
 
     const newReport: any = {
       id: editingReport ? editingReport.id : `rep-${Date.now()}`,
@@ -333,14 +372,14 @@ function NewReportForm({
       ubicacionRef: form.ubicacionRef,
       comuna: form.comuna,
       numeroATM: form.numeroATM,
-      serieATM: form.serieATM,
+      serieATM: form.serieATM || "",
       modeloMMBB: form.modeloMMBB,
-      serieMMBB: form.serieMMBB,
+      serieMMBB: form.serieMMBB || "",
       destinatario: form.destinatario,
       solicitante: form.solicitante,
-      fechaInicio: form.fechaInicio,
-      fechaFin: form.fechaFin,
-      valorServicio: form.valorServicio,
+      fechaInicio: finalFechaInicio,
+      fechaFin: finalFechaFin,
+      valorServicio: form.valorServicio || "",
       images: images.map(img => img.base64),
     };
 
@@ -357,6 +396,9 @@ function NewReportForm({
     const clientName = matchedOrder ? matchedOrder.clientName : (form.solicitante || "Cliente General");
     const workOrderId = editingReport ? editingReport.workOrderId : (matchedOrder ? matchedOrder.id : `wo-${Date.now()}`);
 
+    const finalFechaInicio = reportDate && startTime ? `${reportDate}T${startTime}:00` : form.fechaInicio;
+    const finalFechaFin = reportDate && endTime ? `${reportDate}T${endTime}:00` : form.fechaFin;
+
     const currentReport: any = {
       id: editingReport ? editingReport.id : `rep-${Date.now()}`,
       workOrderId,
@@ -376,14 +418,14 @@ function NewReportForm({
       ubicacionRef: form.ubicacionRef,
       comuna: form.comuna,
       numeroATM: form.numeroATM,
-      serieATM: form.serieATM,
+      serieATM: form.serieATM || "",
       modeloMMBB: form.modeloMMBB,
-      serieMMBB: form.serieMMBB,
+      serieMMBB: form.serieMMBB || "",
       destinatario: form.destinatario,
       solicitante: form.solicitante,
-      fechaInicio: form.fechaInicio,
-      fechaFin: form.fechaFin,
-      valorServicio: form.valorServicio,
+      fechaInicio: finalFechaInicio,
+      fechaFin: finalFechaFin,
+      valorServicio: form.valorServicio || "",
       images: images.map(img => img.base64),
     };
 
@@ -395,6 +437,9 @@ function NewReportForm({
     const clientName = matchedOrder ? matchedOrder.clientName : (form.solicitante || "Cliente General");
     const workOrderId = editingReport ? editingReport.workOrderId : (matchedOrder ? matchedOrder.id : `wo-${Date.now()}`);
 
+    const finalFechaInicio = reportDate && startTime ? `${reportDate}T${startTime}:00` : form.fechaInicio;
+    const finalFechaFin = reportDate && endTime ? `${reportDate}T${endTime}:00` : form.fechaFin;
+
     const currentReport: any = {
       id: editingReport ? editingReport.id : `rep-${Date.now()}`,
       workOrderId,
@@ -414,14 +459,14 @@ function NewReportForm({
       ubicacionRef: form.ubicacionRef,
       comuna: form.comuna,
       numeroATM: form.numeroATM,
-      serieATM: form.serieATM,
+      serieATM: form.serieATM || "",
       modeloMMBB: form.modeloMMBB,
-      serieMMBB: form.serieMMBB,
+      serieMMBB: form.serieMMBB || "",
       destinatario: form.destinatario,
       solicitante: form.solicitante,
-      fechaInicio: form.fechaInicio,
-      fechaFin: form.fechaFin,
-      valorServicio: form.valorServicio,
+      fechaInicio: finalFechaInicio,
+      fechaFin: finalFechaFin,
+      valorServicio: form.valorServicio || "",
       images: images.map(img => img.base64),
     };
 
@@ -434,10 +479,10 @@ function NewReportForm({
         <div className="w-full max-w-3xl rounded-2xl overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)" }}>
 
           {/* Header */}
-          <div className="flex items-center justify-between px-7 py-5" style={{ background: "rgba(27,30,36,0.95)", borderBottom: "1px solid rgba(114,176,29,0.12)" }}>
+          <div className="flex items-center justify-between px-7 py-5" style={{ background: "rgba(27,30,36,0.95)", borderBottom: "1px solid var(--border)" }}>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(114,176,29,0.12)" }}>
-                <FileText size={20} style={{ color: "#72b01d" }} />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--primary-transparent)" }}>
+                <FileText size={20} style={{ color: "var(--primary)" }} />
               </div>
               <div>
                 <div className="font-bold text-lg" style={{ color: "#f1f5f9" }}>
@@ -480,24 +525,18 @@ function NewReportForm({
 
             {/* DATOS DEL ATM */}
             <FormSection icon={Monitor} title="Datos del ATM">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <Field label="Número ATM" required>
                   <Input placeholder="Ej: 00123" value={form.numeroATM} onChange={set("numeroATM")} />
-                </Field>
-                <Field label="Serie ATM">
-                  <Input placeholder="Ej: ATM-XYZ-2024" value={form.serieATM} onChange={set("serieATM")} />
                 </Field>
               </div>
             </FormSection>
 
             {/* DATOS MMBB */}
             <FormSection icon={Cpu} title="Datos MMBB">
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="Modelo MMBB">
+              <div className="grid grid-cols-1 gap-4">
+                <Field label="Modelo" required>
                   <Input placeholder="Ej: Wincor Nixdorf 2550" value={form.modeloMMBB} onChange={set("modeloMMBB")} />
-                </Field>
-                <Field label="Serie MMBB">
-                  <Input placeholder="Ej: MMBB-001" value={form.serieMMBB} onChange={set("serieMMBB")} />
                 </Field>
               </div>
             </FormSection>
@@ -505,29 +544,29 @@ function NewReportForm({
             {/* PERSONAL */}
             <FormSection icon={User} title="Personal">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Field label='Destinatario (para "Estimados...")' required>
-                  <Input placeholder="Ej: Carol, Gerencia, Sr. Pérez" value={form.destinatario} onChange={set("destinatario")} />
+                <Field label="Cliente" required>
+                  <Input placeholder="Ej: Banco de Chile, Santander, etc." value={form.destinatario} onChange={set("destinatario")} />
                 </Field>
                 <Field label="Solicitante">
                   <Input placeholder="Nombre del solicitante" value={form.solicitante} onChange={set("solicitante")} />
                 </Field>
-                <Field label="Técnico / Supervisor" required>
+                <Field label="Técnico" required>
                   <Input placeholder="Nombre del técnico" value={form.tecnico} onChange={set("tecnico")} />
                 </Field>
               </div>
             </FormSection>
 
             {/* PERÍODO Y SERVICIO */}
-            <FormSection icon={Calendar} title="Período y Servicio">
+            <FormSection icon={Calendar} title="Fechas y Horarios">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Field label="Fecha y Hora Inicio" required>
-                  <Input type="datetime-local" placeholder="dd-mm-aaaa --:--" value={form.fechaInicio} onChange={set("fechaInicio")} />
+                <Field label="Fecha" required>
+                  <Input type="date" placeholder="dd-mm-aaaa" value={reportDate} onChange={setReportDate} />
                 </Field>
-                <Field label="Fecha y Hora Fin" required>
-                  <Input type="datetime-local" placeholder="dd-mm-aaaa --:--" value={form.fechaFin} onChange={set("fechaFin")} />
+                <Field label="Hora Inicio" required>
+                  <Input type="time" placeholder="--:--" value={startTime} onChange={setStartTime} />
                 </Field>
-                <Field label="Valor del Servicio">
-                  <Input placeholder="Ej: $ 139.000 + IVA" value={form.valorServicio} onChange={set("valorServicio")} />
+                <Field label="Hora Término" required>
+                  <Input type="time" placeholder="--:--" value={endTime} onChange={setEndTime} />
                 </Field>
               </div>
             </FormSection>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Save, Bell, Shield, Database, Mail, Globe, Eye, EyeOff, CheckCircle, Lock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { CONFIG } from "@/lib/config";
 
 const tabs = [
   { id: "general", label: "General", icon: Globe },
@@ -27,9 +28,9 @@ export default function SettingsPage() {
   const [pwError, setPwError] = useState("");
 
   const [formData, setFormData] = useState({
-    nombre: "OpsATM",
-    empresa: "OpsATM Chile SpA",
-    correo: "contacto@opsatm.cl",
+    nombre: CONFIG.SYSTEM_NAME,
+    empresa: CONFIG.COMPANY_NAME,
+    correo: `contacto@${CONFIG.DEFAULT_EMAIL_DOMAIN}`,
     zona: "America/Santiago (CLT)",
     formato: "DD/MM/YYYY",
     sla_1: "4",
@@ -91,7 +92,7 @@ export default function SettingsPage() {
           disabled={!isAdmin}
           className="btn-primary" 
           style={{
-            background: saved ? "linear-gradient(135deg, #72b01d, #578814)" : "",
+            background: saved ? "linear-gradient(135deg, var(--color-brand-500), var(--color-brand-600))" : "",
             opacity: isAdmin ? 1 : 0.5,
             cursor: isAdmin ? "pointer" : "not-allowed"
           }}
@@ -208,7 +209,7 @@ export default function SettingsPage() {
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" defaultChecked={n.enabled} className="sr-only peer" />
-                      <div className="w-9 h-5 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all" style={{ background: n.enabled ? "#72b01d" : "rgba(255,255,255,0.1)" }} />
+                      <div className="w-9 h-5 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all" style={{ background: n.enabled ? "var(--color-brand-500)" : "rgba(255,255,255,0.1)" }} />
                     </label>
                   </div>
                 ))}
@@ -262,7 +263,7 @@ export default function SettingsPage() {
                     </div>
                   )}
                   {pwSuccess && (
-                    <div className="p-3 rounded-lg text-sm flex items-center gap-2" style={{ background: "rgba(114,176,29,0.1)", border: "1px solid rgba(114,176,29,0.2)", color: "#93c947" }}>
+                    <div className="p-3 rounded-lg text-sm flex items-center gap-2" style={{ background: "rgba(62,207,142,0.1)", border: "1px solid rgba(62,207,142,0.2)", color: "var(--color-brand-400)" }}>
                       <CheckCircle size={16} /> {pwSuccess}
                     </div>
                   )}
@@ -327,7 +328,7 @@ export default function SettingsPage() {
                 ].map((t) => (
                   <div key={t} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
                     <div className="flex items-center gap-2">
-                      <Mail size={14} style={{ color: "#72b01d" }} />
+                      <Mail size={14} style={{ color: "var(--color-brand-500)" }} />
                       <span className="text-sm" style={{ color: "#e2e8f0" }}>{t}</span>
                     </div>
                     <button className="btn-secondary text-xs py-1 px-2.5">Editar plantilla</button>

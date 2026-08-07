@@ -85,8 +85,13 @@ export async function POST(request: NextRequest) {
     sheet.cell('C35').value(`DIRECCIÓN: ${cot.direccion || ''}`);
 
     // Fill note data
-    sheet.cell('F38').value(cot.validacion || '5 dias');
-    sheet.cell('F39').value(cot.plazoEntrega || '3 dias');
+    if (cot.nota) {
+      sheet.cell('F38').value(cot.nota);
+      sheet.cell('F39').value('');
+    } else {
+      sheet.cell('F38').value(cot.validacion || '5 dias');
+      sheet.cell('F39').value(cot.plazoEntrega || '3 dias');
+    }
 
     // Fill totals
     sheet.cell('J38').value(neto);

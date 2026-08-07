@@ -22,6 +22,38 @@ function extractBase64(url: string): { data: string; mime: string } | null {
   }
 }
 
+function extractDate(dateString: string): string {
+  if (!dateString) return '';
+  try {
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) {
+      return dateString.split(';')[0].trim();
+    }
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  } catch {
+    return dateString;
+  }
+}
+
+function extractTime(dateString: string): string {
+  if (!dateString) return '';
+  try {
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) {
+      const parts = dateString.split(';');
+      return parts.length > 1 ? parts[1].trim() : '';
+    }
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${hh}:${min}`;
+  } catch {
+    return '';
+  }
+}
+
 // ── Route ─────────────────────────────────────────────────────────────────────
 export async function POST(request: NextRequest) {
   try {
@@ -51,14 +83,15 @@ export async function POST(request: NextRequest) {
     let logoDataUrl: string | null = null;
 
     if (informe.logoBase64 && informe.logoBase64.length > 100) {
-      logoDataUrl = `data:image/jpeg;base64,${informe.logoBase64}`;
+      logoDataUrl = `data:image/png;base64,${informe.logoBase64}`;
     } else {
-      const logoPath = fs.existsSync(path.join(process.cwd(), 'public', 'Imagen1.jpg'))
-        ? path.join(process.cwd(), 'public', 'Imagen1.jpg')
-        : path.join(process.cwd(), 'public', 'imagen1.jpg');
+      const logoPath = fs.existsSync(path.join(process.cwd(), 'public', 'logo_keytek.png'))
+        ? path.join(process.cwd(), 'public', 'logo_keytek.png')
+        : path.join(process.cwd(), 'public', 'Imagen1.jpg');
       if (fs.existsSync(logoPath)) {
         const buf = fs.readFileSync(logoPath);
-        logoDataUrl = `data:image/jpeg;base64,${buf.toString('base64')}`;
+        const mime = logoPath.endsWith('.png') ? 'image/png' : 'image/jpeg';
+        logoDataUrl = `data:${mime};base64,${buf.toString('base64')}`;
       }
     }
 
@@ -81,8 +114,9 @@ export async function POST(request: NextRequest) {
     pdfmake.setLocalAccessPolicy(() => true);
 
     // ── Constants ────────────────────────────────────────────────────────────
-    const GRAY = '#d9d9d9';
+    const GRAY = '#DEEAF1';
     const BLACK = '#000000';
+    const EMERALD_DARK = '#1F497D';
     const SZ = 11; // default font size
 
     // ── Cell helpers ─────────────────────────────────────────────────────────
@@ -110,16 +144,12 @@ export async function POST(request: NextRequest) {
 
     // ── Info table body ───────────────────────────────────────────────────────
     const tableBody = [
-      [lbl('Dirección'), val(informe.direccion || '', 3), empty(), empty()],
-      [lbl('Ubicación'), val(informe.ubicacion || '', 3), empty(), empty()],
-      [lbl('Comuna'), val(informe.comuna || '', 3), empty(), empty()],
-      [lbl('Número ATM'), val(informe.numeroATM || ''), lbl('# Serie ATM'), val(informe.serieATM || '')],
-      [lbl('Modelo MMBB'), val(informe.modeloMMBB || ''), lbl('# Serie MMBB'), val(informe.serieMMBB || '')],
-      [lbl('Solicitante'), val(informe.solicitante || '', 3), empty(), empty()],
-      [lbl('Técnico Supervisor'), val(informe.tecnicoSupervisor || '', 3), empty(), empty()],
-      [lbl('Fecha Inicio Trab.'), val(informe.fechaInicio || ''), lbl('Fecha Fin Trab.'), val(informe.fechaFin || '')],
-      [{ text: '', colSpan: 4, margin: [0, 4, 0, 4] }, empty(), empty(), empty()],
-      [lbl('Valor Servicio'), val(informe.valorServicio || '', 3), empty(), empty()],
+      [lbl('Fecha'), val(extractDate(informe.fechaInicio)), { text: '' }, { text: '' }],
+      [lbl('Cliente'), val(informe.destinatario || ''), lbl('Solicitante'), val(informe.solicitante || '')],
+      [lbl('Dirección'), val(informe.direccion || ''), lbl('Comuna'), val(informe.comuna || '')],
+      [lbl('Ubicación'), val(informe.ubicacion || ''), lbl('N° ATM'), val(informe.numeroATM || '')],
+      [lbl('Modelo'), val(informe.modeloMMBB || ''), lbl('Técnico'), val(informe.tecnicoSupervisor || '')],
+      [lbl('Hora Inicio'), val(extractTime(informe.fechaInicio)), lbl('Hora Término'), val(extractTime(informe.fechaFin))],
     ];
 
     // ── Photo grid ────────────────────────────────────────────────────────────
@@ -182,79 +212,59 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // ── Header: logo + OT number ──────────────────────────────────────────────
-    const headerColumns: object[] = logoDataUrl
-      ? [
-          { image: logoDataUrl, width: 180, height: 45 },
-          {
-            text: `OT: ${informe.numeroOT || '____'}`,
-            bold: true,
-            fontSize: 12,
-            alignment: 'right',
-            margin: [0, 10, 0, 0],
-          },
-        ]
-      : [
-          { text: "ATM'S Servicios", bold: true, fontSize: 14, color: '#4a7c4e' },
-          {
-            text: `OT: ${informe.numeroOT || '____'}`,
-            bold: true,
-            fontSize: 12,
-            alignment: 'right',
-            margin: [0, 10, 0, 0],
-          },
-        ];
-
     // ── Document definition ───────────────────────────────────────────────────
     const docDefinition = {
       pageSize: 'LETTER',
       pageMargins: [45, 45, 45, 45],
       defaultStyle: { font: 'Roboto', fontSize: SZ, color: BLACK },
       content: [
-        // Header
-        { columns: headerColumns, margin: [0, 0, 0, 12] },
+        // OT number top-right
+        {
+          columns: [
+            { text: '', width: '*' },
+            {
+              text: `OT: ${informe.numeroOT || '____'}`,
+              bold: true,
+              fontSize: 12,
+              alignment: 'right',
+              width: 'auto',
+            },
+          ],
+          margin: [0, 0, 0, 6],
+        },
+        // Logo centered
+        logoDataUrl
+          ? { image: logoDataUrl, width: 160, height: 110, alignment: 'center', margin: [0, 0, 0, 8] }
+          : { text: 'KEYTEK SpA', bold: true, fontSize: 16, color: '#1F497D', alignment: 'center', margin: [0, 0, 0, 8] },
         // Title
         {
-          text: 'INFORME DE ORDEN DE TRABAJO',
+          text: 'INFORME TÉCNICO DE SERVICIO',
           bold: true,
           decoration: 'underline',
           alignment: 'center',
           fontSize: 16,
-          margin: [0, 0, 0, 12],
-        },
-        // Intro
-        {
-          text: [
-            'Estimados ',
-            {
-              text: informe.destinatario || informe.solicitante || '___________',
-              bold: true,
-              decoration: 'underline',
-            },
-            ', informo a ustedes detalle de la supervisión realizada.',
-          ],
-          fontSize: SZ,
-          margin: [0, 0, 0, 10],
+          color: '#1F497D',
+          margin: [0, 4, 0, 12],
         },
         // Info table
         {
           table: {
-            widths: ['28%', '25%', '22%', '25%'],
+            widths: ['25%', '25%', '25%', '25%'],
             body: tableBody,
           },
           layout: {
             hLineWidth: () => 1,
             vLineWidth: () => 1,
-            hLineColor: () => '#000000',
-            vLineColor: () => '#000000',
+            hLineColor: () => EMERALD_DARK,
+            vLineColor: () => EMERALD_DARK,
           },
           margin: [0, 0, 0, 12],
         },
         // Detalle
-        { text: 'Detalle del Trabajo:', bold: true, decoration: 'underline', fontSize: SZ, margin: [0, 8, 0, 4] },
+        { text: 'Detalle del trabajo:', bold: true, decoration: 'underline', fontSize: SZ, margin: [0, 8, 0, 4] },
         { text: informe.detalle || '', fontSize: SZ, margin: [0, 0, 0, 8] },
         // Resumen
-        { text: 'Resumen del Trabajo:', bold: true, decoration: 'underline', fontSize: SZ, margin: [0, 8, 0, 4] },
+        { text: 'Resumen del trabajo:', bold: true, decoration: 'underline', fontSize: SZ, margin: [0, 8, 0, 4] },
         { text: informe.resumenTrabajo || '', fontSize: SZ, margin: [0, 0, 0, 8] },
         // Photos
         ...photoContent,

@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { CONFIG } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: {
-    default: "OpsATM — Sistema de Gestión de Operaciones",
-    template: "%s | OpsATM",
+    default: `${CONFIG.SYSTEM_NAME} — Sistema de Gestión de Operaciones`,
+    template: `%s | ${CONFIG.SYSTEM_NAME}`,
   },
   description:
-    "Plataforma corporativa para gestión de operaciones técnicas en cajeros automáticos. Control de órdenes, técnicos, ATMs, inventario, mapas e informes en tiempo real.",
-  keywords: ["ATM", "gestión operaciones", "órdenes de trabajo", "técnicos campo", "mantenimiento cajeros"],
+    "Plataforma corporativa para gestión de operaciones técnicas. Control de órdenes, técnicos, inventario, mapas e informes en tiempo real.",
+  keywords: ["gestión operaciones", "órdenes de trabajo", "técnicos campo", "mantenimiento", "seguridad", "anclajes"],
 };
 
 export default function RootLayout({

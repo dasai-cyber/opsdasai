@@ -21,18 +21,36 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 // Helpers de fecha
-function formatFechaDocx(dateString: string): string {
+function extractDate(dateString: string): string {
   if (!dateString) return '';
   try {
     const d = new Date(dateString);
+    if (isNaN(d.getTime())) {
+      // If it contains a semicolon, take the first part
+      return dateString.split(';')[0].trim();
+    }
     const dd = String(d.getDate()).padStart(2, '0');
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const yyyy = d.getFullYear();
-    const hh = String(d.getHours()).padStart(2, '0');
-    const min = String(d.getMinutes()).padStart(2, '0');
-    return `${dd}-${mm}-${yyyy}; ${hh}:${min}`;
+    return `${dd}-${mm}-${yyyy}`;
   } catch {
     return dateString;
+  }
+}
+
+function extractTime(dateString: string): string {
+  if (!dateString) return '';
+  try {
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) {
+      const parts = dateString.split(';');
+      return parts.length > 1 ? parts[1].trim() : '';
+    }
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${hh}:${min}`;
+  } catch {
+    return '';
   }
 }
 
@@ -89,14 +107,53 @@ export async function generarDocx(informe: Informe): Promise<Buffer> {
   if (logoBufferInfo) {
     logoRun = new ImageRun({
       data: logoBufferInfo.buffer,
-      transformation: { width: 220, height: 55 },
-      type: 'jpg',
+      transformation: { width: 160, height: 110 },
+      type: logoBufferInfo.type,
     });
   }
 
   // ── Página 1 ──────────────────────────────────────
 
-  // ── Encabezado (Logo a la izquierda, OT a la derecha) ────────────────
+  // ── Encabezado (OT arriba a la derecha, Logo centrado) ────────────────
+  // Row 1: empty left cell + OT right
+  const otRow = new TableRow({
+    children: [
+      new TableCell({
+        width: { size: 80, type: WidthType.PERCENTAGE },
+        borders: {
+          top: { style: BorderStyle.NONE },
+          bottom: { style: BorderStyle.NONE },
+          left: { style: BorderStyle.NONE },
+          right: { style: BorderStyle.NONE },
+        },
+        children: [new Paragraph({ children: [] })],
+      }),
+      new TableCell({
+        width: { size: 20, type: WidthType.PERCENTAGE },
+        borders: {
+          top: { style: BorderStyle.NONE },
+          bottom: { style: BorderStyle.NONE },
+          left: { style: BorderStyle.NONE },
+          right: { style: BorderStyle.NONE },
+        },
+        children: [
+          new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [
+              new TextRun({
+                text: `OT: ${informe.numeroOT || '____'}`,
+                bold: true,
+                size: 24,
+                font: 'Calibri',
+                color: '000000',
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
+
   const headerTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     borders: {
@@ -107,41 +164,16 @@ export async function generarDocx(informe: Informe): Promise<Buffer> {
       insideHorizontal: { style: BorderStyle.NONE },
       insideVertical: { style: BorderStyle.NONE },
     },
-    rows: [
-      new TableRow({
-        children: [
-          new TableCell({
-            width: { size: 50, type: WidthType.PERCENTAGE },
-            children: [
-              new Paragraph({
-                alignment: AlignmentType.LEFT,
-                children: logoRun
-                  ? [logoRun]
-                  : [new TextRun({ text: "ATM'S Servicios", bold: true, size: 28, font: 'Calibri', color: '4a7c4e' })],
-              }),
-            ],
-          }),
-          new TableCell({
-            width: { size: 50, type: WidthType.PERCENTAGE },
-            verticalAlign: VerticalAlign.CENTER,
-            children: [
-              new Paragraph({
-                alignment: AlignmentType.RIGHT,
-                children: [
-                  new TextRun({
-                    text: `OT: ${informe.numeroOT || '____'}`,
-                    bold: true,
-                    size: 24, // 12pt
-                    font: 'Calibri',
-                    color: '000000',
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      }),
-    ],
+    rows: [otRow],
+  });
+
+  // Logo centrado debajo de OT
+  const logoParagraph = new Paragraph({
+    alignment: AlignmentType.CENTER,
+    spacing: { after: 120 },
+    children: logoRun
+      ? [logoRun]
+      : [new TextRun({ text: 'KEYTEK SpA', bold: true, size: 32, font: 'Calibri', color: '0f766e' })],
   });
 
   // Título principal subrayado y centrado
@@ -150,26 +182,13 @@ export async function generarDocx(informe: Informe): Promise<Buffer> {
     spacing: { before: 0, after: 300 },
     children: [
       new TextRun({
-        text: 'INFORME DE ORDEN DE TRABAJO',
+        text: 'INFORME TÉCNICO DE SERVICIO',
         bold: true,
-        size: 36,
-        font: 'Calibri',
-        color: '000000',
+        size: 44,           // 22pt = 44 half-points
+        font: 'Cambria',
+        color: '1F497D',
         underline: { type: UnderlineType.SINGLE },
       }),
-    ],
-  });
-
-  // Texto introductorio
-  const solicitanteTexto = informe.destinatario || informe.solicitante || '___________';
-  const introText = new Paragraph({
-    alignment: AlignmentType.LEFT,
-    spacing: { after: 200 },
-    children: [
-      new TextRun({ text: 'Estimados ', size: 24, font: 'Calibri', color: '000000' }),
-      new TextRun({ text: solicitanteTexto, bold: true, size: 24, font: 'Calibri', color: '000000',
-        underline: { type: UnderlineType.SINGLE } }),
-      new TextRun({ text: ', informo a ustedes detalle de la supervisión realizada.', size: 24, font: 'Calibri', color: '000000' }),
     ],
   });
 
@@ -178,30 +197,6 @@ export async function generarDocx(informe: Informe): Promise<Buffer> {
   const COL_VAL2 = 2250; // Columna 2
   const COL_LBL2 = 2000; // Columna 3
   const COL_VAL_FIN = 2250; // Columna 4 (Total 9000)
-  const COL_TOTAL_VAL = COL_VAL2 + COL_LBL2 + COL_VAL_FIN; // 6500
-
-  function fullRow(label: string, value: string): TableRow {
-    return new TableRow({
-      children: [
-        new TableCell({
-          width: { size: COL_LBL1, type: WidthType.DXA },
-          shading: { type: ShadingType.CLEAR, fill: 'D9D9D9' },
-          verticalAlign: VerticalAlign.CENTER,
-          margins: { top: 60, bottom: 60, left: 80, right: 80 },
-          borders: allBorders(),
-          children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 24, font: 'Calibri', color: '000000' })] })],
-        }),
-        new TableCell({
-          width: { size: COL_TOTAL_VAL, type: WidthType.DXA },
-          columnSpan: 3,
-          verticalAlign: VerticalAlign.CENTER,
-          margins: { top: 60, bottom: 60, left: 80, right: 80 },
-          borders: allBorders(),
-          children: [new Paragraph({ children: [new TextRun({ text: value, size: 24, font: 'Calibri', color: '000000' })] })],
-        }),
-      ],
-    });
-  }
 
   function splitRow(label1: string, val1: string, label2: string, val2: string): TableRow {
     return new TableRow({
@@ -217,7 +212,7 @@ export async function generarDocx(informe: Informe): Promise<Buffer> {
   function mkCell(text: string, width: number, isLabel: boolean): TableCell {
     return new TableCell({
       width: { size: width, type: WidthType.DXA },
-      shading: isLabel ? { type: ShadingType.CLEAR, fill: 'D9D9D9' } : undefined,
+      shading: isLabel ? { type: ShadingType.CLEAR, fill: 'DEEAF1' } : undefined,
       verticalAlign: VerticalAlign.CENTER,
       margins: { top: 60, bottom: 60, left: 80, right: 80 },
       borders: allBorders(),
@@ -227,35 +222,22 @@ export async function generarDocx(informe: Informe): Promise<Buffer> {
 
   function allBorders() {
     return {
-      top: { style: BorderStyle.SINGLE, size: 12, color: '000000' },
-      bottom: { style: BorderStyle.SINGLE, size: 12, color: '000000' },
-      left: { style: BorderStyle.SINGLE, size: 12, color: '000000' },
-      right: { style: BorderStyle.SINGLE, size: 12, color: '000000' },
+      top: { style: BorderStyle.SINGLE, size: 12, color: '1F497D' },
+      bottom: { style: BorderStyle.SINGLE, size: 12, color: '1F497D' },
+      left: { style: BorderStyle.SINGLE, size: 12, color: '1F497D' },
+      right: { style: BorderStyle.SINGLE, size: 12, color: '1F497D' },
     };
   }
 
   const dataTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     rows: [
-      fullRow('Dirección', informe.direccion || ''),
-      fullRow('Ubicación', informe.ubicacion || ''),
-      fullRow('Comuna', informe.comuna || ''),
-      splitRow('Número ATM', informe.numeroATM || '', '# Serie ATM', informe.serieATM || ''),
-      splitRow('Modelo MMBB', informe.modeloMMBB || '', '# Serie MMBB', informe.serieMMBB || ''),
-      fullRow('Solicitante', informe.solicitante || ''),
-      fullRow('Técnico Supervisor', informe.tecnicoSupervisor || ''),
-      splitRow('Fecha Inicio Trab.', formatFechaDocx(informe.fechaInicio), 'Fecha Fin Trab.', formatFechaDocx(informe.fechaFin)),
-      // fila vacía
-      new TableRow({
-        children: [
-          new TableCell({
-            columnSpan: 4,
-            borders: allBorders(),
-            children: [new Paragraph({ children: [new TextRun({ text: '' })] })],
-          }),
-        ],
-      }),
-      fullRow('Valor Servicio', informe.valorServicio || ''),
+      splitRow('Fecha', extractDate(informe.fechaInicio), '', ''),
+      splitRow('Cliente', informe.destinatario || '', 'Solicitante', informe.solicitante || ''),
+      splitRow('Dirección', informe.direccion || '', 'Comuna', informe.comuna || ''),
+      splitRow('Ubicación', informe.ubicacion || '', 'N° ATM', informe.numeroATM || ''),
+      splitRow('Modelo', informe.modeloMMBB || '', 'Técnico', informe.tecnicoSupervisor || ''),
+      splitRow('Hora Inicio', extractTime(informe.fechaInicio), 'Hora Término', extractTime(informe.fechaFin)),
     ],
   });
 
@@ -361,13 +343,13 @@ export async function generarDocx(informe: Informe): Promise<Buffer> {
         },
         children: [
           headerTable,
-          new Paragraph({ spacing: { after: 300 }, children: [] }), // Espacio después del header
+          logoParagraph,
           tituloParagraph,
-          introText,
+          new Paragraph({ spacing: { after: 200 }, children: [] }), // Espacio antes de tabla
           dataTable,
           espacioParagraph,
-          ...makeSection('Detalle del Trabajo:', informe.detalle),
-          ...makeSection('Resumen del Trabajo:', informe.resumenTrabajo),
+          ...makeSection('Detalle del trabajo:', informe.detalle),
+          ...makeSection('Resumen del trabajo:', informe.resumenTrabajo),
           ...imageChildren,
         ],
       },

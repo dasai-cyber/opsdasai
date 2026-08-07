@@ -5,9 +5,8 @@ import { supabase } from "@/lib/supabase";
 import {
   Plus, Trash2, Save, FileText, Printer, Eye, X,
   Building2, User, Mail, Hash, Calendar, Package,
-  CheckCircle2, ChevronDown, Search, Filter, Download, FileSpreadsheet
+  CheckCircle2, ChevronDown, Search, Filter, Download
 } from "lucide-react";
-import * as XLSX from "xlsx";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface LineItem {
@@ -30,6 +29,7 @@ interface Cotizacion {
   items: LineItem[];
   validacion: string;
   plazoEntrega: string;
+  nota: string;
   estado: 'borrador' | 'enviada' | 'aprobada' | 'rechazada';
   createdAt: string;
 }
@@ -53,6 +53,7 @@ const EMPTY_COT = (): Omit<Cotizacion, 'id' | 'createdAt'> => ({
   items: [EMPTY_ITEM()],
   validacion: "5 días",
   plazoEntrega: "3 días",
+  nota: '',
   estado: 'borrador',
 });
 
@@ -69,28 +70,28 @@ function fmtCLP(n: number) {
   return "$ " + n.toLocaleString("es-CL");
 }
 
-const downloadExcel = async (cot: Cotizacion) => {
+const downloadWord = async (cot: Cotizacion) => {
   try {
-    const response = await fetch('/api/generar-excel', {
+    const response = await fetch('/api/generar-cotizacion-docx', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ cotizacion: cot }),
     });
     if (!response.ok) {
-      throw new Error('Error al generar Excel');
+      throw new Error('Error al generar Word');
     }
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Cotizacion_${cot.numero || cot.id}.xlsx`;
+    a.download = `Cotizacion_${cot.numero || cot.id}.docx`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
   } catch (err) {
     console.error(err);
-    alert('Hubo un error al generar el archivo Excel');
+    alert('Hubo un error al generar el archivo Word');
   }
 };
 
@@ -101,162 +102,227 @@ const ESTADO_STYLE: Record<string, { bg: string; color: string; label: string }>
   rechazada: { bg: "rgba(239,68,68,0.15)",   color: "#ef4444", label: "Rechazada" },
 };
 
+// Helper to format date as "06 de Agosto 2026"
+function formatLongDate(dateStr: string) {
+  if (!dateStr) return '';
+  const parts = dateStr.split(/[-/]/);
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const year = parseInt(parts[2], 10);
+    const months = [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+    if (!isNaN(day) && month >= 0 && month < 12 && !isNaN(year)) {
+      return `${String(day).padStart(2, '0')} de ${months[month]} ${year}`;
+    }
+  }
+  return dateStr;
+}
+
 // ─── Print Modal ──────────────────────────────────────────────────────────────
 function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
   const { neto, iva, bruto } = calcTotals(cot.items);
 
-  const handleDownloadExcel = () => {
-    downloadExcel(cot);
-  };
+  const handleDownloadWord = () => downloadWord(cot);
 
   const handleDownloadPDF = async () => {
     const element = document.getElementById("print-area");
     if (!element) return;
     const html2pdf = (await import("html2pdf.js")).default;
     const opt = {
-      margin:       10,
-      filename:     `Cotizacion_${cot.numero || cot.id}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+      margin:      0,
+      filename:    `Cotizacion_${cot.numero || cot.id}.pdf`,
+      image:       { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF:       { unit: 'mm', format: 'letter', orientation: 'portrait' },
     };
     html2pdf().from(element).set(opt).save();
   };
 
+  const BLUE_DARK = '#1D2D44';
+  const BLUE_LIGHT = '#708D81';
+  const BLUE_TEXT = '#1F497D';
+  const TABLE_HEADER_BG = '#4E5E77';
+  const ROW_ALT_BG = '#EBF1F6';
+
   return (
     <div style={{
-      position: "fixed", inset: 0, zIndex: 9999,
-      background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)",
-      display: "flex", alignItems: "flex-start", justifyContent: "center",
-      padding: "24px 16px", overflowY: "auto",
+      position: 'fixed', inset: 0, zIndex: 9999,
+      background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(6px)',
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+      padding: '24px 16px', overflowY: 'auto',
     }}>
-      <div style={{ width: "100%", maxWidth: 800 }}>
+      <div style={{ width: '100%', maxWidth: 800 }}>
         {/* Toolbar */}
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginBottom: 12 }}>
-          <button
-            onClick={handleDownloadExcel}
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "#107c41", color: "white", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
-          >
-            <FileSpreadsheet size={14} /> Excel
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginBottom: 12 }}>
+          <button onClick={handleDownloadWord} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', background: '#2b579a', color: 'white', borderRadius: 8, border: 'none', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+            <FileText size={14} /> Word
           </button>
-          <button
-            onClick={handleDownloadPDF}
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "#ef4444", color: "white", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
-          >
+          <button onClick={handleDownloadPDF} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', background: '#ef4444', color: 'white', borderRadius: 8, border: 'none', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
             <Download size={14} /> PDF
           </button>
-          <button
-            onClick={() => window.print()}
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "linear-gradient(135deg,#72b01d,#578814)", color: "white", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
-          >
+          <button onClick={() => window.print()} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', background: 'linear-gradient(135deg,#72b01d,#578814)', color: 'white', borderRadius: 8, border: 'none', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
             <Printer size={14} /> Imprimir
           </button>
-          <button
-            onClick={onClose}
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "rgba(255,255,255,0.08)", color: "#94a3b8", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
-          >
+          <button onClick={onClose} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', background: 'rgba(255,255,255,0.08)', color: '#94a3b8', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
             <X size={14} /> Cerrar
           </button>
         </div>
 
-        {/* Document */}
-        <div id="print-area" style={{ background: "white", color: "#1e293b", borderRadius: 12, padding: "40px 48px", fontFamily: "Arial, sans-serif", fontSize: 12 }}>
-          {/* Header empresa */}
-          <div style={{ textAlign: "center", marginBottom: 24, borderBottom: "2px solid #1e3a5f", paddingBottom: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#1e3a5f", lineHeight: 1.5 }}>
-              SOCIEDAD DE MANTENCION INTEGRAL DE ATM´S Y SERVICIOS DE AUTOMATIZACION BANCARIA LTDA.
+        {/* Document Container */}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div id="print-area" style={{
+            position: 'relative',
+            background: 'white',
+            color: '#1e293b',
+            width: '794px',
+            minHeight: '1045px',
+            padding: '130px 60px 140px 60px',
+            fontFamily: 'Arial, sans-serif',
+            fontSize: 12,
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+          }}>
+
+            {/* Top wave Image */}
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 180, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/top_wave.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'fill' }} />
             </div>
-            <div style={{ fontSize: 11, marginTop: 4, color: "#475569" }}>
-              Reparación de maquinarias &nbsp;|&nbsp; RUT: 76.049.304-K
+
+            {/* Main content wrapper */}
+            <div style={{ zIndex: 2, position: 'relative', flex: 1, display: 'flex', flexDirection: 'column' }}>
+              
+              {/* Header: Logo and Title */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 30 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo_keytek.png" alt="Keytek" style={{ height: 100, objectFit: 'contain' }} />
+                
+                <div style={{ textAlign: 'right', marginTop: 15 }}>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: BLUE_TEXT, letterSpacing: 1 }}>
+                    COTIZACIÓN #{cot.numero || '___'}
+                  </div>
+                  <div style={{ fontSize: 13, color: '#64748B', marginTop: 4, fontWeight: 600 }}>
+                    {formatLongDate(cot.fecha)}
+                  </div>
+                </div>
+              </div>
+
+              {/* CLIENTE Info */}
+              <div style={{ marginBottom: 28 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, color: '#475569', letterSpacing: 1, marginBottom: 6 }}>
+                  CLIENTE
+                </div>
+                {cot.atencion ? (
+                  <>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#3182CE', marginBottom: 2 }}>
+                      Nombre: {cot.atencion}
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#3182CE' }}>
+                      Empresa: {cot.cliente}
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#3182CE' }}>
+                    Cliente: {cot.cliente}
+                  </div>
+                )}
+              </div>
+
+              {/* Descripción del servicio (Optional) */}
+              {cot.descripcionServicio && (
+                <div style={{ marginBottom: 24, padding: '12px 16px', background: '#F8FAFC', borderLeft: `3px solid ${BLUE_TEXT}`, borderRadius: 4 }}>
+                  <strong style={{ color: BLUE_TEXT, fontSize: 11, letterSpacing: 0.5 }}>DESCRIPCIÓN DEL SERVICIO:</strong><br />
+                  <span style={{ whiteSpace: 'pre-wrap', fontSize: 12, display: 'block', marginTop: 4 }}>{cot.descripcionServicio}</span>
+                </div>
+              )}
+
+              {/* Items Table */}
+              <div style={{ flex: 1 }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ background: TABLE_HEADER_BG, color: 'white' }}>
+                      <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }}>Descripción</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'center', fontSize: 11, fontWeight: 700, width: 80 }}>Cantidad</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: 11, fontWeight: 700, width: 120 }}>Precio</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: 11, fontWeight: 700, width: 120, borderTopRightRadius: 4, borderBottomRightRadius: 4 }}>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cot.items.map((item, i) => (
+                      <tr key={item.id} style={{ background: i % 2 === 1 ? ROW_ALT_BG : 'white' }}>
+                        <td style={{ padding: '10px 12px', borderBottom: '1px solid #E2E8F0', color: '#334155' }}>{item.descripcion}</td>
+                        <td style={{ padding: '10px 12px', textAlign: 'center', borderBottom: '1px solid #E2E8F0', color: '#334155' }}>{item.cantidad}</td>
+                        <td style={{ padding: '10px 12px', textAlign: 'right', borderBottom: '1px solid #E2E8F0', color: '#334155' }}>{fmtCLP(item.valorUnit)}</td>
+                        <td style={{ padding: '10px 12px', textAlign: 'right', borderBottom: '1px solid #E2E8F0', fontWeight: 600, color: '#334155' }}>{fmtCLP(item.cantidad * item.valorUnit)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Totals Section */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20 }}>
+                  <table style={{ borderCollapse: 'collapse', minWidth: 240 }}>
+                    <tbody>
+                      <tr>
+                        <td style={{ padding: '6px 12px', fontSize: 11, fontWeight: 800, color: '#475569', textAlign: 'left' }}>TOTAL</td>
+                        <td style={{ padding: '6px 12px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: '#334155' }}>{fmtCLP(neto)}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '6px 12px', fontSize: 11, fontWeight: 800, color: '#475569', textAlign: 'left' }}>IVA (19%)</td>
+                        <td style={{ padding: '6px 12px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: '#334155' }}>{fmtCLP(iva)}</td>
+                      </tr>
+                      <tr style={{ background: TABLE_HEADER_BG, color: 'white' }}>
+                        <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 800, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }}>TOTAL:</td>
+                        <td style={{ padding: '8px 12px', textAlign: 'right', fontSize: 13, fontWeight: 800, borderTopRightRadius: 4, borderBottomRightRadius: 4 }}>{fmtCLP(bruto)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Nota */}
+              {cot.nota && (
+                <div style={{ marginTop: 24, fontSize: 11, color: '#334155', lineHeight: 1.4 }}>
+                  <span style={{ fontWeight: 800, color: BLUE_TEXT }}>Nota:</span> {cot.nota}
+                </div>
+              )}
+
             </div>
-            <div style={{ fontSize: 11, color: "#475569" }}>
-              Catedral #5880, Lo Prado - Santiago &nbsp;|&nbsp; Fono: 7744476 &nbsp;|&nbsp; Celular: 9 44771425
+
+            {/* Bottom wave Image */}
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 180, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/bottom_wave.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'fill' }} />
             </div>
-          </div>
 
-          {/* Título */}
-          <div style={{ textAlign: "center", fontSize: 16, fontWeight: 800, letterSpacing: 3, color: "#1e3a5f", marginBottom: 20 }}>
-            C O T I Z A C I Ó N
-          </div>
-
-          {/* Meta */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
-            <div><strong>Fecha</strong> {cot.fecha}</div>
-            <div><strong>N°</strong> {cot.numero}</div>
-            <div><strong>Señor (es)</strong> {cot.cliente}</div>
-            <div><strong>RUT</strong> {cot.rut}</div>
-            <div><strong>Atencion</strong> {cot.atencion}</div>
-            <div><strong>Email contacto</strong> {cot.emailContacto}</div>
-          </div>
-
-          {/* Descripción del servicio */}
-          {cot.descripcionServicio && (
-            <div style={{ marginBottom: 16, padding: "10px 14px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
-              <strong>Descripción del servicio:</strong><br />
-              <span style={{ whiteSpace: "pre-wrap" }}>{cot.descripcionServicio}</span>
+            {/* Bottom Email Contact centered */}
+            <div style={{
+              position: 'absolute',
+              bottom: 24,
+              left: 0,
+              right: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              color: 'white',
+              fontSize: 12,
+              fontWeight: 600,
+              zIndex: 2
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              contacto@keytek.cl
             </div>
-          )}
 
-          {/* Items table */}
-          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
-            <thead>
-              <tr style={{ background: "#1e3a5f", color: "white" }}>
-                <th style={{ padding: "8px 10px", textAlign: "left", width: 40 }}>N°</th>
-                <th style={{ padding: "8px 10px", textAlign: "left" }}>DESCRIPCION</th>
-                <th style={{ padding: "8px 10px", textAlign: "center", width: 70 }}>CANT.</th>
-                <th style={{ padding: "8px 10px", textAlign: "right", width: 120 }}>VALOR UNIT</th>
-                <th style={{ padding: "8px 10px", textAlign: "right", width: 120 }}>VALOR TOTAL</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cot.items.map((item, i) => (
-                <tr key={item.id} style={{ background: i % 2 === 0 ? "#f8fafc" : "white" }}>
-                  <td style={{ padding: "8px 10px", borderBottom: "1px solid #e2e8f0" }}>{i + 1}</td>
-                  <td style={{ padding: "8px 10px", borderBottom: "1px solid #e2e8f0" }}>{item.descripcion}</td>
-                  <td style={{ padding: "8px 10px", textAlign: "center", borderBottom: "1px solid #e2e8f0" }}>{item.cantidad}</td>
-                  <td style={{ padding: "8px 10px", textAlign: "right", borderBottom: "1px solid #e2e8f0" }}>{fmtCLP(item.valorUnit)}</td>
-                  <td style={{ padding: "8px 10px", textAlign: "right", borderBottom: "1px solid #e2e8f0", fontWeight: 600 }}>{fmtCLP(item.cantidad * item.valorUnit)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Dirección */}
-          {cot.direccion && (
-            <div style={{ marginBottom: 12 }}><strong>DIRECCIÓN:</strong> {cot.direccion}</div>
-          )}
-
-          {/* Totales + Notas */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 20, marginBottom: 24 }}>
-            <div style={{ fontSize: 11, color: "#475569" }}>
-              <div><strong>NOTA:</strong></div>
-              <div>Validacion de cotizacion : {cot.validacion}</div>
-              <div>Plazo de entrega    : {cot.plazoEntrega}</div>
-            </div>
-            <table style={{ borderCollapse: "collapse" }}>
-              <tbody>
-                <tr>
-                  <td style={{ padding: "4px 16px 4px 0", fontWeight: 600 }}>NETO</td>
-                  <td style={{ padding: "4px 0", textAlign: "right", minWidth: 130 }}>{fmtCLP(neto)}</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: "4px 16px 4px 0", fontWeight: 600 }}>IVA</td>
-                  <td style={{ padding: "4px 0", textAlign: "right" }}>{fmtCLP(iva)}</td>
-                </tr>
-                <tr style={{ background: "#1e3a5f", color: "white" }}>
-                  <td style={{ padding: "6px 16px 6px 8px", fontWeight: 700 }}>BRUTO</td>
-                  <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700 }}>{fmtCLP(bruto)}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          {/* Firma */}
-          <div style={{ textAlign: "center", marginTop: 32, paddingTop: 16, borderTop: "1px solid #e2e8f0" }}>
-            <div style={{ marginBottom: 24, fontStyle: "italic", color: "#475569" }}>Atentamente, Jorge Urra U.</div>
-            <div style={{ fontSize: 11, color: "#64748b" }}>
-              Catedral #5880, Lo Prado Santiago &nbsp;|&nbsp; Fono 944771425
-            </div>
           </div>
         </div>
       </div>
@@ -582,24 +648,20 @@ function CotizacionForm({
             })}
           </div>
 
-          {/* Dirección */}
+          {/* Nota */}
           <div>
-            <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>DIRECCIÓN</label>
-            <input style={inputStyle} value={form.direccion} onChange={e => set("direccion")(e.target.value)} placeholder="Dirección del servicio" />
+            <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>NOTA</label>
+            <textarea
+              style={{ ...inputStyle, minHeight: 64, resize: "vertical" }}
+              value={form.nota ?? ""}
+              onChange={e => set("nota")(e.target.value)}
+              placeholder="Observaciones, condiciones, plazo de entrega..."
+            />
           </div>
 
-          {/* Notas + Totales */}
+          {/* Totales */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 20 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              <div>
-                <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>VALIDACIÓN COTIZACIÓN</label>
-                <input style={inputStyle} value={form.validacion} onChange={e => set("validacion")(e.target.value)} placeholder="5 días" />
-              </div>
-              <div>
-                <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>PLAZO DE ENTREGA</label>
-                <input style={inputStyle} value={form.plazoEntrega} onChange={e => set("plazoEntrega")(e.target.value)} placeholder="3 días" />
-              </div>
-            </div>
+            <div />
 
             {/* Totals */}
             <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "14px 18px", minWidth: 200 }}>
@@ -668,8 +730,8 @@ export default function CotizacionesPage() {
     setLoading(false);
   }
 
-  const handleDownloadExcel = (cot: Cotizacion) => {
-    downloadExcel(cot);
+  const handleDownloadWord = (cot: Cotizacion) => {
+    downloadWord(cot);
   };
 
   async function handleSave(cot: Cotizacion) {
@@ -819,7 +881,7 @@ export default function CotizacionesPage() {
                   <div className="flex flex-row md:flex-col gap-2 flex-shrink-0">
                     <button onClick={() => setPreviewing(c)} className="btn-secondary text-xs py-1.5 px-3"><Eye size={12} /> Ver / Imprimir</button>
                     <button onClick={() => { setEditing(c); setShowForm(true); }} className="btn-secondary text-xs py-1.5 px-3"><FileText size={12} /> Editar</button>
-                    <button onClick={() => handleDownloadExcel(c)} className="btn-secondary text-xs py-1.5 px-3" style={{ color: "#93c947" }}><FileSpreadsheet size={12} /> Excel</button>
+                    <button onClick={() => handleDownloadWord(c)} className="btn-secondary text-xs py-1.5 px-3" style={{ color: "#72b01d" }}><FileText size={12} /> Word</button>
                     <button
                       onClick={() => setConfirmDelete(c)}
                       className="text-xs py-1.5 px-3"

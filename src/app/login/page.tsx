@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Cpu, ShieldCheck, Zap } from "lucide-react";
+import { Eye, EyeOff, Cpu, ShieldCheck, Zap, Key } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { CONFIG } from "@/lib/config";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,14 +34,19 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex" style={{ background: "linear-gradient(135deg, #121418 0%, #1b1e24 50%, #23272f 100%)" }}>
       {/* Left Panel */}
-      <div className="hidden lg:flex flex-col justify-between w-[520px] p-12" style={{ background: "linear-gradient(180deg, rgba(114,176,29,0.08) 0%, rgba(45,52,63,0.05) 100%)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+      <div className="hidden lg:flex flex-col justify-between w-[520px] p-12" style={{ background: "linear-gradient(180deg, rgba(62,207,142,0.08) 0%, rgba(45,52,63,0.05) 100%)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
         <div>
-          {/* Logo */}
           <div className="flex items-center gap-3 mb-16">
-            <img src="/Imagen1.jpg" alt="OpsATM Logo" style={{ height: "42px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
+            {CONFIG.USE_IMAGE_LOGO ? (
+              <img src={CONFIG.LOGO_PATH} alt={`${CONFIG.SYSTEM_NAME} Logo`} style={{ height: "42px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
+            ) : (
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-brand-500/10 border border-brand-500/20 text-brand-500">
+                <Key size={20} />
+              </div>
+            )}
             <div>
-              <div className="font-bold text-white text-lg leading-none">OpsATM</div>
-              <div className="text-xs font-medium mt-1" style={{ color: "#72b01d" }}>Sistema de Operaciones</div>
+              <div className="font-bold text-white text-lg leading-none">{CONFIG.SYSTEM_NAME}</div>
+              <div className="text-xs font-medium mt-1 text-brand-500">Sistema de Operaciones</div>
             </div>
           </div>
 
@@ -58,12 +64,12 @@ export default function LoginPage() {
         {/* Feature pills */}
         <div className="space-y-3">
           {[
-            { icon: <Zap size={15} />, label: "Monitoreo en tiempo real", sub: "248 ATMs activos" },
+            { icon: <Zap size={15} />, label: "Monitoreo en tiempo real", sub: "Operaciones activas en terreno" },
             { icon: <ShieldCheck size={15} />, label: "Control de acceso por roles", sub: "Administrador, Supervisor y Operaria" },
             { icon: <Cpu size={15} />, label: "Informes automáticos PDF", sub: "Generación en un clic" },
           ].map((f, i) => (
             <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(114,176,29,0.15)", color: "#93c947" }}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(62,207,142,0.15)", color: "var(--color-brand-400)" }}>
                 {f.icon}
               </div>
               <div>
@@ -74,16 +80,21 @@ export default function LoginPage() {
           ))}
         </div>
 
-        <div style={{ color: "#64748b", fontSize: "12px" }}>© 2026 inetmatica. Todos los derechos reservados.</div>
+        <div style={{ color: "#64748b", fontSize: "12px" }}>{CONFIG.COPYRIGHT_TEXT}</div>
       </div>
 
       {/* Right Panel — Login Form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          {/* Mobile logo */}
           <div className="flex items-center gap-3 mb-10 lg:hidden">
-            <img src="/Imagen1.jpg" alt="OpsATM Logo" style={{ height: "40px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
-            <div className="font-bold text-white text-xl">OpsATM</div>
+            {CONFIG.USE_IMAGE_LOGO ? (
+              <img src={CONFIG.LOGO_PATH} alt={`${CONFIG.SYSTEM_NAME} Logo`} style={{ height: "40px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
+            ) : (
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-brand-500/10 border border-brand-500/20 text-brand-500">
+                <Key size={18} />
+              </div>
+            )}
+            <div className="font-bold text-white text-xl">{CONFIG.SYSTEM_NAME}</div>
           </div>
 
           <div className="mb-8">
@@ -100,7 +111,7 @@ export default function LoginPage() {
                 id="email-input"
                 type="email"
                 className="ops-input"
-                placeholder="tu@atmservicios.cl"
+                placeholder={`tu@${CONFIG.DEFAULT_EMAIL_DOMAIN}`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -160,14 +171,14 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-xs" style={{ color: "#334155" }}>
             ¿Problemas para ingresar?{" "}
-            <span style={{ color: "#72b01d" }}>Contacta al Administrador</span>
+            <span style={{ color: "var(--color-brand-500)" }}>Contacta al Administrador</span>
           </p>
         </div>
       </div>
 
       {/* Background decorations */}
-      <div style={{ position: "fixed", top: "-200px", right: "-200px", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(114,176,29,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
-      <div style={{ position: "fixed", bottom: "-200px", left: "-100px", width: "400px", height: "400px", background: "radial-gradient(circle, rgba(124,58,237,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "fixed", top: "-200px", right: "-200px", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(62,207,142,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "fixed", bottom: "-200px", left: "-100px", width: "400px", height: "400px", background: "radial-gradient(circle, rgba(62,207,142,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
     </div>
   );
 }

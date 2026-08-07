@@ -7,7 +7,9 @@ import {
   Cpu, LayoutDashboard, ClipboardList, Monitor, Users, MapPin,
   Package, FileText, FolderOpen, BarChart3, ScrollText, Settings,
   Bell, Search, ChevronDown, LogOut, Menu, X, Circle, Zap, CalendarDays, ShieldCheck, Truck, FileSpreadsheet, Calculator,
+  Key,
 } from "lucide-react";
+import { CONFIG } from "@/lib/config";
 import { supabase } from "@/lib/supabase";
 
 type Rol = 'administrador' | 'supervisor' | 'operaria' | 'bodega';
@@ -24,10 +26,8 @@ const navItems = [
   { href: "/dashboard/coordinacion", icon: CalendarDays,    label: "Coordinación",        badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/calculadora-traslado", icon: Calculator, label: "Calculadora de Traslado", badge: null, roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/technicians",  icon: Users,           label: "Técnicos",            badge: null,  roles: ['administrador','supervisor','operaria'] },
-  { href: "/dashboard/revisiones",   icon: Truck,           label: "Revisiones Técnicas", badge: null,  roles: ['administrador','supervisor','operaria'] },
-  { href: "/dashboard/atms",         icon: Monitor,         label: "Cajeros ATM",         badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/reports",      icon: FileText,        label: "Informes Técnicos",   badge: null,  roles: ['administrador','supervisor','operaria'] },
-  { href: "/dashboard/certificados", icon: ShieldCheck,     label: "Certificados de Anclaje", badge: null,  roles: ['administrador','supervisor','operaria'] },
+
   { href: "/dashboard/orders",       icon: ClipboardList,   label: "Órdenes de Trabajo",  badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/map",          icon: MapPin,          label: "Mapa Operacional",    badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/inventory",    icon: Package,         label: "Inventario",          badge: null,  roles: ['administrador','supervisor','bodega'] },
@@ -251,10 +251,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Logo */}
         <div className="flex items-center justify-between p-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
           <Link href="/dashboard" className="flex items-center gap-3">
-            <img src="/Imagen1.jpg" alt="OpsATM Logo" style={{ height: "36px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
+            {CONFIG.USE_IMAGE_LOGO ? (
+              <img src={CONFIG.LOGO_PATH} alt={`${CONFIG.SYSTEM_NAME} Logo`} style={{ height: "36px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
+            ) : (
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-brand-500/10 border border-brand-500/20 text-brand-500">
+                <Key size={16} />
+              </div>
+            )}
             <div>
-              <div className="font-bold text-sm" style={{ color: "#f1f5f9" }}>OpsATM</div>
-              <div className="text-[10px] font-semibold" style={{ color: "#72b01d" }}>v2025.1</div>
+              <div className="font-bold text-sm" style={{ color: "#f1f5f9" }}>{CONFIG.SYSTEM_NAME}</div>
+              <div className="text-[10px] font-semibold text-brand-500">{CONFIG.SYSTEM_VERSION}</div>
             </div>
           </Link>
           <button className="lg:hidden" onClick={() => setSidebarOpen(false)} style={{ color: "#64748b", background: "none", border: "none", cursor: "pointer" }}>
@@ -263,10 +269,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Live status */}
-        <div className="mx-4 mt-4 p-3 rounded-lg flex items-center gap-2" style={{ background: "rgba(114,176,29,0.08)", border: "1px solid rgba(114,176,29,0.15)" }}>
-          <div className="w-2 h-2 rounded-full bg-brand-500 pulse-live" style={{ color: "#72b01d" }} />
-          <span style={{ color: "#93c947", fontSize: "11px", fontWeight: 600 }}>SISTEMA EN LÍNEA</span>
-          <Zap size={11} style={{ color: "#72b01d", marginLeft: "auto" }} />
+        <div className="mx-4 mt-4 p-3 rounded-lg flex items-center gap-2" style={{ background: "rgba(62,207,142,0.08)", border: "1px solid rgba(62,207,142,0.15)" }}>
+          <div className="w-2 h-2 rounded-full bg-brand-500 pulse-live" style={{ color: "var(--color-brand-500)" }} />
+          <span style={{ color: "var(--color-brand-400)", fontSize: "11px", fontWeight: 600 }}>SISTEMA EN LÍNEA</span>
+          <Zap size={11} style={{ color: "var(--color-brand-500)", marginLeft: "auto" }} />
         </div>
 
         {/* Navigation */}
@@ -398,7 +404,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       <button
                         onClick={markAllAsRead}
                         className="text-xs"
-                        style={{ color: "#72b01d", background: "none", border: "none", cursor: "pointer" }}
+                        style={{ color: "var(--color-brand-500)", background: "none", border: "none", cursor: "pointer" }}
                       >
                         Marcar todas leídas
                       </button>
@@ -446,7 +452,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <div className="p-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                     <div className="text-sm font-semibold" style={{ color: "#f1f5f9" }}>{profile?.nombre}</div>
                     <div className="text-xs mt-0.5" style={{ color: "#475569" }}>{profile?.correo}</div>
-                    <div className="mt-2 inline-flex px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: "rgba(114,176,29,0.15)", color: "#93c947" }}>
+                    <div className="mt-2 inline-flex px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: "rgba(62,207,142,0.15)", color: "var(--color-brand-400)" }}>
                       {rolLabel}
                     </div>
                   </div>
