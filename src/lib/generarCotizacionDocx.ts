@@ -186,6 +186,11 @@ export async function generarCotizacionDocx(cot: Cotizacion): Promise<Buffer> {
   //    A4 en twips: 11906 de ancho. Margen 720 twips = 1.27cm cada lado
   //    La imagen ocupa el ancho completo de la página (11906 twips ≈ 210mm)
   //    En pixeles a 96dpi: A4 = 794px ancho
+  // top_wave.png es 794x287px (75.7mm de alto en A4 a 96dpi)
+  // Lo mostramos a 794x287 para que ocupe exactamente su zona natural
+  const TOP_WAVE_H_PX = 200; // px de display — ~53mm en Word
+  const BOT_WAVE_H_PX = 230; // px de display — ~61mm en Word
+
   const pageHeader = new Header({
     children: topWaveBuffer ? [
       new Paragraph({
@@ -193,7 +198,7 @@ export async function generarCotizacionDocx(cot: Cotizacion): Promise<Buffer> {
           new ImageRun({
             data: topWaveBuffer,
             type: 'png',
-            transformation: { width: 794, height: 160 },
+            transformation: { width: 794, height: TOP_WAVE_H_PX },
             floating: {
               horizontalPosition: {
                 relative: HorizontalPositionRelativeFrom.PAGE,
@@ -221,7 +226,7 @@ export async function generarCotizacionDocx(cot: Cotizacion): Promise<Buffer> {
             new ImageRun({
               data: bottomWaveBuffer,
               type: 'png',
-              transformation: { width: 794, height: 160 },
+              transformation: { width: 794, height: BOT_WAVE_H_PX },
               floating: {
                 horizontalPosition: {
                   relative: HorizontalPositionRelativeFrom.PAGE,
@@ -238,14 +243,14 @@ export async function generarCotizacionDocx(cot: Cotizacion): Promise<Buffer> {
           ],
         }),
       ] : []),
+      // Email centrado — aparece sobre la ola oscura
       new Paragraph({
         alignment: AlignmentType.CENTER,
-        spacing: { before: 160 },
+        spacing: { before: 80 },
         children: [
           new TextRun({
             text: 'Contacto@keytek.cl',
-            bold: false,
-            size: 22,
+            size: 20,
             color: 'FFFFFF',
             font: 'Calibri',
           }),
@@ -261,7 +266,7 @@ export async function generarCotizacionDocx(cot: Cotizacion): Promise<Buffer> {
     rows: [
       new TableRow({
         children: [
-          // Celda logo
+          // Celda logo — el spacing before empuja el logo por debajo de la ola
           new TableCell({
             width: { size: 45, type: WidthType.PERCENTAGE },
             borders: NO_BORDERS,
@@ -269,11 +274,12 @@ export async function generarCotizacionDocx(cot: Cotizacion): Promise<Buffer> {
             children: [
               new Paragraph({
                 alignment: AlignmentType.LEFT,
+                spacing: { before: 0 },
                 children: logoBuffer ? [
                   new ImageRun({
                     data: logoBuffer,
                     type: 'png',
-                    transformation: { width: 130, height: 88 },
+                    transformation: { width: 110, height: 75 },
                   }),
                 ] : [
                   new TextRun({ text: 'KEYTEK', bold: true, size: 32, color: NAVY, font: 'Calibri' }),
@@ -449,10 +455,15 @@ export async function generarCotizacionDocx(cot: Cotizacion): Promise<Buffer> {
           page: {
             size: { width: 11906, height: 16838 }, // A4 en twips
             margin: {
-              top:    1800, // ~3.2cm — deja espacio para la ola superior
-              bottom: 1800, // ~3.2cm — deja espacio para la ola inferior
+              // TOP_WAVE_H_PX=200px → 200/96*25.4mm=52.9mm → 52.9*56.7=2999 twips
+              // Añadimos 400 extra para que el logo quede claramente bajo la ola
+              top:    3400, // ~60mm — logo queda bajo la ola superior
+              // BOT_WAVE_H_PX=230px → 230/96*25.4mm=60.8mm → 3447 twips
+              bottom: 3600, // ~63mm — ola inferior visible completa
               left:   1260, // ~2.2cm
               right:  1260,
+              header: 0,    // header desde el borde superior de la página
+              footer: 0,    // footer desde el borde inferior de la página
             },
           },
         },
