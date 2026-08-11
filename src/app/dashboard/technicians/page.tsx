@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   Search, Phone, Mail, MapPin, Award, X, TrendingUp,
-  CheckCircle2, Plus, Save, User, Pencil, Truck,
+  CheckCircle2, Plus, Save, User, Pencil, Truck, Trash2,
 } from "lucide-react";
 import { getStatusBg } from "@/lib/utils";
 import type { Technician, TechnicianStatus } from "@/types";
@@ -444,13 +444,15 @@ function EditTechModal({
 
 // ─── Tech Detail Modal ─────────────────────────────────────────────────────────
 function TechModal({
-  tech, onClose, onUpdateStatus, onEdit,
+  tech, onClose, onUpdateStatus, onEdit, onDelete,
 }: {
   tech: Technician;
   onClose: () => void;
   onUpdateStatus: (id: string, s: TechnicianStatus) => void;
   onEdit: () => void;
+  onDelete: () => void;
 }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const radarData = [
     { subject: "Productividad", value: tech.productivity },
     { subject: "Velocidad", value: tech.avgTime > 0 ? Math.min(100, Math.round(100 / tech.avgTime * 2)) : 0 },
@@ -499,8 +501,8 @@ function TechModal({
           </button>
         </div>
 
-        {/* Edit button */}
-        <div className="px-6 pt-4">
+        {/* Botones de acción */}
+        <div className="px-6 pt-4" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button
             onClick={onEdit}
             style={{
@@ -512,6 +514,37 @@ function TechModal({
           >
             <Pencil size={14} /> Editar datos
           </button>
+
+          {/* Eliminar con confirmación inline */}
+          {!confirmDelete ? (
+            <button
+              onClick={() => setConfirmDelete(true)}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                padding: "7px 16px", background: "rgba(239,68,68,0.10)",
+                color: "#f87171", borderRadius: 8, fontSize: 13, fontWeight: 600,
+                border: "1px solid rgba(239,68,68,0.22)", cursor: "pointer", fontFamily: "inherit",
+              }}
+            >
+              <Trash2 size={14} /> Eliminar técnico
+            </button>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, padding: '6px 14px' }}>
+              <span style={{ color: '#f87171', fontSize: 13, fontWeight: 600 }}>¿Confirmar eliminación?</span>
+              <button
+                onClick={onDelete}
+                style={{ padding: '4px 12px', background: '#ef4444', color: 'white', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                Sí, eliminar
+              </button>
+              <button
+                onClick={() => setConfirmDelete(false)}
+                style={{ padding: '4px 10px', background: 'rgba(255,255,255,0.06)', color: '#94a3b8', borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                Cancelar
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="p-6">
@@ -600,9 +633,28 @@ function TechModal({
 }
 
 // ─── Tech Card ─────────────────────────────────────────────────────────────────
-function TechCard({ tech, onClick }: { tech: Technician; onClick: () => void }) {
+function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () => void; onDelete: (e: React.MouseEvent) => void }) {
   return (
-    <div className="glass-card-hover p-5 cursor-pointer" onClick={onClick}>
+    <div className="glass-card-hover p-5 cursor-pointer" style={{ position: 'relative' }} onClick={onClick}>
+      {/* Botón eliminar — aparece en hover */}
+      <button
+        onClick={onDelete}
+        title="Eliminar técnico"
+        style={{
+          position: 'absolute', top: 10, right: 10,
+          background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)',
+          borderRadius: 7, padding: '5px 7px', cursor: 'pointer', color: '#f87171',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          opacity: 0, transition: 'opacity 0.2s',
+          zIndex: 10,
+        }}
+        onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+        onMouseLeave={e => (e.currentTarget.style.opacity = '0')}
+        onFocus={e => (e.currentTarget.style.opacity = '1')}
+        onBlur={e => (e.currentTarget.style.opacity = '0')}
+      >
+        <Trash2 size={13} />
+      </button>
       <div className="flex items-center gap-4 mb-4">
         <div className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: "linear-gradient(135deg, #72b01d, #2d343f)", color: "white" }}>
           {tech.name.charAt(0)}
@@ -747,6 +799,16 @@ export default function TechniciansPage() {
     setSelectedTech(updated);
   };
 
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from('tecnicos').delete().eq('id', id);
+    if (error) {
+      alert('Error al eliminar: ' + error.message);
+      return;
+    }
+    setTechnicians(prev => prev.filter(t => t.id !== id));
+    setSelectedTech(null);
+  };
+
   const handleUpdateStatus = async (id: string, newStatus: TechnicianStatus) => {
     // Actualizar estado en pantalla inmediatamente
     setTechnicians((prev) => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
@@ -806,7 +868,12 @@ export default function TechniciansPage() {
       {/* Cards grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {filtered.map((tech) => (
-          <TechCard key={tech.id} tech={tech} onClick={() => setSelectedTech(tech)} />
+          <TechCard
+            key={tech.id}
+            tech={tech}
+            onClick={() => setSelectedTech(tech)}
+            onDelete={(e) => { e.stopPropagation(); if (confirm(`¿Eliminar a ${tech.name}? Esta acción no se puede deshacer.`)) handleDelete(tech.id); }}
+          />
         ))}
       </div>
 
@@ -816,6 +883,7 @@ export default function TechniciansPage() {
           onClose={() => setSelectedTech(null)}
           onUpdateStatus={handleUpdateStatus}
           onEdit={() => setEditingTech(selectedTech)}
+          onDelete={() => handleDelete(selectedTech.id)}
         />
       )}
       {editingTech && (
