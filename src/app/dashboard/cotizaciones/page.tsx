@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
@@ -208,6 +208,7 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
                 {/* OLA SUPERIOR */}
                 <svg viewBox="0 0 210 297" preserveAspectRatio="none"
                   style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none', zIndex:1 }}>
+                  <path d="M0,0 L210,0 L210,18 C160,35 120,5 60,30 C30,42 10,50 0,60 Z" fill="#C6D0E0"/>
                   <path d="M0,0 L95,0 C70,25 60,45 30,62 C15,70 5,72 0,73 Z" fill={SLATE_LIGHT}/>
                   <path d="M0,0 L72,0 C55,22 42,40 20,55 C12,60 5,62 0,63 Z" fill={NAVY}/>
                 </svg>
@@ -220,7 +221,7 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
                 </svg>
 
                 {/* CONTENIDO */}
-                <div style={{ position:'relative', zIndex:2, width:'100%', height:'100%', padding:'48mm 22mm 54mm 22mm', boxSizing:'border-box', display:'flex', flexDirection:'column' }}>
+                <div style={{ position:'relative', zIndex:2, width:'100%', height:'100%', padding:'75mm 22mm 54mm 22mm', boxSizing:'border-box', display:'flex', flexDirection:'column' }}>
 
                   {/* HEADER */}
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:'7mm' }}>

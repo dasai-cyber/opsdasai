@@ -186,10 +186,10 @@ export async function generarCotizacionDocx(cot: Cotizacion): Promise<Buffer> {
   //    A4 en twips: 11906 de ancho. Margen 720 twips = 1.27cm cada lado
   //    La imagen ocupa el ancho completo de la página (11906 twips ≈ 210mm)
   //    En pixeles a 96dpi: A4 = 794px ancho
-  // top_wave.png: 794x287px → en Word a 96dpi = 794/96*25.4 = 210mm ancho, 287/96*25.4 = 75.9mm alto
-  // bottom_wave.png: 794x322px → 85.2mm alto
-  const TOP_WAVE_H_PX = 287; // tamaño real del PNG generado
-  const BOT_WAVE_H_PX = 322; // tamaño real del PNG generado
+  // top_wave.png es 794x287px (75.7mm de alto en A4 a 96dpi)
+  // Lo mostramos a 794x287 para que ocupe exactamente su zona natural
+  const TOP_WAVE_H_PX = 200; // px de display — ~53mm en Word
+  const BOT_WAVE_H_PX = 230; // px de display — ~61mm en Word
 
   const pageHeader = new Header({
     children: topWaveBuffer ? [
@@ -210,7 +210,6 @@ export async function generarCotizacionDocx(cot: Cotizacion): Promise<Buffer> {
               },
               wrap: { type: TextWrappingType.NONE },
               margins: { top: 0, bottom: 0, left: 0, right: 0 },
-              allowOverlap: true,
             },
           }),
         ],
@@ -239,13 +238,12 @@ export async function generarCotizacionDocx(cot: Cotizacion): Promise<Buffer> {
                 },
                 wrap: { type: TextWrappingType.NONE },
                 margins: { top: 0, bottom: 0, left: 0, right: 0 },
-                allowOverlap: true,
               },
             }),
           ],
         }),
       ] : []),
-      // Email centrado sobre la ola oscura inferior
+      // Email centrado — aparece sobre la ola oscura
       new Paragraph({
         alignment: AlignmentType.CENTER,
         spacing: { before: 80 },
@@ -455,17 +453,17 @@ export async function generarCotizacionDocx(cot: Cotizacion): Promise<Buffer> {
       {
         properties: {
           page: {
-            size: { width: 11906, height: 16838 }, // A4 en twips (210x297mm)
+            size: { width: 11906, height: 16838 }, // A4 en twips
             margin: {
-              // TOP_WAVE_H_PX=287px → 287/96*25.4mm=75.9mm → 75.9mm*1440/25.4=4305 twips
-              // +300 de margen extra para que el logo quede claramente bajo la ola
-              top:    4600, // ~81mm — logo bien por debajo de la ola superior
-              // BOT_WAVE_H_PX=322px → 85.2mm → 4830 twips + 300 extra = 5130
-              bottom: 5100, // ~90mm — ola inferior visible completa
-              left:   1260, // 2.2cm
+              // TOP_WAVE_H_PX=200px → 200/96*25.4mm=52.9mm → 52.9*56.7=2999 twips
+              // Añadimos 400 extra para que el logo quede claramente bajo la ola
+              top:    3400, // ~60mm — logo queda bajo la ola superior
+              // BOT_WAVE_H_PX=230px → 230/96*25.4mm=60.8mm → 3447 twips
+              bottom: 3600, // ~63mm — ola inferior visible completa
+              left:   1260, // ~2.2cm
               right:  1260,
-              header: 0,    // ola empieza justo en el borde superior
-              footer: 0,    // ola empieza justo en el borde inferior
+              header: 0,    // header desde el borde superior de la página
+              footer: 0,    // footer desde el borde inferior de la página
             },
           },
         },
