@@ -188,10 +188,10 @@ export default function NosotrosPage() {
     }
   };
 
-  // Acumulados monetarios
-  const totalCarlos = records.reduce((sum, r) => sum + r.carlos, 0);
-  const totalScott = records.reduce((sum, r) => sum + r.scott, 0);
-  const totalRicardo = records.reduce((sum, r) => sum + r.ricardo, 0);
+  // Acumulados monetarios (solo completados)
+  const totalCarlos = records.reduce((sum, r) => r.status === "Completado" ? sum + r.carlos : sum, 0);
+  const totalScott = records.reduce((sum, r) => r.status === "Completado" ? sum + r.scott : sum, 0);
+  const totalRicardo = records.reduce((sum, r) => r.status === "Completado" ? sum + r.ricardo : sum, 0);
 
   const fmtCLP = (n: number) => {
     return "$ " + n.toLocaleString("es-CL");
