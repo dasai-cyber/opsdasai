@@ -283,7 +283,7 @@ export default function CalculadoraTrasladoPage() {
 
   // Math
   const kmValue = Number(km) || 0;
-  const precioKm = 390;
+  const precioKm = 200;
   const total = kmValue * precioKm * 2;
 
   // Formatting currency
@@ -528,7 +528,7 @@ Total a Pagar: ${formatCurrency(tot)}
               </div>
               <div className="flex justify-between items-center text-sm py-1">
                 <span className="text-slate-400 font-medium">Tarifa por Kilómetro:</span>
-                <span className="text-slate-200 font-bold">$390 / Km</span>
+                <span className="text-slate-200 font-bold">$200 / Km</span>
               </div>
 
               <div className="pt-6 mt-4" style={{ borderTop: "1px dashed rgba(255,255,255,0.1)" }}>
@@ -537,7 +537,7 @@ Total a Pagar: ${formatCurrency(tot)}
                   {formatCurrency(total)}
                 </div>
                 <div className="text-[10px] text-slate-500 mt-1">
-                  Cálculo realizado: {kmValue} Km × $390/Km × 2 (Ida/Vuelta)
+                  Cálculo realizado: {kmValue} Km × $200/Km × 2 (Ida/Vuelta)
                 </div>
               </div>
             </div>
