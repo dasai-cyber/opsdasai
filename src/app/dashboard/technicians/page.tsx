@@ -48,6 +48,7 @@ function AddTechModal({
     phone: "",
     estadoCivil: "",
     estudios: "",
+    patente: "",
     email: "",
     status: "disponible" as TechnicianStatus,
     certInput: "",
@@ -314,6 +315,7 @@ function EditTechModal({
     phone: tech.phone,
     estadoCivil: tech.estadoCivil || "",
     estudios: tech.estudios || "",
+    patente: tech.patente || "",
     email: tech.email,
     status: tech.status,
   });

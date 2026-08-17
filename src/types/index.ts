@@ -80,6 +80,7 @@ export interface Technician {
   phone: string;
   estadoCivil?: string;
   estudios?: string;
+  patente?: string;
   email: string;
   region?: string;
   vehicle?: string;
