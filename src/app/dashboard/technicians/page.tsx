@@ -423,6 +423,10 @@ function EditTechModal({
                 <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Estudios</label>
                 <input style={inputStyle} value={form.estudios} onChange={set("estudios")} />
               </div>
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Patente Vehículo</label>
+                <input style={{ ...inputStyle, textTransform: "uppercase" }} value={form.patente} onChange={set("patente")} />
+              </div>
             </div>
             {/* Documentos */}
             <div style={{ background: "rgba(255,255,255,0.02)", padding: 16, borderRadius: 12, border: "1px dashed rgba(255,255,255,0.1)", marginBottom: 12 }}>
