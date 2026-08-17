@@ -2,21 +2,21 @@
 
 export const CONFIG = {
   // Nombre del sistema (se usa en títulos y menús)
-  SYSTEM_NAME: "OpsKeytek",
+  SYSTEM_NAME: "OpsDasai",
   
   // Nombre completo de la empresa (para pantallas corporativas)
-  COMPANY_NAME: "Keytek SpA",
+  COMPANY_NAME: "Dasai Cyber",
   
   // Dominio de correo electrónico por defecto para placeholders y sugerencias
-  DEFAULT_EMAIL_DOMAIN: "keytek.cl",
+  DEFAULT_EMAIL_DOMAIN: "dasai-cyber.com",
   
   // Texto de derechos de autor (copyright)
-  COPYRIGHT_TEXT: `© ${new Date().getFullYear()} Keytek. Todos los derechos reservados.`,
+  COPYRIGHT_TEXT: `© ${new Date().getFullYear()} Dasai Cyber. Todos los derechos reservados.`,
   
   // Versión del sistema
   SYSTEM_VERSION: "v2026.1",
   
-  // Ruta al logo de la empresa (puedes reemplazar /Imagen1.jpg por el de Keytek)
+  // Ruta al logo de la empresa (puedes reemplazar /Imagen1.jpg por el de Dasai)
   LOGO_PATH: "/Imagen1.jpg",
   
   // ¿Usar el logo como imagen física o preferir un logo dinámico con icono CSS?

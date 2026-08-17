@@ -226,7 +226,7 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
                   {/* HEADER */}
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:'7mm' }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/logo_keytek.png" alt="keytek" style={{ width:'42mm', objectFit:'contain', objectPosition:'left bottom' }}/>
+                    <img src="/logo_dasai.png" alt="dasai" style={{ width:'42mm', objectFit:'contain', objectPosition:'left bottom' }}/>
                     <div style={{ textAlign:'right' }}>
                       <div style={{ fontFamily:"'Montserrat',sans-serif", fontWeight:800, fontSize:'18pt', color:TITLE_GRAY, lineHeight:1.1 }}>
                         COTIZACI&Oacute;N #{cot.numero || '___'}
@@ -317,7 +317,7 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
                       <polyline points="22,6 12,13 2,6"/>
                     </svg>
                   </div>
-                  <span style={{ fontFamily:"'Poppins',sans-serif", fontWeight:300, fontSize:'9pt', color:'white' }}>contacto@keytek.cl</span>
+                  <span style={{ fontFamily:"'Poppins',sans-serif", fontWeight:300, fontSize:'9pt', color:'white' }}>contacto@dasai-cyber.com</span>
                 </div>
 
               </div>

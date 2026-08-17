@@ -201,7 +201,7 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
               {/* Header: Logo and Title */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 30 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo_keytek.png" alt="Keytek" style={{ height: 100, objectFit: 'contain' }} />
+                <img src="/logo_dasai.png" alt="Dasai" style={{ height: 100, objectFit: 'contain' }} />
                 
                 <div style={{ textAlign: 'right', marginTop: 15 }}>
                   <div style={{ fontSize: 24, fontWeight: 800, color: BLUE_TEXT, letterSpacing: 1 }}>
@@ -320,7 +320,7 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                 <polyline points="22,6 12,13 2,6"/>
               </svg>
-              contacto@keytek.cl
+              contacto@dasai-cyber.com
             </div>
 
           </div>
