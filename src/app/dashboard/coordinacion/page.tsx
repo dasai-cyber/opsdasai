@@ -27,7 +27,7 @@ export default function CoordinacionPage() {
   const [search, setSearch] = useState("");
   
   // Choferes list
-  const [choferes, setChoferes] = useState<string[]>([]);
+  const [choferes, setChoferes] = useState<Array<{name: string, patente: string}>>([]);
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +58,7 @@ export default function CoordinacionPage() {
   const fetchChoferes = async () => {
     const { data: rows } = await supabase.from('tecnicos').select('*');
     if (rows) {
-      setChoferes(rows.map(r => r.data?.name || "").filter(Boolean));
+      setChoferes(rows.map(r => ({ name: r.data?.name || "", patente: r.data?.patente || "" })).filter(c => c.name));
     }
   };
 
@@ -307,12 +307,20 @@ export default function CoordinacionPage() {
                     type="text"
                     list="choferes-list"
                     value={form.asignadoA}
-                    onChange={(e) => setForm({...form, asignadoA: e.target.value})}
+                    onChange={(e) => {
+                      const selectedName = e.target.value;
+                      const matched = choferes.find(c => c.name === selectedName);
+                      setForm({
+                        ...form, 
+                        asignadoA: selectedName,
+                        patente: matched && matched.patente && !form.patente ? matched.patente : (matched && matched.patente && form.patente !== matched.patente ? matched.patente : form.patente)
+                      });
+                    }}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
                     placeholder="Escriba o seleccione..."
                   />
                   <datalist id="choferes-list">
-                    {choferes.map((c, i) => <option key={i} value={c} />)}
+                    {choferes.map((c, i) => <option key={i} value={c.name} />)}
                   </datalist>
                 </div>
 
