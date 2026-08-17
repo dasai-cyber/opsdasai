@@ -257,6 +257,28 @@ export default function CoordinacionPage() {
             
             <div className="flex-1 overflow-auto p-6">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+                <div className="col-span-1">
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Asignado a</label>
+                  <input
+                    type="text"
+                    list="choferes-list"
+                    value={form.asignadoA}
+                    onChange={(e) => {
+                      const selectedName = e.target.value;
+                      const matched = choferes.find(c => c.name === selectedName);
+                      setForm({
+                        ...form, 
+                        asignadoA: selectedName,
+                        patente: matched && matched.patente && !form.patente ? matched.patente : (matched && matched.patente && form.patente !== matched.patente ? matched.patente : form.patente)
+                      });
+                    }}
+                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
+                    placeholder="Escriba o seleccione..."
+                  />
+                  <datalist id="choferes-list">
+                    {choferes.map((c, i) => <option key={i} value={c.name} />)}
+                  </datalist>
+                </div>
                 
                 <div className="col-span-1">
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Patente Vehículo</label>
@@ -301,28 +323,7 @@ export default function CoordinacionPage() {
                   />
                 </div>
 
-                <div className="col-span-1">
-                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Asignado a</label>
-                  <input
-                    type="text"
-                    list="choferes-list"
-                    value={form.asignadoA}
-                    onChange={(e) => {
-                      const selectedName = e.target.value;
-                      const matched = choferes.find(c => c.name === selectedName);
-                      setForm({
-                        ...form, 
-                        asignadoA: selectedName,
-                        patente: matched && matched.patente && !form.patente ? matched.patente : (matched && matched.patente && form.patente !== matched.patente ? matched.patente : form.patente)
-                      });
-                    }}
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
-                    placeholder="Escriba o seleccione..."
-                  />
-                  <datalist id="choferes-list">
-                    {choferes.map((c, i) => <option key={i} value={c.name} />)}
-                  </datalist>
-                </div>
+
 
                 <div className="col-span-1">
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Local</label>
