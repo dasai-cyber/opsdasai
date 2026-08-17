@@ -807,21 +807,24 @@ export default function TechniciansPage() {
       }
       setLoadingTechs(false);
 
-      // Cargar conteo de coordinaciones
+      // Cargar conteo de coordinaciones (forzando evitar caché)
       const { data: coordData } = await supabase.from('servicios').select('asignado_a, data');
       if (coordData) {
         const counts: Record<string, number> = {};
         coordData.forEach(row => {
-          const namesStr = [
-            row.asignado_a, 
-            row.data?.asignadoA, 
-            row.data?.nombreChofer
-          ].filter(Boolean).join(",");
+          // Extraemos todos los posibles nombres que referencien al chofer en este servicio
+          let possibleNames: string[] = [];
+          if (row.asignado_a) possibleNames.push(String(row.asignado_a));
+          if (row.data) {
+            if (row.data.asignadoA) possibleNames.push(String(row.data.asignadoA));
+            if (row.data.nombreChofer) possibleNames.push(String(row.data.nombreChofer));
+          }
+          
+          const namesStr = possibleNames.filter(Boolean).join(",");
           
           if (namesStr) {
-            // Separa por comas o guiones y normaliza para evitar duplicar por espacios extra
-            const names = namesStr.split(/[,\-]+/).map(normalizeString).filter(Boolean);
-            // Evitar contar al mismo chofer dos veces en el mismo servicio si está en nombreChofer y asignadoA
+            // Separamos por comas, guiones o saltos de línea
+            const names = namesStr.split(/[,\-|\n]+/).map(normalizeString).filter(Boolean);
             const uniqueNames = Array.from(new Set(names));
             uniqueNames.forEach(name => { counts[name] = (counts[name] || 0) + 1; });
           }
@@ -832,10 +835,13 @@ export default function TechniciansPage() {
     fetchAll();
   }, []);
 
-  const enrichedTechnicians = technicians.map(t => ({
-    ...t,
-    completedOrders: coordinacionesCount[normalizeString(t.name)] || 0
-  }));
+  const enrichedTechnicians = technicians.map(t => {
+    const normName = normalizeString(t.name);
+    return {
+      ...t,
+      completedOrders: coordinacionesCount[normName] || 0
+    };
+  });
 
   const filtered = enrichedTechnicians.filter((t) => {
     const matchSearch = search === "" || [t.name, t.email, t.comuna, t.phone, t.rut].some(
