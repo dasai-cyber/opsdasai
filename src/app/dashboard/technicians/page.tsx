@@ -54,8 +54,10 @@ function AddTechModal({
   });
   const [docs, setDocs] = useState({
     hojaConductor: null as File | null,
-    licencia: null as File | null,
-    carnet: null as File | null,
+    licenciaFrontal: null as File | null,
+    licenciaTrasera: null as File | null,
+    carnetFrontal: null as File | null,
+    carnetTrasera: null as File | null,
     certificadoAntecedentes: null as File | null,
   });
   const [uploading, setUploading] = useState(false);
@@ -84,8 +86,10 @@ function AddTechModal({
     try {
       const docsUrls: any = {};
       if (docs.hojaConductor) docsUrls.hojaConductor = await uploadDocument(docs.hojaConductor, newId, 'hojaConductor');
-      if (docs.licencia) docsUrls.licencia = await uploadDocument(docs.licencia, newId, 'licencia');
-      if (docs.carnet) docsUrls.carnet = await uploadDocument(docs.carnet, newId, 'carnet');
+      if (docs.licenciaFrontal) docsUrls.licenciaFrontal = await uploadDocument(docs.licenciaFrontal, newId, 'licenciaFrontal');
+      if (docs.licenciaTrasera) docsUrls.licenciaTrasera = await uploadDocument(docs.licenciaTrasera, newId, 'licenciaTrasera');
+      if (docs.carnetFrontal) docsUrls.carnetFrontal = await uploadDocument(docs.carnetFrontal, newId, 'carnetFrontal');
+      if (docs.carnetTrasera) docsUrls.carnetTrasera = await uploadDocument(docs.carnetTrasera, newId, 'carnetTrasera');
       if (docs.certificadoAntecedentes) docsUrls.certificadoAntecedentes = await uploadDocument(docs.certificadoAntecedentes, newId, 'certificadoAntecedentes');
 
       const newTech: Technician = {
@@ -231,8 +235,10 @@ function AddTechModal({
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { key: 'hojaConductor', label: 'Hoja de Conductor' },
-                  { key: 'licencia', label: 'Licencia (Ambos lados)' },
-                  { key: 'carnet', label: 'Carnet (Ambos lados)' },
+                  { key: 'licenciaFrontal', label: 'Licencia (Frontal)' },
+                  { key: 'licenciaTrasera', label: 'Licencia (Trasera)' },
+                  { key: 'carnetFrontal', label: 'Carnet (Frontal)' },
+                  { key: 'carnetTrasera', label: 'Carnet (Trasera)' },
                   { key: 'certificadoAntecedentes', label: 'Cert. de Antecedentes' }
                 ].map(({ key, label }) => (
                   <div key={key}>
@@ -316,8 +322,10 @@ function EditTechModal({
   const [saveError, setSaveError] = useState("");
   const [docs, setDocs] = useState({
     hojaConductor: null as File | null,
-    licencia: null as File | null,
-    carnet: null as File | null,
+    licenciaFrontal: null as File | null,
+    licenciaTrasera: null as File | null,
+    carnetFrontal: null as File | null,
+    carnetTrasera: null as File | null,
     certificadoAntecedentes: null as File | null,
   });
 
@@ -336,8 +344,10 @@ function EditTechModal({
     try {
       const docsUrls = { ...(tech.documentos || {}) };
       if (docs.hojaConductor) docsUrls.hojaConductor = await uploadDocument(docs.hojaConductor, tech.id, 'hojaConductor');
-      if (docs.licencia) docsUrls.licencia = await uploadDocument(docs.licencia, tech.id, 'licencia');
-      if (docs.carnet) docsUrls.carnet = await uploadDocument(docs.carnet, tech.id, 'carnet');
+      if (docs.licenciaFrontal) docsUrls.licenciaFrontal = await uploadDocument(docs.licenciaFrontal, tech.id, 'licenciaFrontal');
+      if (docs.licenciaTrasera) docsUrls.licenciaTrasera = await uploadDocument(docs.licenciaTrasera, tech.id, 'licenciaTrasera');
+      if (docs.carnetFrontal) docsUrls.carnetFrontal = await uploadDocument(docs.carnetFrontal, tech.id, 'carnetFrontal');
+      if (docs.carnetTrasera) docsUrls.carnetTrasera = await uploadDocument(docs.carnetTrasera, tech.id, 'carnetTrasera');
       if (docs.certificadoAntecedentes) docsUrls.certificadoAntecedentes = await uploadDocument(docs.certificadoAntecedentes, tech.id, 'certificadoAntecedentes');
 
       const updated = { ...tech, ...form, documentos: docsUrls };
@@ -418,8 +428,10 @@ function EditTechModal({
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { key: 'hojaConductor', label: 'Hoja de Conductor' },
-                  { key: 'licencia', label: 'Licencia (Ambos lados)' },
-                  { key: 'carnet', label: 'Carnet (Ambos lados)' },
+                  { key: 'licenciaFrontal', label: 'Licencia (Frontal)' },
+                  { key: 'licenciaTrasera', label: 'Licencia (Trasera)' },
+                  { key: 'carnetFrontal', label: 'Carnet (Frontal)' },
+                  { key: 'carnetTrasera', label: 'Carnet (Trasera)' },
                   { key: 'certificadoAntecedentes', label: 'Cert. de Antecedentes' }
                 ].map(({ key, label }) => (
                   <div key={key}>
@@ -629,14 +641,16 @@ function TechModal({
 
               
               {/* Documentos */}
-              {(tech.documentos?.hojaConductor || tech.documentos?.licencia || tech.documentos?.carnet || tech.documentos?.certificadoAntecedentes) && (
+              {(tech.documentos?.hojaConductor || tech.documentos?.licenciaFrontal || tech.documentos?.licenciaTrasera || tech.documentos?.carnetFrontal || tech.documentos?.carnetTrasera || tech.documentos?.certificadoAntecedentes) && (
                 <div style={{ marginBottom: 16 }}>
                   <div className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#475569" }}>Documentos Adjuntos</div>
                   <div className="grid grid-cols-2 gap-2">
                     {[
                       { key: 'hojaConductor', label: 'Hoja de Conductor', url: tech.documentos?.hojaConductor },
-                      { key: 'licencia', label: 'Licencia', url: tech.documentos?.licencia },
-                      { key: 'carnet', label: 'Carnet', url: tech.documentos?.carnet },
+                      { key: 'licenciaFrontal', label: 'Licencia (Frontal)', url: tech.documentos?.licenciaFrontal },
+                      { key: 'licenciaTrasera', label: 'Licencia (Trasera)', url: tech.documentos?.licenciaTrasera },
+                      { key: 'carnetFrontal', label: 'Carnet (Frontal)', url: tech.documentos?.carnetFrontal },
+                      { key: 'carnetTrasera', label: 'Carnet (Trasera)', url: tech.documentos?.carnetTrasera },
                       { key: 'certificadoAntecedentes', label: 'Antecedentes', url: tech.documentos?.certificadoAntecedentes }
                     ].filter(d => d.url).map((d) => (
                       <a 

@@ -86,8 +86,10 @@ export interface Technician {
   certifications?: string[];
   documentos?: {
     hojaConductor?: string;
-    licencia?: string;
-    carnet?: string;
+    licenciaFrontal?: string;
+    licenciaTrasera?: string;
+    carnetFrontal?: string;
+    carnetTrasera?: string;
     certificadoAntecedentes?: string;
   };
   status: TechnicianStatus;
