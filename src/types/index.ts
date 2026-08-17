@@ -84,6 +84,12 @@ export interface Technician {
   region?: string;
   vehicle?: string;
   certifications?: string[];
+  documentos?: {
+    hojaConductor?: string;
+    licencia?: string;
+    carnet?: string;
+    certificadoAntecedentes?: string;
+  };
   status: TechnicianStatus;
   avatar?: string;
   completedOrders: number;
