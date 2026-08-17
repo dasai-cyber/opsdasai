@@ -265,7 +265,7 @@ export default function OrdersPage() {
       </div>
 
       {/* Orders table */}
-      <div className="glass-card overflow-hidden">
+      <div className="glass-card overflow-x-auto">
         <div className="overflow-x-auto">
           <table className="ops-table">
             <thead>

@@ -178,8 +178,8 @@ export default function CoordinacionPage() {
       </div>
 
       {/* Tabla */}
-      <div className="flex-1 overflow-auto p-6">
-        <div className="rounded-xl border border-white/5 overflow-hidden" style={{ background: "rgba(255,255,255,0.01)" }}>
+      <div className="flex-1 overflow-auto p-2 sm:p-6">
+        <div className="rounded-xl border border-white/5 overflow-x-auto" style={{ background: "rgba(255,255,255,0.01)" }}>
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead style={{ background: "rgba(255,255,255,0.03)", color: "#94a3b8", fontSize: "11px", textTransform: "uppercase", letterSpacing: "1px" }}>
               <tr>
