@@ -13,7 +13,8 @@ interface CoordinacionRow {
   horaInicio: string;
   horaTermino: string;
   local: string;
-  direccion: string;
+  guias: string;
+  puntos: string;
   comuna: string;
   asignadoA: string;
   descuento: string;
@@ -36,7 +37,7 @@ export default function CoordinacionPage() {
   
   const [form, setForm] = useState<Partial<CoordinacionRow>>({
     patente: "", nombreChofer: "", fecha: "", horaInicio: "", horaTermino: "",
-    local: "", direccion: "", comuna: "", asignadoA: "",
+    local: "", guias: "", puntos: "", comuna: "", asignadoA: "",
     descuento: "", bono: "", vueltas: ""
   });
 
@@ -70,7 +71,7 @@ export default function CoordinacionPage() {
   const openAdd = () => {
     setForm({
       patente: "", nombreChofer: "", fecha: new Date().toISOString().split('T')[0], 
-      horaInicio: "", horaTermino: "", local: "", direccion: "", comuna: "", asignadoA: "",
+      horaInicio: "", horaTermino: "", local: "", guias: "", puntos: "", comuna: "", asignadoA: "",
       descuento: "", bono: "", vueltas: ""
     });
     setEditingRow(null);
@@ -95,7 +96,8 @@ export default function CoordinacionPage() {
         horaInicio: form.horaInicio,
         horaTermino: form.horaTermino,
         local: form.local,
-        direccion: form.direccion,
+        guias: form.guias,
+        puntos: form.puntos,
         comuna: form.comuna,
         asignadoA: form.asignadoA,
         descuento: form.descuento,
@@ -186,8 +188,9 @@ export default function CoordinacionPage() {
                 <th className="px-4 py-3 font-semibold">Vehículo</th>
                 <th className="px-4 py-3 font-semibold">Chofer</th>
                 <th className="px-4 py-3 font-semibold">Fecha / Hora</th>
-                <th className="px-4 py-3 font-semibold">Local / Dirección</th>
+                <th className="px-4 py-3 font-semibold">Local / Guías</th>
                 <th className="px-4 py-3 font-semibold">Comuna</th>
+                <th className="px-4 py-3 font-semibold">Puntos</th>
                 <th className="px-4 py-3 font-semibold">Asignado a</th>
                 <th className="px-4 py-3 font-semibold text-center">Extras</th>
                 <th className="px-4 py-3 font-semibold text-right">Acciones</th>
@@ -213,9 +216,10 @@ export default function CoordinacionPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div>{row.local || "—"}</div>
-                      <div className="text-xs truncate max-w-[150px]" style={{ color: "#64748b" }}>{row.direccion || "—"}</div>
+                      <div className="text-xs truncate max-w-[150px]" style={{ color: "#64748b" }}>{row.guias || "—"}</div>
                     </td>
                     <td className="px-4 py-3">{row.comuna || "—"}</td>
+                    <td className="px-4 py-3 text-xs">{row.puntos || "—"}</td>
                     <td className="px-4 py-3 text-xs">{row.asignadoA || "—"}</td>
                     <td className="px-4 py-3 text-xs text-center">
                       {(row.descuento || row.bono || row.vueltas) ? (
@@ -336,12 +340,22 @@ export default function CoordinacionPage() {
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Dirección</label>
+                <div className="col-span-1">
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Guías</label>
                   <input
                     type="text"
-                    value={form.direccion}
-                    onChange={(e) => setForm({...form, direccion: e.target.value})}
+                    value={form.guias}
+                    onChange={(e) => setForm({...form, guias: e.target.value})}
+                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
+                  />
+                </div>
+
+                <div className="col-span-1">
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Puntos</label>
+                  <input
+                    type="text"
+                    value={form.puntos}
+                    onChange={(e) => setForm({...form, puntos: e.target.value})}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
                   />
                 </div>
