@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   Search, Phone, Mail, MapPin, Award, X, TrendingUp,
-  CheckCircle2, Plus, Save, User, Pencil, Truck, Trash2,
+  CheckCircle2, Plus, Save, User, Pencil, Truck, Trash2, Download, FileText,
 } from "lucide-react";
 import { getStatusBg } from "@/lib/utils";
 import type { Technician, TechnicianStatus } from "@/types";
@@ -591,6 +591,18 @@ function TechModal({
 
         {/* Botones de acción */}
         <div className="px-6 pt-4" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button
+            onClick={downloadInfo}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 16px", background: "rgba(147,201,71,0.15)",
+              color: "#93c947", borderRadius: 8, fontSize: 13, fontWeight: 600,
+              border: "1px solid rgba(147,201,71,0.3)", cursor: "pointer", fontFamily: "inherit",
+            }}
+          >
+            <Download size={14} /> Descargar Ficha
+          </button>
+          
           <button
             onClick={onEdit}
             style={{
