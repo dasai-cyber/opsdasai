@@ -135,8 +135,8 @@ function AddTechModal({
                 <User size={18} style={{ color: "#72b01d" }} />
               </div>
               <div>
-                <div className="font-bold text-lg" style={{ color: "#f1f5f9" }}>Agregar Técnico</div>
-                <div className="text-xs" style={{ color: "#475569" }}>Completa los datos del nuevo técnico</div>
+                <div className="font-bold text-lg" style={{ color: "#f1f5f9" }}>Agregar Chofer</div>
+                <div className="text-xs" style={{ color: "#475569" }}>Completa los datos del nuevo chofer</div>
               </div>
             </div>
             <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}>
@@ -287,7 +287,7 @@ function AddTechModal({
                 }}
               >
                 {saved ? <CheckCircle2 size={16} /> : <Save size={16} />}
-                {saved ? "¡Guardado!" : "Guardar Técnico"}
+                {saved ? "¡Guardado!" : "Guardar Chofer"}
               </button>
             </div>
           </div>
@@ -360,7 +360,7 @@ function EditTechModal({
                 <Pencil size={18} style={{ color: "#72b01d" }} />
               </div>
               <div>
-                <div className="font-bold text-lg" style={{ color: "#f1f5f9" }}>Editar Técnico</div>
+                <div className="font-bold text-lg" style={{ color: "#f1f5f9" }}>Editar Chofer</div>
                 <div className="text-xs" style={{ color: "#475569" }}>{tech.name}</div>
               </div>
             </div>
@@ -526,7 +526,7 @@ function TechModal({
                 border: "1px solid rgba(239,68,68,0.22)", cursor: "pointer", fontFamily: "inherit",
               }}
             >
-              <Trash2 size={14} /> Eliminar técnico
+              <Trash2 size={14} /> Eliminar chofer
             </button>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, padding: '6px 14px' }}>
@@ -639,7 +639,7 @@ function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () =
       {/* Botón eliminar — aparece en hover */}
       <button
         onClick={onDelete}
-        title="Eliminar técnico"
+        title="Eliminar chofer"
         style={{
           position: 'absolute', top: 10, right: 10,
           background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)',
@@ -825,15 +825,15 @@ export default function TechniciansPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="section-title">Técnicos</h2>
-          <p className="section-subtitle">{technicians.length} técnicos registrados en el sistema</p>
+          <h2 className="section-title">Choferes</h2>
+          <p className="section-subtitle">{technicians.length} choferes registrados en el sistema</p>
         </div>
         <button
           className="btn-primary"
           onClick={() => setShowAddModal(true)}
           style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
         >
-          <Plus size={16} /> Agregar técnico
+          <Plus size={16} /> Agregar chofer
         </button>
       </div>
 
@@ -862,7 +862,7 @@ export default function TechniciansPage() {
           <option value="all">Todos los estados</option>
           {STATUS_OPTS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
         </select>
-        <div className="text-xs" style={{ color: "#475569" }}>{filtered.length} técnicos</div>
+        <div className="text-xs" style={{ color: "#475569" }}>{filtered.length} choferes</div>
       </div>
 
       {/* Cards grid */}

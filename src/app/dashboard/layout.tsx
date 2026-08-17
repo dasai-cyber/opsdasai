@@ -24,7 +24,7 @@ interface UserProfile {
 const navItems = [
   { href: "/dashboard",              icon: LayoutDashboard, label: "Dashboard",           badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/calculadora-traslado", icon: Calculator, label: "Calculadora de Traslado", badge: null, roles: ['administrador','supervisor','operaria'] },
-  { href: "/dashboard/technicians",  icon: Users,           label: "Técnicos",            badge: null,  roles: ['administrador','supervisor','operaria'] },
+  { href: "/dashboard/technicians",  icon: Users,           label: "Chofer",            badge: null,  roles: ['administrador','supervisor','operaria'] },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
