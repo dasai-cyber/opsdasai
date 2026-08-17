@@ -808,13 +808,22 @@ export default function TechniciansPage() {
       setLoadingTechs(false);
 
       // Cargar conteo de coordinaciones
-      const { data: coordData } = await supabase.from('servicios').select('asignado_a');
+      const { data: coordData } = await supabase.from('servicios').select('asignado_a, data');
       if (coordData) {
         const counts: Record<string, number> = {};
         coordData.forEach(row => {
-          if (row.asignado_a) {
-            const names = String(row.asignado_a).split(/[,\-]+/).map(normalizeString).filter(Boolean);
-            names.forEach(name => { counts[name] = (counts[name] || 0) + 1; });
+          const namesStr = [
+            row.asignado_a, 
+            row.data?.asignadoA, 
+            row.data?.nombreChofer
+          ].filter(Boolean).join(",");
+          
+          if (namesStr) {
+            // Separa por comas o guiones y normaliza para evitar duplicar por espacios extra
+            const names = namesStr.split(/[,\-]+/).map(normalizeString).filter(Boolean);
+            // Evitar contar al mismo chofer dos veces en el mismo servicio si está en nombreChofer y asignadoA
+            const uniqueNames = Array.from(new Set(names));
+            uniqueNames.forEach(name => { counts[name] = (counts[name] || 0) + 1; });
           }
         });
         setCoordinacionesCount(counts);
