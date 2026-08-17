@@ -500,6 +500,34 @@ function TechModal({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+
+  const downloadInfo = () => {
+    const text = `FICHA DE CHOFER - OPSDASAI\n\n` +
+      `Nombre: ${tech.name}\n` +
+      `RUT: ${tech.rut}\n` +
+      `Teléfono: ${tech.phone}\n` +
+      `Email: ${tech.email || "—"}\n` +
+      `Estado: ${tech.status.toUpperCase()}\n` +
+      `Comuna: ${tech.comuna || "—"}\n` +
+      `Dirección: ${tech.direccion || "—"}\n` +
+      `Estado Civil: ${tech.estadoCivil || "—"}\n` +
+      `Nivel de Estudios: ${tech.estudios || "—"}\n` +
+      `Patente Vehículo: ${tech.patente || "—"}\n\n` +
+      `Métricas:\n` +
+      `- Coordinaciones: ${tech.completedOrders}\n` +
+      `- Productividad: ${tech.productivity}%\n`;
+      
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Chofer_${tech.name.replace(/\s+/g, '_')}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const [confirmDelete, setConfirmDelete] = useState(false);
   const radarData = [
     { subject: "Productividad", value: tech.productivity },
@@ -730,12 +758,12 @@ function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () =
       <div className="space-y-1 mb-3">
         <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
           <Phone size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
-          <span className="truncate">{tech.phone}</span>
+          <a href={`tel:${tech.phone}`} onClick={e => e.stopPropagation()} className="truncate hover:text-brand-500 transition-colors">{tech.phone}</a>
         </div>
         {tech.email && (
           <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
             <Mail size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
-            <span className="truncate">{tech.email}</span>
+            <a href={`mailto:${tech.email}`} onClick={e => e.stopPropagation()} className="truncate hover:text-brand-500 transition-colors">{tech.email}</a>
           </div>
         )}
         <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
