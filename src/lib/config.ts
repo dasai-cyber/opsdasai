@@ -16,10 +16,10 @@ export const CONFIG = {
   // Versión del sistema
   SYSTEM_VERSION: "v2026.1",
   
-  // Ruta al logo de la empresa (puedes reemplazar /Imagen1.jpg por el de Dasai)
-  LOGO_PATH: "/Imagen1.jpg",
+  // Ruta al logo de la empresa
+  LOGO_PATH: "/logo_dasai.png",
   
   // ¿Usar el logo como imagen física o preferir un logo dinámico con icono CSS?
   // true = usa LOGO_PATH. false = dibuja un logo premium usando CSS + Lucide Icon
-  USE_IMAGE_LOGO: false,
+  USE_IMAGE_LOGO: true,
 };
