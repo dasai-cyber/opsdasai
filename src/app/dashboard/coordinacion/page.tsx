@@ -318,9 +318,11 @@ export default function CoordinacionPage() {
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Asignado a</label>
                   <input
                     type="text"
+                    list="choferes-list"
                     value={form.asignadoA}
                     onChange={(e) => setForm({...form, asignadoA: e.target.value})}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
+                    placeholder="Escriba o seleccione..."
                   />
                 </div>
 
