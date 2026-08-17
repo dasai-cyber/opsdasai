@@ -32,10 +32,12 @@ function AddTechModal({
     techNumber: "",
     name: "",
     rut: "",
+    direccion: "",
+    comuna: "",
     phone: "",
+    estadoCivil: "",
+    estudios: "",
     email: "",
-    region: "Metropolitana",
-    vehicle: "",
     status: "disponible" as TechnicianStatus,
     certInput: "",
   });
@@ -69,14 +71,14 @@ function AddTechModal({
     const newId = `tech-${Date.now()}`;
     const newTech: Technician = {
       id: newId,
-      techNumber: form.techNumber.trim(),
       name: form.name.trim(),
       rut: form.rut.trim(),
+      direccion: form.direccion.trim(),
+      comuna: form.comuna.trim(),
       phone: form.phone.trim(),
+      estadoCivil: form.estadoCivil.trim(),
+      estudios: form.estudios.trim(),
       email: form.email.trim(),
-      region: form.region.trim(),
-      vehicle: form.vehicle.trim(),
-      certifications,
       status: form.status,
       completedOrders: 0,
       avgTime: 0,
@@ -85,18 +87,7 @@ function AddTechModal({
     // Guardar en Supabase
     const { error: insertError } = await supabase.from('tecnicos').insert({
       id: newId,
-      tech_number: newTech.techNumber,
-      name: newTech.name,
-      rut: newTech.rut,
-      phone: newTech.phone,
-      email: newTech.email,
-      region: newTech.region,
-      vehicle: newTech.vehicle,
-      certifications: newTech.certifications,
-      status: newTech.status,
-      completed_orders: 0,
-      avg_time: 0,
-      productivity: 0,
+      data: newTech
     });
     if (insertError) {
       setSaveError('Error al guardar: ' + insertError.message);
@@ -147,14 +138,8 @@ function AddTechModal({
           {/* Form */}
           <div className="p-6 space-y-4">
 
-            {/* Número y Nombre */}
-            <div className="grid grid-cols-[100px_1fr] gap-3">
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  N° Asoc.
-                </label>
-                <input style={inputStyle} placeholder="Ej: 01" value={form.techNumber} onChange={set("techNumber")} />
-              </div>
+            {/* Nombre y RUT */}
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
                   Nombre completo <span style={{ color: "#72b01d" }}>*</span>
@@ -162,10 +147,6 @@ function AddTechModal({
                 <input style={inputStyle} placeholder="Ej: Juan Pérez González" value={form.name} onChange={set("name")} />
                 {errors.name && <div style={errStyle}>{errors.name}</div>}
               </div>
-            </div>
-
-            {/* RUT / Teléfono */}
-            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
                   RUT <span style={{ color: "#72b01d" }}>*</span>
@@ -173,6 +154,26 @@ function AddTechModal({
                 <input style={inputStyle} placeholder="Ej: 12.345.678-9" value={form.rut} onChange={set("rut")} />
                 {errors.rut && <div style={errStyle}>{errors.rut}</div>}
               </div>
+            </div>
+
+            {/* Dirección / Comuna */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
+                  Dirección
+                </label>
+                <input style={inputStyle} placeholder="Ej: Av. Providencia 1234" value={form.direccion} onChange={set("direccion")} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
+                  Comuna
+                </label>
+                <input style={inputStyle} placeholder="Ej: Providencia" value={form.comuna} onChange={set("comuna")} />
+              </div>
+            </div>
+
+            {/* Teléfono / Correo */}
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
                   Teléfono <span style={{ color: "#72b01d" }}>*</span>
@@ -180,96 +181,44 @@ function AddTechModal({
                 <input style={inputStyle} placeholder="Ej: 56944771425" value={form.phone} onChange={set("phone")} />
                 {errors.phone && <div style={errStyle}>{errors.phone}</div>}
               </div>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
+                  Correo electrónico
+                </label>
+                <input style={inputStyle} type="email" placeholder="nombre@correo.cl" value={form.email} onChange={set("email")} />
+              </div>
             </div>
 
-            {/* Email */}
-            <div>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                Correo electrónico
-              </label>
-              <input style={inputStyle} type="email" placeholder="nombre@atmservicios.cl" value={form.email} onChange={set("email")} />
-            </div>
-
-            {/* Región / Estado */}
+            {/* Estado Civil / Estudios */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  <MapPin size={12} style={{ display: "inline", marginRight: 4 }} />Región
+                  Estado civil
                 </label>
-                <select
-                  style={{ ...inputStyle, cursor: "pointer" }}
-                  value={form.region}
-                  onChange={set("region")}
-                >
-                  {["Metropolitana","Valparaíso","Biobío","Tarapacá","Antofagasta","Araucanía","Los Lagos","O'Higgins","Maule","Ñuble","Los Ríos","Arica y Parinacota","Atacama","Coquimbo","Aysén","Magallanes"].map(r => (
-                    <option key={r} value={r}>{r}</option>
-                  ))}
-                </select>
+                <input style={inputStyle} placeholder="Ej: Soltero" value={form.estadoCivil} onChange={set("estadoCivil")} />
               </div>
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Estado inicial
+                  Estudios
                 </label>
-                <select
-                  style={{ ...inputStyle, cursor: "pointer" }}
-                  value={form.status}
-                  onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as TechnicianStatus }))}
-                >
-                  {STATUS_OPTS.map(s => (
-                    <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-                  ))}
-                </select>
+                <input style={inputStyle} placeholder="Ej: Educación Media Completa" value={form.estudios} onChange={set("estudios")} />
               </div>
             </div>
 
-            {/* Vehículo */}
+            {/* Estado */}
             <div>
               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                <Truck size={12} style={{ display: "inline", marginRight: 4 }} />Vehículo
+                Estado inicial
               </label>
-              <input style={inputStyle} placeholder="Ej: Camioneta Hilux TJ-4521" value={form.vehicle} onChange={set("vehicle")} />
-            </div>
-
-            {/* Certificaciones */}
-            <div>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                <Award size={12} style={{ display: "inline", marginRight: 4 }} />Certificaciones
-              </label>
-              <div style={{ display: "flex", gap: 8 }}>
-                <input
-                  style={{ ...inputStyle, flex: 1 }}
-                  placeholder="Ej: NCR Certificado"
-                  value={form.certInput}
-                  onChange={set("certInput")}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCert())}
-                />
-                <button
-                  type="button"
-                  onClick={addCert}
-                  style={{ padding: "10px 16px", background: "rgba(114,176,29,0.15)", border: "1px solid rgba(114,176,29,0.3)", borderRadius: 8, color: "#72b01d", cursor: "pointer" }}
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-              {certifications.length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
-                  {certifications.map((c) => (
-                    <span
-                      key={c}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "rgba(114,176,29,0.1)", border: "1px solid rgba(114,176,29,0.2)", color: "#93c947", borderRadius: 999, padding: "3px 10px", fontSize: 12 }}
-                    >
-                      {c}
-                      <button
-                        type="button"
-                        onClick={() => setCertifications((prev) => prev.filter((x) => x !== c))}
-                        style={{ background: "none", border: "none", cursor: "pointer", color: "#93c947", padding: 0, lineHeight: 1 }}
-                      >
-                        <X size={11} />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
+              <select
+                style={{ ...inputStyle, cursor: "pointer" }}
+                value={form.status}
+                onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as TechnicianStatus }))}
+              >
+                {STATUS_OPTS.map(s => (
+                  <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+                ))}
+              </select>
             </div>
 
             {/* Actions */}
@@ -306,13 +255,14 @@ function EditTechModal({
   onSave: (updated: Technician) => void;
 }) {
   const [form, setForm] = useState({
-    techNumber: tech.techNumber,
     name: tech.name,
     rut: tech.rut,
+    direccion: tech.direccion || "",
+    comuna: tech.comuna || "",
     phone: tech.phone,
+    estadoCivil: tech.estadoCivil || "",
+    estudios: tech.estudios || "",
     email: tech.email,
-    region: tech.region,
-    vehicle: tech.vehicle,
     status: tech.status,
   });
   const [saving, setSaving] = useState(false);
@@ -331,19 +281,12 @@ function EditTechModal({
 
   const handleSave = async () => {
     setSaving(true); setSaveError("");
+    const updated = { ...tech, ...form };
     const { error } = await supabase.from('tecnicos').update({
-      tech_number: form.techNumber,
-      name: form.name,
-      rut: form.rut,
-      phone: form.phone,
-      email: form.email,
-      region: form.region,
-      vehicle: form.vehicle,
-      status: form.status,
+      data: updated
     }).eq('id', tech.id);
     if (error) { setSaveError('Error: ' + error.message); setSaving(false); return; }
     setSaved(true);
-    const updated: Technician = { ...tech, ...form };
     setTimeout(() => { onSave(updated); onClose(); }, 800);
     setSaving(false);
   };
@@ -368,50 +311,54 @@ function EditTechModal({
           </div>
 
           <div className="p-6 space-y-4">
-            <div className="grid grid-cols-[100px_1fr] gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>N° Asoc.</label>
-                <input style={inputStyle} value={form.techNumber} onChange={set("techNumber")} />
-              </div>
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Nombre completo <span style={{ color:"#72b01d" }}>*</span></label>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Nombre completo *</label>
                 <input style={inputStyle} value={form.name} onChange={set("name")} />
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>RUT</label>
                 <input style={inputStyle} value={form.rut} onChange={set("rut")} />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Dirección</label>
+                <input style={inputStyle} value={form.direccion} onChange={set("direccion")} />
+              </div>
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Comuna</label>
+                <input style={inputStyle} value={form.comuna} onChange={set("comuna")} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Teléfono</label>
                 <input style={inputStyle} value={form.phone} onChange={set("phone")} />
               </div>
-            </div>
-            <div>
-              <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Correo electrónico</label>
-              <input style={inputStyle} type="email" value={form.email} onChange={set("email")} />
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Correo electrónico</label>
+                <input style={inputStyle} type="email" value={form.email} onChange={set("email")} />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Región</label>
-                <select style={{ ...inputStyle, cursor:"pointer" }} value={form.region} onChange={set("region")}>
-                  {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
-                </select>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Estado Civil</label>
+                <input style={inputStyle} value={form.estadoCivil} onChange={set("estadoCivil")} />
               </div>
               <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Estado</label>
-                <select style={{ ...inputStyle, cursor:"pointer" }} value={form.status} onChange={set("status")}>
-                  <option value="disponible">Disponible</option>
-                  <option value="en ruta">En ruta</option>
-                  <option value="trabajando">Trabajando</option>
-                  <option value="offline">Offline</option>
-                </select>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Estudios</label>
+                <input style={inputStyle} value={form.estudios} onChange={set("estudios")} />
               </div>
             </div>
             <div>
-              <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Vehículo</label>
-              <input style={inputStyle} placeholder="Ej: Camioneta Hilux TJ-4521" value={form.vehicle} onChange={set("vehicle")} />
+              <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Estado</label>
+              <select style={{ ...inputStyle, cursor:"pointer" }} value={form.status} onChange={set("status")}>
+                <option value="disponible">Disponible</option>
+                <option value="en ruta">En ruta</option>
+                <option value="trabajando">Trabajando</option>
+                <option value="offline">Offline</option>
+              </select>
             </div>
 
             {saveError && (
@@ -472,7 +419,6 @@ function TechModal({
             </div>
             <div>
               <h3 className="text-xl font-bold" style={{ color: "#f1f5f9" }}>
-                {tech.techNumber ? <span style={{ color: "#72b01d", marginRight: 8 }}>#{tech.techNumber}</span> : null}
                 {tech.name}
               </h3>
               <div className="flex items-center gap-2 mt-1">
@@ -557,19 +503,14 @@ function TechModal({
                 {[
                   { icon: Phone, value: tech.phone },
                   { icon: Mail, value: tech.email || "—" },
-                  { icon: MapPin, value: tech.region },
-                ].map(({ icon: Icon, value }) => (
-                  <div key={value} className="flex items-center gap-3 p-2.5 rounded-lg" style={{ background: "rgba(255,255,255,0.03)" }}>
+                  { icon: MapPin, value: tech.comuna || "—" },
+                  { icon: MapPin, value: tech.direccion || "—" },
+                ].map(({ icon: Icon, value }, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-2.5 rounded-lg" style={{ background: "rgba(255,255,255,0.03)" }}>
                     <Icon size={14} style={{ color: "#72b01d", flexShrink: 0 }} />
                     <span className="text-sm" style={{ color: "#e2e8f0" }}>{value}</span>
                   </div>
                 ))}
-                {tech.vehicle && (
-                  <div className="flex items-center gap-3 p-2.5 rounded-lg" style={{ background: "rgba(255,255,255,0.03)" }}>
-                    <TrendingUp size={14} style={{ color: "#72b01d" }} />
-                    <span className="text-sm" style={{ color: "#e2e8f0" }}>{tech.vehicle}</span>
-                  </div>
-                )}
               </div>
 
               {/* KPIs */}
@@ -599,19 +540,7 @@ function TechModal({
                 </div>
               </div>
 
-              {/* Certifications */}
-              <div>
-                <div className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#475569" }}>Certificaciones</div>
-                <div className="flex flex-wrap gap-2">
-                  {tech.certifications.length > 0 ? tech.certifications.map((c) => (
-                    <div key={c} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium" style={{ background: "rgba(114,176,29,0.1)", color: "#93c947", border: "1px solid rgba(114,176,29,0.2)" }}>
-                      <Award size={11} /> {c}
-                    </div>
-                  )) : (
-                    <span style={{ color: "#475569", fontSize: 13 }}>Sin certificaciones registradas</span>
-                  )}
-                </div>
-              </div>
+              {/* Certificaciones eliminadas */}
             </div>
 
             {/* Right col — Radar */}
@@ -661,7 +590,6 @@ function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () =
         </div>
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-sm truncate" style={{ color: "#f1f5f9" }}>
-            {tech.techNumber ? <span style={{ color: "#72b01d", marginRight: 6 }}>#{tech.techNumber}</span> : null}
             {tech.name}
           </div>
           <div className="text-xs truncate" style={{ color: "#475569" }}>{tech.rut}</div>
@@ -683,7 +611,7 @@ function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () =
         )}
         <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
           <MapPin size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
-          <span className="truncate">{tech.region || "—"}</span>
+          <span className="truncate">{tech.comuna || "—"}</span>
         </div>
       </div>
 
@@ -706,15 +634,7 @@ function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () =
         <div className="h-1.5 rounded-full" style={{ width: `${tech.productivity}%`, background: STATUS_COLOR[tech.status] }} />
       </div>
 
-      {/* Certs */}
-      <div className="flex flex-wrap gap-1">
-        {tech.certifications.slice(0, 2).map((c) => (
-          <span key={c} className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(114,176,29,0.08)", color: "#93c947" }}>{c}</span>
-        ))}
-        {tech.certifications.length > 2 && (
-          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(255,255,255,0.04)", color: "#475569" }}>+{tech.certifications.length - 2}</span>
-        )}
-      </div>
+      {/* Certs eliminadas */}
     </div>
   );
 }
@@ -738,21 +658,24 @@ export default function TechniciansPage() {
         .select('*')
         .order('tech_number', { ascending: true });
       if (techData) {
-        setTechnicians(techData.map(t => ({
-          id: t.id,
-          techNumber: t.tech_number ?? '',
-          name: t.name,
-          rut: t.rut ?? '',
-          phone: t.phone ?? '',
-          email: t.email ?? '',
-          region: t.region ?? '',
-          vehicle: t.vehicle ?? '',
-          certifications: t.certifications ?? [],
-          status: t.status as TechnicianStatus,
-          completedOrders: t.completed_orders ?? 0,
-          avgTime: t.avg_time ?? 0,
-          productivity: t.productivity ?? 0,
-        })));
+        setTechnicians(techData.map(t => {
+          const dt = t.data || {};
+          return {
+            id: t.id,
+            name: dt.name || t.name || '',
+            rut: dt.rut || t.rut || '',
+            direccion: dt.direccion || '',
+            comuna: dt.comuna || '',
+            phone: dt.phone || t.phone || '',
+            estadoCivil: dt.estadoCivil || '',
+            estudios: dt.estudios || '',
+            email: dt.email || t.email || '',
+            status: (dt.status || t.status || 'disponible') as TechnicianStatus,
+            completedOrders: dt.completedOrders || t.completed_orders || 0,
+            avgTime: dt.avgTime || t.avg_time || 0,
+            productivity: dt.productivity || t.productivity || 0,
+          };
+        }));
       }
       setLoadingTechs(false);
 
@@ -778,7 +701,7 @@ export default function TechniciansPage() {
   }));
 
   const filtered = enrichedTechnicians.filter((t) => {
-    const matchSearch = search === "" || [t.name, t.email, t.region, t.phone, t.rut].some(
+    const matchSearch = search === "" || [t.name, t.email, t.comuna, t.phone, t.rut].some(
       (f) => (f || "").toLowerCase().includes(search.toLowerCase())
     );
     const matchStatus = statusFilter === "all" || t.status === statusFilter;

@@ -75,11 +75,15 @@ export interface Technician {
   techNumber?: string;
   name: string;
   rut: string;
+  direccion?: string;
+  comuna?: string;
   phone: string;
+  estadoCivil?: string;
+  estudios?: string;
   email: string;
-  region: string;
-  vehicle: string;
-  certifications: string[];
+  region?: string;
+  vehicle?: string;
+  certifications?: string[];
   status: TechnicianStatus;
   avatar?: string;
   completedOrders: number;
