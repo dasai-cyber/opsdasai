@@ -8,7 +8,6 @@ import * as XLSX from "xlsx";
 interface CoordinacionRow {
   id: string;
   patente: string;
-  nombreChofer: string;
   fecha: string;
   horaInicio: string;
   horaTermino: string;
@@ -36,7 +35,7 @@ export default function CoordinacionPage() {
   const [saving, setSaving] = useState(false);
   
   const [form, setForm] = useState<Partial<CoordinacionRow>>({
-    patente: "", nombreChofer: "", fecha: "", horaInicio: "", horaTermino: "",
+    patente: "", fecha: "", horaInicio: "", horaTermino: "",
     local: "", guias: "", puntos: "", comuna: "", asignadoA: "",
     descuento: "", bono: "", vueltas: ""
   });
@@ -70,7 +69,7 @@ export default function CoordinacionPage() {
 
   const openAdd = () => {
     setForm({
-      patente: "", nombreChofer: "", fecha: new Date().toISOString().split('T')[0], 
+      patente: "", fecha: new Date().toISOString().split('T')[0], 
       horaInicio: "", horaTermino: "", local: "", guias: "", puntos: "", comuna: "", asignadoA: "",
       descuento: "", bono: "", vueltas: ""
     });
@@ -91,7 +90,6 @@ export default function CoordinacionPage() {
       id: newId,
       data: {
         patente: form.patente,
-        nombreChofer: form.nombreChofer,
         fecha: form.fecha,
         horaInicio: form.horaInicio,
         horaTermino: form.horaTermino,
@@ -186,8 +184,7 @@ export default function CoordinacionPage() {
             <thead style={{ background: "rgba(255,255,255,0.03)", color: "#94a3b8", fontSize: "11px", textTransform: "uppercase", letterSpacing: "1px" }}>
               <tr>
                 <th className="px-4 py-3 font-semibold">Vehículo</th>
-                <th className="px-4 py-3 font-semibold">Chofer</th>
-                <th className="px-4 py-3 font-semibold">Fecha / Hora</th>
+                                <th className="px-4 py-3 font-semibold">Fecha / Hora</th>
                 <th className="px-4 py-3 font-semibold">Local / Guías</th>
                 <th className="px-4 py-3 font-semibold">Comuna</th>
                 <th className="px-4 py-3 font-semibold">Puntos</th>
@@ -209,8 +206,7 @@ export default function CoordinacionPage() {
                 filtered.map((row) => (
                   <tr key={row.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3 font-mono text-xs">{row.patente || "—"}</td>
-                    <td className="px-4 py-3 font-medium text-brand-400">{row.nombreChofer || "—"}</td>
-                    <td className="px-4 py-3">
+                                        <td className="px-4 py-3">
                       <div>{row.fecha || "—"}</div>
                       <div className="text-xs" style={{ color: "#64748b" }}>{row.horaInicio} - {row.horaTermino}</div>
                     </td>
@@ -273,20 +269,7 @@ export default function CoordinacionPage() {
                   />
                 </div>
 
-                <div className="col-span-1">
-                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Nombre Chofer</label>
-                  <input
-                    type="text"
-                    list="choferes-list"
-                    value={form.nombreChofer}
-                    onChange={(e) => setForm({...form, nombreChofer: e.target.value})}
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
-                    placeholder="Escriba o seleccione..."
-                  />
-                  <datalist id="choferes-list">
-                    {choferes.map((c, i) => <option key={i} value={c} />)}
-                  </datalist>
-                </div>
+
 
                 <div className="col-span-1">
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Fecha</label>
@@ -328,6 +311,9 @@ export default function CoordinacionPage() {
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
                     placeholder="Escriba o seleccione..."
                   />
+                  <datalist id="choferes-list">
+                    {choferes.map((c, i) => <option key={i} value={c} />)}
+                  </datalist>
                 </div>
 
                 <div className="col-span-1">
