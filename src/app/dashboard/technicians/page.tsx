@@ -58,8 +58,13 @@ function AddTechModal({
     certInput: "",
   });
   const confirmClose = () => {
-    if (window.confirm("¿Estás seguro de que deseas cerrar? Se perderán los cambios no guardados."))
-      onClose();
+    if (window.confirm("¿Deseas GUARDAR los datos antes de salir? (Aceptar = Guardar, Cancelar = No guardar)")) {
+      handleSave();
+    } else {
+      if (window.confirm("¿Deseas salir sin guardar y perder los cambios?")) {
+        onClose();
+      }
+    }
   };
   const [docs, setDocs] = useState({
     hojaConductor: null as File | null,
@@ -386,8 +391,13 @@ function EditTechModal({
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState("");
   const confirmClose = () => {
-    if (window.confirm("¿Estás seguro de que deseas cerrar? Se perderán los cambios no guardados."))
-      onClose();
+    if (window.confirm("¿Deseas GUARDAR los datos antes de salir? (Aceptar = Guardar, Cancelar = No guardar)")) {
+      handleSave();
+    } else {
+      if (window.confirm("¿Deseas salir sin guardar y perder los cambios?")) {
+        onClose();
+      }
+    }
   };
   const [docs, setDocs] = useState({
     hojaConductor: null as File | null,
