@@ -772,10 +772,10 @@ function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () =
           {tech.name.charAt(0)}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm truncate" style={{ color: "#f1f5f9" }}>
+          <div className="font-semibold text-sm" style={{ color: "#f1f5f9", wordBreak: "break-word" }}>
             {tech.name}
           </div>
-          <div className="text-xs truncate" style={{ color: "#475569" }}>
+          <div className="text-xs" style={{ color: "#475569", wordBreak: "break-word" }}>
             {tech.patente ? `Patente: ${tech.patente}` : "Sin Patente"}
           </div>
         </div>
