@@ -58,12 +58,10 @@ function AddTechModal({
     certInput: "",
   });
   const confirmClose = () => {
-    if (window.confirm("¿Deseas GUARDAR los datos antes de salir? (Aceptar = Guardar, Cancelar = No guardar)")) {
+    if (window.confirm("¿Deseas guardar los cambios antes de salir?\n\n[Aceptar] = Guardar y cerrar\n[Cancelar] = Cerrar sin guardar")) {
       handleSave();
     } else {
-      if (window.confirm("¿Deseas salir sin guardar y perder los cambios?")) {
-        onClose();
-      }
+      onClose();
     }
   };
   const [docs, setDocs] = useState({
@@ -391,12 +389,10 @@ function EditTechModal({
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState("");
   const confirmClose = () => {
-    if (window.confirm("¿Deseas GUARDAR los datos antes de salir? (Aceptar = Guardar, Cancelar = No guardar)")) {
+    if (window.confirm("¿Deseas guardar los cambios antes de salir?\n\n[Aceptar] = Guardar y cerrar\n[Cancelar] = Cerrar sin guardar")) {
       handleSave();
     } else {
-      if (window.confirm("¿Deseas salir sin guardar y perder los cambios?")) {
-        onClose();
-      }
+      onClose();
     }
   };
   const [docs, setDocs] = useState({
