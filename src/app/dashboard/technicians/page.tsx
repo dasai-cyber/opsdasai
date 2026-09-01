@@ -854,6 +854,7 @@ export default function TechniciansPage() {
             phone: dt.phone || t.phone || '',
             estadoCivil: dt.estadoCivil || '',
             estudios: dt.estudios || '',
+            patente: dt.patente || '',
             email: dt.email || t.email || '',
             status: (dt.status || t.status || 'disponible') as TechnicianStatus,
             completedOrders: dt.completedOrders || t.completed_orders || 0,
