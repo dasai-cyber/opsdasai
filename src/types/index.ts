@@ -84,6 +84,7 @@ export interface Technician {
   patente?: string;
   modeloAuto?: string;
   anioAuto?: string;
+  tipoServicio?: string;
   email: string;
   region?: string;
   vehicle?: string;

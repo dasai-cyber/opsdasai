@@ -52,6 +52,7 @@ function AddTechModal({
     patente: "",
     modeloAuto: "",
     anioAuto: "",
+    tipoServicio: "",
     email: "",
     status: "disponible" as TechnicianStatus,
     certInput: "",
@@ -109,6 +110,7 @@ function AddTechModal({
         patente: form.patente.trim().toUpperCase(),
         modeloAuto: form.modeloAuto.trim(),
         anioAuto: form.anioAuto.trim(),
+        tipoServicio: form.tipoServicio,
         email: form.email.trim(),
         status: form.status,
         completedOrders: 0,
@@ -231,8 +233,8 @@ function AddTechModal({
               </div>
             </div>
 
-            {/* Estado Civil / Estudios */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Estado Civil / Estudios / Tipo Servicio */}
+            <div className="grid grid-cols-3 gap-3">
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
                   Estado civil
@@ -243,7 +245,18 @@ function AddTechModal({
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
                   Estudios
                 </label>
-                <input style={inputStyle} placeholder="Ej: Educación Media Completa" value={form.estudios} onChange={set("estudios")} />
+                <input style={inputStyle} placeholder="Ej: Media" value={form.estudios} onChange={set("estudios")} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
+                  Servicio
+                </label>
+                <select style={inputStyle} value={form.tipoServicio} onChange={set("tipoServicio")}>
+                  <option value="">Seleccione...</option>
+                  <option value="Paquetería">Paquetería</option>
+                  <option value="Supermercado">Supermercado</option>
+                  <option value="Ambas">Ambas</option>
+                </select>
               </div>
             </div>
 
@@ -361,6 +374,7 @@ function EditTechModal({
     patente: tech.patente || "",
     modeloAuto: tech.modeloAuto || "",
     anioAuto: tech.anioAuto || "",
+    tipoServicio: tech.tipoServicio || "",
     email: tech.email,
     status: tech.status,
   });
@@ -922,6 +936,7 @@ export default function TechniciansPage() {
             patente: dt.patente || '',
             modeloAuto: dt.modeloAuto || '',
             anioAuto: dt.anioAuto || '',
+            tipoServicio: dt.tipoServicio || '',
             email: dt.email || t.email || '',
             status: (dt.status || t.status || 'disponible') as TechnicianStatus,
             completedOrders: dt.completedOrders || t.completed_orders || 0,

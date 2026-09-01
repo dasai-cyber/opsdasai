@@ -214,6 +214,7 @@ export default function AutosPage() {
             patente: dt.patente || '',
             modeloAuto: dt.modeloAuto || '',
             anioAuto: dt.anioAuto || '',
+            tipoServicio: dt.tipoServicio || '',
             email: dt.email || t.email || '',
             status: (dt.status || t.status || 'disponible') as any,
             completedOrders: dt.completedOrders || t.completed_orders || 0,
