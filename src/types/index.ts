@@ -78,6 +78,7 @@ export interface Technician {
   direccion?: string;
   comuna?: string;
   phone: string;
+  phone2?: string;
   estadoCivil?: string;
   estudios?: string;
   patente?: string;

@@ -46,6 +46,7 @@ function AddTechModal({
     direccion: "",
     comuna: "",
     phone: "",
+    phone2: "",
     estadoCivil: "",
     estudios: "",
     patente: "",
@@ -100,6 +101,7 @@ function AddTechModal({
         direccion: form.direccion.trim(),
         comuna: form.comuna.trim(),
         phone: form.phone.trim(),
+        phone2: form.phone2.trim(),
         estadoCivil: form.estadoCivil.trim(),
         estudios: form.estudios.trim(),
         patente: form.patente.trim().toUpperCase(),
@@ -198,7 +200,7 @@ function AddTechModal({
               </div>
             </div>
 
-            {/* Teléfono / Correo */}
+            {/* Teléfono / Teléfono 2 */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
@@ -207,6 +209,16 @@ function AddTechModal({
                 <input style={inputStyle} placeholder="Ej: 56944771425" value={form.phone} onChange={set("phone")} />
                 {errors.phone && <div style={errStyle}>{errors.phone}</div>}
               </div>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
+                  WhatsApp / Secundario
+                </label>
+                <input style={inputStyle} placeholder="Ej: 56911223344" value={form.phone2} onChange={set("phone2")} />
+              </div>
+            </div>
+
+            {/* Correo / vacio */}
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
                   Correo electrónico
@@ -323,6 +335,7 @@ function EditTechModal({
     direccion: tech.direccion || "",
     comuna: tech.comuna || "",
     phone: tech.phone,
+    phone2: tech.phone2 || "",
     estadoCivil: tech.estadoCivil || "",
     estudios: tech.estudios || "",
     patente: tech.patente || "",
@@ -788,6 +801,18 @@ function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () =
           <Phone size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
           <a href={`tel:${tech.phone}`} onClick={e => e.stopPropagation()} className="truncate hover:text-brand-500 transition-colors">{tech.phone}</a>
         </div>
+        {tech.phone2 && (
+          <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
+            <Phone size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
+            <a href={`https://wa.me/${tech.phone2.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="truncate hover:text-brand-500 transition-colors">{tech.phone2}</a>
+          </div>
+        )}
+        {tech.phone2 && (
+          <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
+            <Phone size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
+            <a href={`https://wa.me/${tech.phone2.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="truncate hover:text-brand-500 transition-colors">{tech.phone2}</a>
+          </div>
+        )}
         {tech.email && (
           <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
             <Mail size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
@@ -852,6 +877,7 @@ export default function TechniciansPage() {
             direccion: dt.direccion || '',
             comuna: dt.comuna || '',
             phone: dt.phone || t.phone || '',
+            phone2: dt.phone2 || '',
             estadoCivil: dt.estadoCivil || '',
             estudios: dt.estudios || '',
             patente: dt.patente || '',
