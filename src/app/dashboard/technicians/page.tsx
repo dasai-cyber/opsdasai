@@ -479,7 +479,7 @@ function EditTechModal({
                 <input style={inputStyle} type="email" value={form.email} onChange={set("email")} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <div>
                 <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Estado Civil</label>
                 <input style={inputStyle} value={form.estadoCivil} onChange={set("estadoCivil")} />
@@ -487,6 +487,15 @@ function EditTechModal({
               <div>
                 <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Estudios</label>
                 <input style={inputStyle} value={form.estudios} onChange={set("estudios")} />
+              </div>
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Servicio</label>
+                <select style={inputStyle} value={form.tipoServicio} onChange={set("tipoServicio")}>
+                  <option value="">Seleccione...</option>
+                  <option value="Paquetería">Paquetería</option>
+                  <option value="Supermercado">Supermercado</option>
+                  <option value="Ambas">Ambas</option>
+                </select>
               </div>
             </div>
             
