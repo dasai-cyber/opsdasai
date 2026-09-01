@@ -429,9 +429,15 @@ function EditTechModal({
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Teléfono</label>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Teléfono principal</label>
                 <input style={inputStyle} value={form.phone} onChange={set("phone")} />
               </div>
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>WhatsApp / Secundario</label>
+                <input style={inputStyle} value={form.phone2} onChange={set("phone2")} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Correo electrónico</label>
                 <input style={inputStyle} type="email" value={form.email} onChange={set("email")} />
