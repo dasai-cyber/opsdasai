@@ -50,6 +50,7 @@ function AddTechModal({
     phone2: "",
     estadoCivil: "",
     estudios: "",
+    nLocal: "",
     patente: "",
     modeloAuto: "",
     anioAuto: "",
@@ -119,6 +120,7 @@ function AddTechModal({
         modeloAuto: form.modeloAuto.trim(),
         anioAuto: form.anioAuto.trim(),
         tipoServicio: form.tipoServicio,
+        nLocal: form.nLocal,
         email: form.email.trim(),
         status: form.status,
         completedOrders: 0,
@@ -242,7 +244,13 @@ function AddTechModal({
             </div>
 
             {/* Estado Civil / Estudios / Tipo Servicio */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-4 gap-3">
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
+                  N° Local
+                </label>
+                <input style={inputStyle} placeholder="Ej: 123" value={form.nLocal || ''} onChange={set("nLocal")} />
+              </div>
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
                   Estado civil
@@ -379,6 +387,7 @@ function EditTechModal({
     phone2: tech.phone2 || "",
     estadoCivil: tech.estadoCivil || "",
     estudios: tech.estudios || "",
+      nLocal: tech.nLocal || "",
     patente: tech.patente || "",
     modeloAuto: tech.modeloAuto || "",
     anioAuto: tech.anioAuto || "",
@@ -494,9 +503,17 @@ function EditTechModal({
                 <input style={inputStyle} type="email" value={form.email} onChange={set("email")} />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-4 gap-3">
               <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Estado Civil</label>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
+                  N° Local
+                </label>
+                <input style={inputStyle} placeholder="Ej: 123" value={form.nLocal || ''} onChange={set("nLocal")} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
+                  Estado Civil
+                </label>
                 <input style={inputStyle} value={form.estadoCivil} onChange={set("estadoCivil")} />
               </div>
               <div>
@@ -961,6 +978,7 @@ export default function TechniciansPage() {
             modeloAuto: dt.modeloAuto || '',
             anioAuto: dt.anioAuto || '',
             tipoServicio: dt.tipoServicio || '',
+            nLocal: dt.nLocal || '',
             email: dt.email || t.email || '',
             status: (dt.status || t.status || 'disponible') as TechnicianStatus,
             completedOrders: dt.completedOrders || t.completed_orders || 0,
@@ -1045,6 +1063,7 @@ export default function TechniciansPage() {
       "Modelo Auto": t.modeloAuto,
       "Año Auto": t.anioAuto,
       "Tipo Servicio": t.tipoServicio,
+      "N° Local": t.nLocal,
       Email: t.email,
       Estado: t.status
     }));

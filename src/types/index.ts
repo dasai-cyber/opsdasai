@@ -85,6 +85,7 @@ export interface Technician {
   modeloAuto?: string;
   anioAuto?: string;
   tipoServicio?: string;
+  nLocal?: string;
   email: string;
   region?: string;
   vehicle?: string;
