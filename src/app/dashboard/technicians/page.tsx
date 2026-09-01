@@ -966,6 +966,7 @@ export default function TechniciansPage() {
             completedOrders: dt.completedOrders || t.completed_orders || 0,
             avgTime: dt.avgTime || t.avg_time || 0,
             productivity: dt.productivity || t.productivity || 0,
+            rating: dt.rating || 0,
             documentos: dt.documentos || {},
             autoDocumentos: dt.autoDocumentos || {},
           };
