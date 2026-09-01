@@ -109,6 +109,7 @@ export interface Technician {
   completedOrders: number;
   avgTime: number;
   productivity: number;
+  rating?: number;
 }
 
 export interface WorkOrder {

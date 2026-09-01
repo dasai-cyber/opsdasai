@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Technician } from "@/types";
 import { 
-  Car, FileText, Upload, X, CheckCircle2, AlertCircle, FileBox
+  Car, FileText, Upload, X, CheckCircle2, AlertCircle, FileBox, Star
 } from "lucide-react";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -158,6 +158,15 @@ function EditAutoModal({
 
 // ─── Auto Card Component ────────────────────────────────────────────────────
 function AutoCard({ tech, onClick }: { tech: Technician; onClick: () => void }) {
+  const [rating, setRating] = useState(tech.rating || 0);
+
+  const handleRate = async (e: React.MouseEvent, val: number) => {
+    e.stopPropagation();
+    setRating(val);
+    const updated = { ...tech, rating: val };
+    await supabase.from('tecnicos').update({ data: updated }).eq('id', tech.id);
+  };
+
   const getDocStatus = (url?: string) => {
     return url 
       ? <div className="flex items-center gap-1 text-xs text-green-500"><CheckCircle2 size={12} /> Subida</div>
@@ -171,8 +180,23 @@ function AutoCard({ tech, onClick }: { tech: Technician; onClick: () => void }) 
           <Car size={24} style={{ color: "#72b01d" }} />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-bold text-lg" style={{ color: "#f1f5f9", letterSpacing: "1px" }}>
-            {tech.patente} <span className="text-sm font-normal text-slate-400 ml-2">{tech.modeloAuto} {tech.anioAuto}</span>
+          <div className="font-bold text-lg flex items-start justify-between" style={{ color: "#f1f5f9", letterSpacing: "1px" }}>
+            <div>
+              {tech.patente} <span className="text-sm font-normal text-slate-400 ml-2">{tech.modeloAuto} {tech.anioAuto}</span>
+            </div>
+            <div className="flex items-center gap-1 mt-1" onClick={(e) => e.stopPropagation()}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  size={16}
+                  fill={star <= rating ? "#fbbf24" : "transparent"}
+                  color={star <= rating ? "#fbbf24" : "#475569"}
+                  onClick={(e) => handleRate(e, star)}
+                  style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                  className="hover:scale-110"
+                />
+              ))}
+            </div>
           </div>
           <div className="text-xs text-slate-400 mt-1 truncate">
             Chofer: <span className="text-slate-300">{tech.name}</span>
