@@ -893,6 +893,7 @@ export default function TechniciansPage() {
             avgTime: dt.avgTime || t.avg_time || 0,
             productivity: dt.productivity || t.productivity || 0,
             documentos: dt.documentos || {},
+            autoDocumentos: dt.autoDocumentos || {},
           };
         }));
       }

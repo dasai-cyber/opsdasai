@@ -94,6 +94,11 @@ export interface Technician {
     carnetTrasera?: string;
     certificadoAntecedentes?: string;
   };
+  autoDocumentos?: {
+    revisionTecnica?: string;
+    gases?: string;
+    permisoCirculacion?: string;
+  };
   status: TechnicianStatus;
   avatar?: string;
   completedOrders: number;
