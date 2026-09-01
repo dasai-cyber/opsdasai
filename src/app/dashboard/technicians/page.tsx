@@ -102,6 +102,7 @@ function AddTechModal({
         phone: form.phone.trim(),
         estadoCivil: form.estadoCivil.trim(),
         estudios: form.estudios.trim(),
+        patente: form.patente.trim().toUpperCase(),
         email: form.email.trim(),
         status: form.status,
         completedOrders: 0,
@@ -361,7 +362,7 @@ function EditTechModal({
       if (docs.carnetTrasera) docsUrls.carnetTrasera = await uploadDocument(docs.carnetTrasera, tech.id, 'carnetTrasera');
       if (docs.certificadoAntecedentes) docsUrls.certificadoAntecedentes = await uploadDocument(docs.certificadoAntecedentes, tech.id, 'certificadoAntecedentes');
 
-      const updated = { ...tech, ...form, documentos: docsUrls };
+      const updated = { ...tech, ...form, patente: form.patente.trim().toUpperCase(), documentos: docsUrls };
       const { error } = await supabase.from('tecnicos').update({ data: updated }).eq('id', tech.id);
       if (error) throw error;
       setSaved(true);
