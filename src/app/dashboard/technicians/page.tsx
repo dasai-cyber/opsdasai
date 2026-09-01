@@ -8,6 +8,7 @@ import {
 import { getStatusBg } from "@/lib/utils";
 import type { Technician, TechnicianStatus } from "@/types";
 import { supabase } from "@/lib/supabase";
+import * as XLSX from "xlsx";
 import {
   ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar,
 } from "recharts";
@@ -1026,34 +1027,32 @@ export default function TechniciansPage() {
   const statsPaqueteria = getStatsForTipo('Paquetería');
 
 
-  const exportToCSV = () => {
+  const exportToExcel = () => {
     if (technicians.length === 0) return;
 
-    const headers = [
-      "ID", "Nombre", "RUT", "Dirección", "Comuna", "Teléfono 1", "Teléfono 2",
-      "Estado Civil", "Estudios", "Patente", "Modelo Auto", "Año Auto", "Tipo Servicio",
-      "Email", "Estado"
-    ];
+    const data = technicians.map(t => ({
+      ID: t.id,
+      Nombre: t.name,
+      RUT: t.rut,
+      "Dirección": t.direccion,
+      Comuna: t.comuna,
+      "Teléfono 1": t.phone,
+      "Teléfono 2": t.phone2,
+      "Estado Civil": t.estadoCivil,
+      Estudios: t.estudios,
+      Patente: t.patente,
+      "Modelo Auto": t.modeloAuto,
+      "Año Auto": t.anioAuto,
+      "Tipo Servicio": t.tipoServicio,
+      Email: t.email,
+      Estado: t.status
+    }));
 
-    const rows = technicians.map(t => [
-      t.id, t.name, t.rut, t.direccion, t.comuna, t.phone, t.phone2,
-      t.estadoCivil, t.estudios, t.patente, t.modeloAuto, t.anioAuto, t.tipoServicio,
-      t.email, t.status
-    ]);
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Choferes");
 
-    const csvContent = [
-      headers.join(","),
-      ...rows.map(row => row.map(v => `"${(v || '').toString().replace(/"/g, '""')}"`).join(","))
-    ].join("\n");
-
-    const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Choferes_${new Date().toISOString().split("T")[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    XLSX.writeFile(workbook, `Choferes_${new Date().toISOString().split("T")[0]}.xlsx`);
   };
 
   const handleAdd = (newTech: Technician) => {
@@ -1097,7 +1096,7 @@ export default function TechniciansPage() {
         <div className="flex gap-2">
           <button
             className="btn-secondary"
-            onClick={exportToCSV}
+            onClick={exportToExcel}
             style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.05)", padding: "8px 16px", borderRadius: 8, color: "#cbd5e1" }}
           >
             <Download size={16} /> Exportar
