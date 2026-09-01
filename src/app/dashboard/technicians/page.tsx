@@ -50,6 +50,8 @@ function AddTechModal({
     estadoCivil: "",
     estudios: "",
     patente: "",
+    modeloAuto: "",
+    anioAuto: "",
     email: "",
     status: "disponible" as TechnicianStatus,
     certInput: "",
@@ -105,6 +107,8 @@ function AddTechModal({
         estadoCivil: form.estadoCivil.trim(),
         estudios: form.estudios.trim(),
         patente: form.patente.trim().toUpperCase(),
+        modeloAuto: form.modeloAuto.trim(),
+        anioAuto: form.anioAuto.trim(),
         email: form.email.trim(),
         status: form.status,
         completedOrders: 0,
@@ -244,11 +248,27 @@ function AddTechModal({
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16, marginBottom: 16 }}>
+            </div>
+            
+            {/* Vehículo info */}
+            <div className="grid grid-cols-3 gap-3">
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Patente Vehículo
+                  Patente
                 </label>
-                <input style={{ ...inputStyle, textTransform: "uppercase" }} placeholder="Ej: AB-CD-12" value={form.patente} onChange={set("patente")} />
+                <input style={{ ...inputStyle, textTransform: "uppercase" }} placeholder="EJ: AB-CD-12" value={form.patente} onChange={set("patente")} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
+                  Modelo
+                </label>
+                <input style={inputStyle} placeholder="Ej: Kia Rio" value={form.modeloAuto} onChange={set("modeloAuto")} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
+                  Año
+                </label>
+                <input style={inputStyle} placeholder="Ej: 2018" value={form.anioAuto} onChange={set("anioAuto")} />
               </div>
             </div>
 
@@ -339,6 +359,8 @@ function EditTechModal({
     estadoCivil: tech.estadoCivil || "",
     estudios: tech.estudios || "",
     patente: tech.patente || "",
+    modeloAuto: tech.modeloAuto || "",
+    anioAuto: tech.anioAuto || "",
     email: tech.email,
     status: tech.status,
   });
@@ -887,6 +909,8 @@ export default function TechniciansPage() {
             estadoCivil: dt.estadoCivil || '',
             estudios: dt.estudios || '',
             patente: dt.patente || '',
+            modeloAuto: dt.modeloAuto || '',
+            anioAuto: dt.anioAuto || '',
             email: dt.email || t.email || '',
             status: (dt.status || t.status || 'disponible') as TechnicianStatus,
             completedOrders: dt.completedOrders || t.completed_orders || 0,

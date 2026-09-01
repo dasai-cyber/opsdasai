@@ -82,6 +82,8 @@ export interface Technician {
   estadoCivil?: string;
   estudios?: string;
   patente?: string;
+  modeloAuto?: string;
+  anioAuto?: string;
   email: string;
   region?: string;
   vehicle?: string;

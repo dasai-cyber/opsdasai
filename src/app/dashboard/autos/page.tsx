@@ -159,7 +159,7 @@ function AutoCard({ tech, onClick }: { tech: Technician; onClick: () => void }) 
         </div>
         <div className="flex-1 min-w-0">
           <div className="font-bold text-lg" style={{ color: "#f1f5f9", letterSpacing: "1px" }}>
-            {tech.patente}
+            {tech.patente} <span className="text-sm font-normal text-slate-400 ml-2">{tech.modeloAuto} {tech.anioAuto}</span>
           </div>
           <div className="text-xs text-slate-400 mt-1 truncate">
             Chofer: <span className="text-slate-300">{tech.name}</span>
@@ -212,6 +212,8 @@ export default function AutosPage() {
             estadoCivil: dt.estadoCivil || '',
             estudios: dt.estudios || '',
             patente: dt.patente || '',
+            modeloAuto: dt.modeloAuto || '',
+            anioAuto: dt.anioAuto || '',
             email: dt.email || t.email || '',
             status: (dt.status || t.status || 'disponible') as any,
             completedOrders: dt.completedOrders || t.completed_orders || 0,
