@@ -101,7 +101,7 @@ export default function ProgramacionPage() {
             </div>
             <input
               type="text"
-              placeholder="Buscar chofer, ruta, patente..."
+              placeholder="Buscar chofer, n° local, patente..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-2 w-full text-sm outline-none"
@@ -125,7 +125,7 @@ export default function ProgramacionPage() {
             <tr style={{ background: "rgba(255,255,255,0.02)", color: "#94a3b8" }}>
               <th className="px-4 py-3 font-medium">Fecha</th>
               <th className="px-4 py-3 font-medium">Mes</th>
-              <th className="px-4 py-3 font-medium text-center">Ruta</th>
+              <th className="px-4 py-3 font-medium text-center">N° LOCAL</th>
               <th className="px-4 py-3 font-medium">Patente</th>
               <th className="px-4 py-3 font-medium">Chofer</th>
               <th className="px-4 py-3 font-medium">RUT</th>
@@ -335,7 +335,7 @@ function ProgModal({
                 <input type="date" style={inputStyle} value={form.fecha} onChange={set('fecha')} />
               </div>
               <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>Ruta (Ej: 95)</label>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>N° LOCAL (Ej: 95)</label>
                 <input style={inputStyle} value={form.ruta} onChange={set('ruta')} />
               </div>
             </div>
