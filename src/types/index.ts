@@ -101,6 +101,8 @@ export interface Technician {
     revisionTecnica?: string;
     gases?: string;
     permisoCirculacion?: string;
+    soap?: string;
+    padron?: string;
   };
   status: TechnicianStatus;
   avatar?: string;

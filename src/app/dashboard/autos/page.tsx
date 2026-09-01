@@ -56,6 +56,8 @@ function EditAutoModal({
     revisionTecnica: null as File | null,
     gases: null as File | null,
     permisoCirculacion: null as File | null,
+    soap: null as File | null,
+    padron: null as File | null,
   });
 
   const handleSave = async () => {
@@ -66,6 +68,8 @@ function EditAutoModal({
       if (docs.revisionTecnica) autoDocsUrls.revisionTecnica = await uploadDocument(docs.revisionTecnica, tech.id, 'revisionTecnica');
       if (docs.gases) autoDocsUrls.gases = await uploadDocument(docs.gases, tech.id, 'gases');
       if (docs.permisoCirculacion) autoDocsUrls.permisoCirculacion = await uploadDocument(docs.permisoCirculacion, tech.id, 'permisoCirculacion');
+      if (docs.soap) autoDocsUrls.soap = await uploadDocument(docs.soap, tech.id, 'soap');
+      if (docs.padron) autoDocsUrls.padron = await uploadDocument(docs.padron, tech.id, 'padron');
 
       const updated = { ...tech, autoDocumentos: autoDocsUrls };
       const { error } = await supabase.from('tecnicos').update({ data: updated }).eq('id', tech.id);
@@ -189,6 +193,14 @@ function AutoCard({ tech, onClick }: { tech: Technician; onClick: () => void }) 
           <span className="text-xs text-slate-400 flex items-center gap-2"><FileBox size={12} /> Permiso de Circ.</span>
           {getDocStatus(tech.autoDocumentos?.permisoCirculacion)}
         </div>
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-slate-400 flex items-center gap-2"><FileBox size={12} /> SOAP</span>
+          {getDocStatus(tech.autoDocumentos?.soap)}
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-slate-400 flex items-center gap-2"><FileBox size={12} /> Padrón</span>
+          {getDocStatus(tech.autoDocumentos?.padron)}
+        </div>
       </div>
     </div>
   );
@@ -199,6 +211,7 @@ export default function AutosPage() {
   const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingTech, setEditingTech] = useState<Technician | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     async function fetchAll() {
@@ -245,6 +258,11 @@ export default function AutosPage() {
     setTechnicians(prev => prev.map(t => t.id === updated.id ? updated : t));
   };
 
+  const filteredAutos = technicians.filter(t => 
+    (t.patente && t.patente.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (t.name && t.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -254,6 +272,24 @@ export default function AutosPage() {
           <p className="text-sm mt-1" style={{ color: "#94a3b8" }}>
             Administra los documentos de los vehículos registrados en la plataforma.
           </p>
+        </div>
+        
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#64748b" }}><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Buscar por patente o chofer..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2 w-full text-sm outline-none"
+              style={{
+                background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9", borderRadius: 8, transition: "border 0.2s"
+              }}
+            />
+          </div>
         </div>
       </div>
 
@@ -270,9 +306,17 @@ export default function AutosPage() {
             Para que aparezca un auto aquí, debes asignarle una <strong>Patente</strong> a un chofer en su ficha respectiva.
           </p>
         </div>
+      ) : filteredAutos.length === 0 ? (
+        <div className="text-center py-12" style={{ background: "rgba(255,255,255,0.02)", borderRadius: 12, border: "1px dashed rgba(255,255,255,0.1)" }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-3" style={{ color: "#475569" }}><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <h3 className="text-lg font-medium" style={{ color: "#e2e8f0" }}>No hay resultados</h3>
+          <p className="text-sm mt-1" style={{ color: "#94a3b8" }}>
+            No encontramos ningún auto que coincida con "{searchQuery}".
+          </p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {technicians.map(tech => (
+          {filteredAutos.map(tech => (
             <AutoCard key={tech.id} tech={tech} onClick={() => setEditingTech(tech)} />
           ))}
         </div>
