@@ -564,7 +564,7 @@ function EditTechModal({
               <select style={{ ...inputStyle, cursor:"pointer" }} value={form.status} onChange={set("status")}>
                 <option value="disponible">Disponible</option>
                 <option value="en ruta">En ruta</option>
-                <option value="trabajando">Trabajando</option>
+                <option value="trabajando">Libre</option>
                 <option value="offline">Offline</option>
               </select>
             </div>
