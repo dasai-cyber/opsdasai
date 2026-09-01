@@ -774,7 +774,9 @@ function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () =
           <div className="font-semibold text-sm truncate" style={{ color: "#f1f5f9" }}>
             {tech.name}
           </div>
-          <div className="text-xs truncate" style={{ color: "#475569" }}>{tech.rut}</div>
+          <div className="text-xs truncate" style={{ color: "#475569" }}>
+            {tech.rut} {tech.patente ? ` | Patente: ${tech.patente}` : ''}
+          </div>
         </div>
         <span className={`status-badge text-xs ${getStatusBg(tech.status)}`}>{tech.status}</span>
       </div>
