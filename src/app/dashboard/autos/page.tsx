@@ -130,6 +130,8 @@ function EditAutoModal({
               <DocInput label="Revisión Técnica" field="revisionTecnica" currentUrl={tech.autoDocumentos?.revisionTecnica} />
               <DocInput label="Gases" field="gases" currentUrl={tech.autoDocumentos?.gases} />
               <DocInput label="Permiso de Circulación" field="permisoCirculacion" currentUrl={tech.autoDocumentos?.permisoCirculacion} />
+              <DocInput label="SOAP" field="soap" currentUrl={tech.autoDocumentos?.soap} />
+              <DocInput label="Padrón del Vehículo" field="padron" currentUrl={tech.autoDocumentos?.padron} />
             </div>
 
             {saveError && <div style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444", padding: 12, borderRadius: 8, fontSize: 13 }}>{saveError}</div>}
