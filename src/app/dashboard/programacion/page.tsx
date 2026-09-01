@@ -290,23 +290,13 @@ function ProgModal({
 
       if (isEdit && record) {
         payload.id = record.id; // required to not overwrite
-        await supabase.from('servicios').update({
-          data: payload,
-          fecha: form.fecha // Keep root fecha searchable if needed
-        }).eq('id', record.id);
+        await supabase.from('servicios').update({ data: payload }).eq('id', record.id);
         onSave(payload as Programacion);
       } else {
         const id = `prog-${Date.now()}`;
         payload.id = id;
         
-        await supabase.from('servicios').insert({
-          id,
-          cliente: 'N/A', // dummy for not-null constraints if any
-          direccion: 'N/A',
-          fecha: form.fecha,
-          estado: 'creada',
-          data: payload
-        });
+        await supabase.from('servicios').insert({ id, data: payload });
         onSave(payload as Programacion);
       }
     } catch (err) {
