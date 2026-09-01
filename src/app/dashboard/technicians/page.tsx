@@ -57,6 +57,10 @@ function AddTechModal({
     status: "disponible" as TechnicianStatus,
     certInput: "",
   });
+  const confirmClose = () => {
+    if (window.confirm("¿Estás seguro de que deseas cerrar? Se perderán los cambios no guardados."))
+      onClose();
+  };
   const [docs, setDocs] = useState({
     hojaConductor: null as File | null,
     licenciaFrontal: null as File | null,
@@ -164,7 +168,7 @@ function AddTechModal({
                 <div className="text-xs" style={{ color: "#475569" }}>Completa los datos del nuevo chofer</div>
               </div>
             </div>
-            <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}>
+            <button onClick={confirmClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}>
               <X size={20} />
             </button>
           </div>
@@ -331,7 +335,7 @@ function AddTechModal({
 
             {/* Actions */}
             <div className="flex items-center justify-between pt-2">
-              <button onClick={onClose} className="btn-secondary text-sm">Cancelar</button>
+              <button onClick={confirmClose} className="btn-secondary text-sm">Cancelar</button>
               <button
                 onClick={handleSave}
                 style={{
@@ -381,6 +385,10 @@ function EditTechModal({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const confirmClose = () => {
+    if (window.confirm("¿Estás seguro de que deseas cerrar? Se perderán los cambios no guardados."))
+      onClose();
+  };
   const [docs, setDocs] = useState({
     hojaConductor: null as File | null,
     licenciaFrontal: null as File | null,
@@ -439,7 +447,7 @@ function EditTechModal({
                 <div className="text-xs" style={{ color: "#475569" }}>{tech.name}</div>
               </div>
             </div>
-            <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}><X size={20} /></button>
+            <button onClick={confirmClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}><X size={20} /></button>
           </div>
 
           <div className="p-6 space-y-4">
@@ -556,7 +564,7 @@ function EditTechModal({
             )}
 
             <div className="flex items-center justify-between pt-2">
-              <button onClick={onClose} className="btn-secondary text-sm">Cancelar</button>
+              <button onClick={confirmClose} className="btn-secondary text-sm">Cancelar</button>
               <button
                 onClick={handleSave}
                 disabled={saving}

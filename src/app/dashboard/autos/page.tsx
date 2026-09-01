@@ -42,6 +42,10 @@ function EditAutoModal({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const confirmClose = () => {
+    if (window.confirm("¿Estás seguro de que deseas cerrar? Se perderán los cambios no guardados."))
+      onClose();
+  };
 
   const [docs, setDocs] = useState({
     revisionTecnica: null as File | null,
@@ -109,7 +113,7 @@ function EditAutoModal({
                 <div className="text-xs" style={{ color: "#475569" }}>Patente: {tech.patente} • Chofer: {tech.name}</div>
               </div>
             </div>
-            <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}><X size={20} /></button>
+            <button onClick={confirmClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}><X size={20} /></button>
           </div>
 
           <div className="p-6 space-y-4">
@@ -123,7 +127,7 @@ function EditAutoModal({
           </div>
 
           <div className="px-6 py-4 flex justify-end gap-3" style={{ background: "rgba(0,0,0,0.2)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-            <button onClick={onClose} style={{ background: "transparent", color: "#94a3b8", fontSize: 13, fontWeight: 500, padding: "8px 16px", borderRadius: 8 }}>
+            <button onClick={confirmClose} style={{ background: "transparent", color: "#94a3b8", fontSize: 13, fontWeight: 500, padding: "8px 16px", borderRadius: 8 }}>
               Cancelar
             </button>
             <button 
