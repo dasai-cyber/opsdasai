@@ -283,12 +283,24 @@ export default function CoordinacionPage() {
                 <div className="col-span-1">
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Patente Vehículo</label>
                   <input
+                    list="patentes-list"
                     type="text"
                     value={form.patente}
-                    onChange={(e) => setForm({...form, patente: e.target.value})}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const matched = choferes.find(c => c.patente && c.patente.toLowerCase() === val.toLowerCase());
+                      setForm({
+                        ...form,
+                        patente: val,
+                        asignadoA: matched && matched.name ? matched.name : form.asignadoA
+                      });
+                    }}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
                     placeholder="Ej: AB-CD-12"
                   />
+                  <datalist id="patentes-list">
+                    {choferes.filter(c => c.patente).map((c, i) => <option key={i} value={c.patente} />)}
+                  </datalist>
                 </div>
 
 
