@@ -185,7 +185,7 @@ export default function CoordinacionPage() {
               <tr>
                 <th className="px-4 py-3 font-semibold">Vehículo</th>
                                 <th className="px-4 py-3 font-semibold">Fecha / Hora</th>
-                <th className="px-4 py-3 font-semibold">Local / Guías</th>
+                <th className="px-4 py-3 font-semibold">Local / Folio</th>
                 <th className="px-4 py-3 font-semibold">Comuna</th>
                 <th className="px-4 py-3 font-semibold">Puntos</th>
                 <th className="px-4 py-3 font-semibold">Asignado a</th>
@@ -348,7 +348,7 @@ export default function CoordinacionPage() {
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Guías</label>
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Folio</label>
                   <input
                     type="text"
                     value={form.guias}
