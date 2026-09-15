@@ -220,7 +220,7 @@ export default function CoordinacionPage() {
                     <td className="px-4 py-3 text-xs text-center">
                       {(row.descuento || row.bono || row.vueltas) ? (
                         <div className="flex flex-col gap-1 items-center">
-                          {row.descuento && <span className="bg-red-500/10 text-red-400 px-2 rounded">Desc: {row.descuento}</span>}
+                          {row.descuento && <span className="bg-purple-500/10 text-purple-400 px-2 rounded">Valor día: {row.descuento}</span>}
                           {row.bono && <span className="bg-green-500/10 text-green-400 px-2 rounded">Bono: {row.bono}</span>}
                           {row.vueltas && <span className="bg-blue-500/10 text-blue-400 px-2 rounded">Vueltas: {row.vueltas}</span>}
                         </div>
@@ -372,12 +372,12 @@ export default function CoordinacionPage() {
                 <div className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>Opciones Adicionales</div>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold mb-1.5 text-red-400">Descuento</label>
+                    <label className="block text-xs font-semibold mb-1.5 text-purple-400">Valor día</label>
                     <input
                       type="text"
                       value={form.descuento}
                       onChange={(e) => setForm({...form, descuento: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg border border-red-500/20 bg-red-500/5 text-sm text-slate-200 outline-none focus:border-red-500"
+                      className="w-full px-3 py-2 rounded-lg border border-purple-500/20 bg-purple-500/5 text-sm text-slate-200 outline-none focus:border-purple-500"
                       placeholder="$0"
                     />
                   </div>
