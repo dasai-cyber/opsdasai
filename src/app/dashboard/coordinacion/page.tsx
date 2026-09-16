@@ -12,11 +12,11 @@ interface CoordinacionRow {
   horaInicio: string;
   horaTermino: string;
   local: string;
-  guias: string;
+  folio: string;
   puntos: string;
   comuna: string;
   asignadoA: string;
-  descuento: string;
+  valorDia: string;
   bono: string;
   vueltas: string;
 }
@@ -36,8 +36,8 @@ export default function CoordinacionPage() {
   
   const [form, setForm] = useState<Partial<CoordinacionRow>>({
     patente: "", fecha: "", horaInicio: "", horaTermino: "",
-    local: "", guias: "", puntos: "", comuna: "", asignadoA: "",
-    descuento: "", bono: "", vueltas: ""
+    local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
+    valorDia: "", bono: "", vueltas: ""
   });
 
   const fetchData = async () => {
@@ -70,8 +70,8 @@ export default function CoordinacionPage() {
   const openAdd = () => {
     setForm({
       patente: "", fecha: new Date().toISOString().split('T')[0], 
-      horaInicio: "", horaTermino: "", local: "", guias: "", puntos: "", comuna: "", asignadoA: "",
-      descuento: "", bono: "", vueltas: ""
+      horaInicio: "", horaTermino: "", local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
+      valorDia: "", bono: "", vueltas: ""
     });
     setEditingRow(null);
     setIsModalOpen(true);
@@ -94,11 +94,11 @@ export default function CoordinacionPage() {
         horaInicio: form.horaInicio,
         horaTermino: form.horaTermino,
         local: form.local,
-        guias: form.guias,
+        folio: form.folio,
         puntos: form.puntos,
         comuna: form.comuna,
         asignadoA: form.asignadoA,
-        descuento: form.descuento,
+        valorDia: form.valorDia,
         bono: form.bono,
         vueltas: form.vueltas
       }
@@ -212,15 +212,15 @@ export default function CoordinacionPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div>{row.local || "—"}</div>
-                      <div className="text-xs truncate max-w-[150px]" style={{ color: "#64748b" }}>{row.guias || "—"}</div>
+                      <div className="text-xs truncate max-w-[150px]" style={{ color: "#64748b" }}>{row.folio || "—"}</div>
                     </td>
                     <td className="px-4 py-3">{row.comuna || "—"}</td>
                     <td className="px-4 py-3 text-xs">{row.puntos || "—"}</td>
                     <td className="px-4 py-3 text-xs">{row.asignadoA || "—"}</td>
                     <td className="px-4 py-3 text-xs text-center">
-                      {(row.descuento || row.bono || row.vueltas) ? (
+                      {(row.valorDia || row.bono || row.vueltas) ? (
                         <div className="flex flex-col gap-1 items-center">
-                          {row.descuento && <span className="bg-purple-500/10 text-purple-400 px-2 rounded">Valor día: {row.descuento}</span>}
+                          {row.valorDia && <span className="bg-purple-500/10 text-purple-400 px-2 rounded">Valor día: {row.valorDia}</span>}
                           {row.bono && <span className="bg-green-500/10 text-green-400 px-2 rounded">Bono: {row.bono}</span>}
                           {row.vueltas && <span className="bg-blue-500/10 text-blue-400 px-2 rounded">Vueltas: {row.vueltas}</span>}
                         </div>
@@ -351,8 +351,8 @@ export default function CoordinacionPage() {
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Folio</label>
                   <input
                     type="text"
-                    value={form.guias}
-                    onChange={(e) => setForm({...form, guias: e.target.value})}
+                    value={form.folio}
+                    onChange={(e) => setForm({...form, folio: e.target.value})}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
                   />
                 </div>
@@ -387,8 +387,8 @@ export default function CoordinacionPage() {
                     <label className="block text-xs font-semibold mb-1.5 text-purple-400">Valor día</label>
                     <input
                       type="text"
-                      value={form.descuento}
-                      onChange={(e) => setForm({...form, descuento: e.target.value})}
+                      value={form.valorDia}
+                      onChange={(e) => setForm({...form, valorDia: e.target.value})}
                       className="w-full px-3 py-2 rounded-lg border border-purple-500/20 bg-purple-500/5 text-sm text-slate-200 outline-none focus:border-purple-500"
                       placeholder="$0"
                     />
