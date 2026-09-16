@@ -44,10 +44,24 @@ export default function CoordinacionPage() {
     setLoading(true);
     const { data: rows, error } = await supabase.from('servicios').select('*');
     if (!error && rows) {
-      const parsed: CoordinacionRow[] = rows.map(r => ({
-        id: r.id,
-        ...(r.data || {})
-      }));
+      const parsed: CoordinacionRow[] = rows.map(r => {
+        const dt = r.data || {};
+        return {
+          id: r.id,
+          patente: dt.patente || "",
+          fecha: dt.fecha || "",
+          horaInicio: dt.horaInicio || "",
+          horaTermino: dt.horaTermino || "",
+          local: dt.local || "",
+          folio: dt.folio || dt.guias || "",
+          puntos: dt.puntos || "",
+          comuna: dt.comuna || "",
+          asignadoA: dt.asignadoA || "",
+          valorDia: dt.valorDia || dt.descuento || "",
+          adicional: dt.adicional || dt.bono || "",
+          vueltas: dt.vueltas || ""
+        };
+      });
       // Sort by newer first
       parsed.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
       setData(parsed);
