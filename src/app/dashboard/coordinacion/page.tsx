@@ -232,11 +232,11 @@ export default function CoordinacionPage() {
                     <td className="px-4 py-3 text-xs">{row.puntos || "—"}</td>
                     <td className="px-4 py-3 text-xs">{row.asignadoA || "—"}</td>
                     <td className="px-4 py-3 text-xs text-center">
-                      {(row.valorDia || row.adicional || row.vueltas) ? (
+                      {((row.valorDia !== "" && row.valorDia !== undefined) || (row.adicional !== "" && row.adicional !== undefined) || (row.vueltas !== "" && row.vueltas !== undefined)) ? (
                         <div className="flex flex-col gap-1 items-center">
-                          {row.valorDia && <span className="bg-purple-500/10 text-purple-400 px-2 rounded">Valor día: {row.valorDia}</span>}
-                          {row.adicional && <span className="bg-green-500/10 text-green-400 px-2 rounded">Adicional: {row.adicional}</span>}
-                          {row.vueltas && <span className="bg-blue-500/10 text-blue-400 px-2 rounded">Vueltas: {row.vueltas}</span>}
+                          {(row.valorDia !== "" && row.valorDia !== undefined) && <span className="bg-purple-500/10 text-purple-400 px-2 rounded">Valor día: {row.valorDia}</span>}
+                          {(row.adicional !== "" && row.adicional !== undefined) && <span className="bg-green-500/10 text-green-400 px-2 rounded">Adicional: {row.adicional}</span>}
+                          {(row.vueltas !== "" && row.vueltas !== undefined) && <span className="bg-blue-500/10 text-blue-400 px-2 rounded">Vueltas: {row.vueltas}</span>}
                         </div>
                       ) : "—"}
                     </td>
