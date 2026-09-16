@@ -17,7 +17,7 @@ interface CoordinacionRow {
   comuna: string;
   asignadoA: string;
   valorDia: string;
-  bono: string;
+  adicional: string;
   vueltas: string;
 }
 
@@ -37,7 +37,7 @@ export default function CoordinacionPage() {
   const [form, setForm] = useState<Partial<CoordinacionRow>>({
     patente: "", fecha: "", horaInicio: "", horaTermino: "",
     local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
-    valorDia: "", bono: "", vueltas: ""
+    valorDia: "", adicional: "", vueltas: ""
   });
 
   const fetchData = async () => {
@@ -71,7 +71,7 @@ export default function CoordinacionPage() {
     setForm({
       patente: "", fecha: new Date().toISOString().split('T')[0], 
       horaInicio: "", horaTermino: "", local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
-      valorDia: "", bono: "", vueltas: ""
+      valorDia: "", adicional: "", vueltas: ""
     });
     setEditingRow(null);
     setIsModalOpen(true);
@@ -99,7 +99,7 @@ export default function CoordinacionPage() {
         comuna: form.comuna,
         asignadoA: form.asignadoA,
         valorDia: form.valorDia,
-        bono: form.bono,
+        adicional: form.adicional,
         vueltas: form.vueltas
       }
     };
@@ -218,10 +218,10 @@ export default function CoordinacionPage() {
                     <td className="px-4 py-3 text-xs">{row.puntos || "—"}</td>
                     <td className="px-4 py-3 text-xs">{row.asignadoA || "—"}</td>
                     <td className="px-4 py-3 text-xs text-center">
-                      {(row.valorDia || row.bono || row.vueltas) ? (
+                      {(row.valorDia || row.adicional || row.vueltas) ? (
                         <div className="flex flex-col gap-1 items-center">
                           {row.valorDia && <span className="bg-purple-500/10 text-purple-400 px-2 rounded">Valor día: {row.valorDia}</span>}
-                          {row.bono && <span className="bg-green-500/10 text-green-400 px-2 rounded">Bono: {row.bono}</span>}
+                          {row.adicional && <span className="bg-green-500/10 text-green-400 px-2 rounded">Adicional: {row.adicional}</span>}
                           {row.vueltas && <span className="bg-blue-500/10 text-blue-400 px-2 rounded">Vueltas: {row.vueltas}</span>}
                         </div>
                       ) : "—"}
@@ -394,11 +394,11 @@ export default function CoordinacionPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold mb-1.5 text-green-400">Bono</label>
+                    <label className="block text-xs font-semibold mb-1.5 text-green-400">Adicional</label>
                     <input
                       type="text"
-                      value={form.bono}
-                      onChange={(e) => setForm({...form, bono: e.target.value})}
+                      value={form.adicional}
+                      onChange={(e) => setForm({...form, adicional: e.target.value})}
                       className="w-full px-3 py-2 rounded-lg border border-green-500/20 bg-green-500/5 text-sm text-slate-200 outline-none focus:border-green-500"
                       placeholder="$0"
                     />
