@@ -227,12 +227,22 @@ export default function CoordinacionPage() {
       "Valor Día": d.valorDia,
       "Adicional": d.adicional,
       "Bono": d.vueltas,
+      "Total": (parseMoneyValue(d.valorDia) + parseMoneyValue(d.adicional) + parseMoneyValue(d.vueltas)) > 0
+        ? (parseMoneyValue(d.valorDia) + parseMoneyValue(d.adicional) + parseMoneyValue(d.vueltas)).toLocaleString("es-CL")
+        : "",
     }));
     const ws = XLSX.utils.json_to_sheet(formattedData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Coordinacion");
     XLSX.writeFile(wb, `Coordinacion-${new Date().toISOString().split('T')[0]}.xlsx`);
   };
+
+const parseMoneyValue = (val: string | number | undefined): number => {
+  if (!val) return 0;
+  const cleaned = String(val).replace(/[^0-9]/g, "");
+  const num = parseInt(cleaned, 10);
+  return isNaN(num) ? 0 : num;
+};
 
 const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): string => {
   if (puntosVal === undefined || puntosVal === null) return "";
@@ -367,6 +377,11 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                           {(row.valorDia !== "" && row.valorDia !== undefined) && <span className="bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded text-[11px]">Valor día: {row.valorDia}</span>}
                           {(row.adicional !== "" && row.adicional !== undefined) && <span className="bg-green-500/10 text-green-400 px-2 py-0.5 rounded text-[11px]">Adicional: {row.adicional}</span>}
                           {(row.vueltas !== "" && row.vueltas !== undefined) && <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[11px]">Bono: {row.vueltas}</span>}
+                          {((parseMoneyValue(row.valorDia) + parseMoneyValue(row.adicional) + parseMoneyValue(row.vueltas)) > 0) && (
+                            <span className="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-500/30">
+                              Total: ${(parseMoneyValue(row.valorDia) + parseMoneyValue(row.adicional) + parseMoneyValue(row.vueltas)).toLocaleString("es-CL")}
+                            </span>
+                          )}
                           <div className="flex flex-wrap gap-1 justify-center mt-1 max-w-[280px]">
                             {[1, 2, 3, 4, 5, 6, 7].map((num) => {
                               const vVal = (row as any)[`v${num}`];
@@ -631,7 +646,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
               {/* Extras Row */}
               <div className="mt-6 p-4 rounded-xl border border-white/5" style={{ background: "rgba(255,255,255,0.02)" }}>
                 <div className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>Opciones Adicionales</div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-xs font-semibold mb-1.5 text-purple-400">Valor día</label>
                     <input
@@ -666,6 +681,25 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                       value={form.vueltas}
                       onChange={(e) => setForm({...form, vueltas: e.target.value})}
                       className="w-full px-3 py-2 rounded-lg border border-blue-500/20 bg-blue-500/5 text-sm text-slate-200 outline-none focus:border-blue-500"
+                      placeholder="$0"
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-semibold text-emerald-400">Total</label>
+                      <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                        Auto (Suma)
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      readOnly
+                      value={
+                        (parseMoneyValue(form.valorDia) + parseMoneyValue(form.adicional) + parseMoneyValue(form.vueltas)) > 0
+                          ? `$ ${(parseMoneyValue(form.valorDia) + parseMoneyValue(form.adicional) + parseMoneyValue(form.vueltas)).toLocaleString("es-CL")}`
+                          : "$0"
+                      }
+                      className="w-full px-3 py-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none select-none cursor-default"
                       placeholder="$0"
                     />
                   </div>
