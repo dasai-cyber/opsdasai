@@ -226,7 +226,7 @@ export default function CoordinacionPage() {
       "SG7": d.sg7,
       "Valor Día": d.valorDia,
       "Adicional": d.adicional,
-      "Vueltas": d.vueltas,
+      "Bono": d.vueltas,
     }));
     const ws = XLSX.utils.json_to_sheet(formattedData);
     const wb = XLSX.utils.book_new();
@@ -366,7 +366,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                         <div className="flex flex-col gap-1 items-center">
                           {(row.valorDia !== "" && row.valorDia !== undefined) && <span className="bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded text-[11px]">Valor día: {row.valorDia}</span>}
                           {(row.adicional !== "" && row.adicional !== undefined) && <span className="bg-green-500/10 text-green-400 px-2 py-0.5 rounded text-[11px]">Adicional: {row.adicional}</span>}
-                          {(row.vueltas !== "" && row.vueltas !== undefined) && <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[11px]">Vueltas: {row.vueltas}</span>}
+                          {(row.vueltas !== "" && row.vueltas !== undefined) && <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[11px]">Bono: {row.vueltas}</span>}
                           <div className="flex flex-wrap gap-1 justify-center mt-1 max-w-[280px]">
                             {[1, 2, 3, 4, 5, 6, 7].map((num) => {
                               const vVal = (row as any)[`v${num}`];
@@ -660,13 +660,13 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold mb-1.5 text-blue-400">Vueltas</label>
+                    <label className="block text-xs font-semibold mb-1.5 text-blue-400">Bono</label>
                     <input
                       type="text"
                       value={form.vueltas}
                       onChange={(e) => setForm({...form, vueltas: e.target.value})}
                       className="w-full px-3 py-2 rounded-lg border border-blue-500/20 bg-blue-500/5 text-sm text-slate-200 outline-none focus:border-blue-500"
-                      placeholder="Ej: 2"
+                      placeholder="$0"
                     />
                   </div>
                 </div>
