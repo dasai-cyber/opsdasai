@@ -93,6 +93,9 @@ export default function PaqueteriaPage() {
     sg1: "", sg2: "", sg3: "", sg4: "", sg5: "", sg6: "", sg7: "", sg: ""
   });
 
+  const [comunaRM, setComunaRM] = useState("");
+  const [comunaRegiones, setComunaRegiones] = useState("");
+
   const fetchData = async () => {
     setLoading(true);
     const { data: rows, error } = await supabase.from('servicios').select('*');
@@ -159,12 +162,24 @@ export default function PaqueteriaPage() {
       v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
       sg1: "", sg2: "", sg3: "", sg4: "", sg5: "", sg6: "", sg7: "", sg: ""
     });
+    setComunaRM("");
+    setComunaRegiones("");
     setEditingRow(null);
     setIsModalOpen(true);
   };
 
   const openEdit = (row: PaqueteriaRow) => {
     setForm({ ...row });
+    if (COMUNAS_RM.includes(row.comuna || "")) {
+      setComunaRM(row.comuna || "");
+      setComunaRegiones("");
+    } else if (COMUNAS_OTRAS_REGIONES.includes(row.comuna || "")) {
+      setComunaRegiones(row.comuna || "");
+      setComunaRM("");
+    } else {
+      setComunaRM(row.comuna || "");
+      setComunaRegiones("");
+    }
     setEditingRow(row);
     setIsModalOpen(true);
   };
@@ -563,27 +578,35 @@ export default function PaqueteriaPage() {
                 {/* Casilla RM */}
                 <div className="col-span-1">
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-xs font-semibold text-sky-400">RM</label>
+                    <label className="block text-xs font-semibold text-sky-400">RM (Región Metropolitana)</label>
                     {COMUNAS_RM.includes(form.comuna || "") && (
                       <span className="text-[10px] font-bold text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20">
                         Seleccionada
                       </span>
                     )}
                   </div>
-                  <select
-                    value={COMUNAS_RM.includes(form.comuna || "") ? form.comuna : ""}
+                  <input
+                    list="rm-comunas-list"
+                    type="text"
+                    value={comunaRM}
                     onChange={(e) => {
-                      setForm({ ...form, comuna: e.target.value });
+                      const val = e.target.value;
+                      setComunaRM(val);
+                      if (val) {
+                        setComunaRegiones("");
+                        setForm({ ...form, comuna: val });
+                      } else {
+                        setForm({ ...form, comuna: "" });
+                      }
                     }}
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-sky-500 cursor-pointer"
-                  >
-                    <option value="">Seleccionar comuna RM...</option>
+                    placeholder="Escriba o busque comuna RM..."
+                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-sky-500"
+                  />
+                  <datalist id="rm-comunas-list">
                     {COMUNAS_RM.map((c) => (
-                      <option key={c} value={c} className="bg-[#1e293b] text-white">
-                        {c}
-                      </option>
+                      <option key={c} value={c} />
                     ))}
-                  </select>
+                  </datalist>
                 </div>
 
                 {/* Casilla Otras Regiones */}
@@ -596,20 +619,28 @@ export default function PaqueteriaPage() {
                       </span>
                     )}
                   </div>
-                  <select
-                    value={COMUNAS_OTRAS_REGIONES.includes(form.comuna || "") ? form.comuna : ""}
+                  <input
+                    list="otras-regiones-list"
+                    type="text"
+                    value={comunaRegiones}
                     onChange={(e) => {
-                      setForm({ ...form, comuna: e.target.value });
+                      const val = e.target.value;
+                      setComunaRegiones(val);
+                      if (val) {
+                        setComunaRM("");
+                        setForm({ ...form, comuna: val });
+                      } else {
+                        setForm({ ...form, comuna: "" });
+                      }
                     }}
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-purple-500 cursor-pointer"
-                  >
-                    <option value="">Seleccionar comuna regiones...</option>
+                    placeholder="Escriba o busque comuna regiones..."
+                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-purple-500"
+                  />
+                  <datalist id="otras-regiones-list">
                     {COMUNAS_OTRAS_REGIONES.map((c) => (
-                      <option key={c} value={c} className="bg-[#1e293b] text-white">
-                        {c}
-                      </option>
+                      <option key={c} value={c} />
                     ))}
-                  </select>
+                  </datalist>
                 </div>
                 
               </div>
