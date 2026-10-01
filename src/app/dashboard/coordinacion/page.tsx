@@ -19,6 +19,13 @@ interface CoordinacionRow {
   valorDia: string;
   adicional: string;
   vueltas: string;
+  v1: string;
+  v2: string;
+  v3: string;
+  v4: string;
+  v5: string;
+  v6: string;
+  sg: string;
 }
 
 export default function CoordinacionPage() {
@@ -37,7 +44,8 @@ export default function CoordinacionPage() {
   const [form, setForm] = useState<Partial<CoordinacionRow>>({
     patente: "", fecha: "", horaInicio: "", horaTermino: "",
     local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
-    valorDia: "", adicional: "", vueltas: ""
+    valorDia: "", adicional: "", vueltas: "",
+    v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", sg: ""
   });
 
   const fetchData = async () => {
@@ -59,7 +67,14 @@ export default function CoordinacionPage() {
           asignadoA: dt.asignadoA || "",
           valorDia: dt.valorDia || dt.descuento || "",
           adicional: dt.adicional || dt.bono || "",
-          vueltas: dt.vueltas || ""
+          vueltas: dt.vueltas || "",
+          v1: dt.v1 || "",
+          v2: dt.v2 || "",
+          v3: dt.v3 || "",
+          v4: dt.v4 || "",
+          v5: dt.v5 || "",
+          v6: dt.v6 || "",
+          sg: dt.sg || ""
         };
       });
       // Sort by newer first
@@ -85,7 +100,8 @@ export default function CoordinacionPage() {
     setForm({
       patente: "", fecha: new Date().toISOString().split('T')[0], 
       horaInicio: "", horaTermino: "", local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
-      valorDia: "", adicional: "", vueltas: ""
+      valorDia: "", adicional: "", vueltas: "",
+      v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", sg: ""
     });
     setEditingRow(null);
     setIsModalOpen(true);
@@ -114,7 +130,14 @@ export default function CoordinacionPage() {
         asignadoA: form.asignadoA,
         valorDia: form.valorDia,
         adicional: form.adicional,
-        vueltas: form.vueltas
+        vueltas: form.vueltas,
+        v1: form.v1,
+        v2: form.v2,
+        v3: form.v3,
+        v4: form.v4,
+        v5: form.v5,
+        v6: form.v6,
+        sg: form.sg
       }
     };
 
@@ -136,7 +159,28 @@ export default function CoordinacionPage() {
   };
 
   const exportExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(data);
+    const formattedData = data.map(d => ({
+      "PPU": d.patente,
+      "Fecha": d.fecha,
+      "Hora Inicio": d.horaInicio,
+      "Hora Término": d.horaTermino,
+      "Local": d.local,
+      "Folio / Guías": d.folio,
+      "Comuna": d.comuna,
+      "Puntos": d.puntos,
+      "Asignado a": d.asignadoA,
+      "V1": d.v1,
+      "V2": d.v2,
+      "V3": d.v3,
+      "V4": d.v4,
+      "V5": d.v5,
+      "V6": d.v6,
+      "SG (Paquetes)": d.sg,
+      "Valor Día": d.valorDia,
+      "Adicional": d.adicional,
+      "Vueltas": d.vueltas,
+    }));
+    const ws = XLSX.utils.json_to_sheet(formattedData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Coordinacion");
     XLSX.writeFile(wb, `Coordinacion-${new Date().toISOString().split('T')[0]}.xlsx`);
@@ -232,11 +276,25 @@ export default function CoordinacionPage() {
                     <td className="px-4 py-3 text-xs">{row.puntos || "—"}</td>
                     <td className="px-4 py-3 text-xs">{row.asignadoA || "—"}</td>
                     <td className="px-4 py-3 text-xs text-center">
-                      {((row.valorDia !== "" && row.valorDia !== undefined) || (row.adicional !== "" && row.adicional !== undefined) || (row.vueltas !== "" && row.vueltas !== undefined)) ? (
+                      {((row.valorDia !== "" && row.valorDia !== undefined) || 
+                        (row.adicional !== "" && row.adicional !== undefined) || 
+                        (row.vueltas !== "" && row.vueltas !== undefined) ||
+                        row.v1 || row.v2 || row.v3 || row.v4 || row.v5 || row.v6 || row.sg) ? (
                         <div className="flex flex-col gap-1 items-center">
-                          {(row.valorDia !== "" && row.valorDia !== undefined) && <span className="bg-purple-500/10 text-purple-400 px-2 rounded">Valor día: {row.valorDia}</span>}
-                          {(row.adicional !== "" && row.adicional !== undefined) && <span className="bg-green-500/10 text-green-400 px-2 rounded">Adicional: {row.adicional}</span>}
-                          {(row.vueltas !== "" && row.vueltas !== undefined) && <span className="bg-blue-500/10 text-blue-400 px-2 rounded">Vueltas: {row.vueltas}</span>}
+                          {(row.valorDia !== "" && row.valorDia !== undefined) && <span className="bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded text-[11px]">Valor día: {row.valorDia}</span>}
+                          {(row.adicional !== "" && row.adicional !== undefined) && <span className="bg-green-500/10 text-green-400 px-2 py-0.5 rounded text-[11px]">Adicional: {row.adicional}</span>}
+                          {(row.vueltas !== "" && row.vueltas !== undefined) && <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[11px]">Vueltas: {row.vueltas}</span>}
+                          {(row.v1 || row.v2 || row.v3 || row.v4 || row.v5 || row.v6 || row.sg) && (
+                            <div className="flex flex-wrap gap-1 justify-center mt-1">
+                              {row.v1 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V1: {row.v1}</span>}
+                              {row.v2 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V2: {row.v2}</span>}
+                              {row.v3 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V3: {row.v3}</span>}
+                              {row.v4 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V4: {row.v4}</span>}
+                              {row.v5 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V5: {row.v5}</span>}
+                              {row.v6 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V6: {row.v6}</span>}
+                              {row.sg && <span className="bg-amber-500/15 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">SG: {row.sg} paq.</span>}
+                            </div>
+                          )}
                         </div>
                       ) : "—"}
                     </td>
@@ -317,8 +375,6 @@ export default function CoordinacionPage() {
                   </datalist>
                 </div>
 
-
-
                 <div className="col-span-1">
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Fecha</label>
                   <input
@@ -348,8 +404,6 @@ export default function CoordinacionPage() {
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
                   />
                 </div>
-
-
 
                 <div className="col-span-1">
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Local</label>
@@ -391,6 +445,104 @@ export default function CoordinacionPage() {
                   />
                 </div>
                 
+              </div>
+
+              {/* Casillas V1..V6 y SG (Paquetes) */}
+              <div className="mt-6 p-4 rounded-xl border border-white/5" style={{ background: "rgba(255,255,255,0.02)" }}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                    Control de Vueltas (V1 - V6) y Paquetes (SG)
+                  </div>
+                  <div className="text-[11px] text-slate-400">
+                    Coloca <span className="text-emerald-400 font-bold">OK</span> al terminar cada vuelta
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-3 sm:grid-cols-7 gap-2.5">
+                  {/* V1 */}
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V1</label>
+                    <input
+                      type="text"
+                      value={form.v1 || ""}
+                      onChange={(e) => setForm({...form, v1: e.target.value.toUpperCase()})}
+                      placeholder="OK"
+                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
+                    />
+                  </div>
+
+                  {/* V2 */}
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V2</label>
+                    <input
+                      type="text"
+                      value={form.v2 || ""}
+                      onChange={(e) => setForm({...form, v2: e.target.value.toUpperCase()})}
+                      placeholder="OK"
+                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
+                    />
+                  </div>
+
+                  {/* V3 */}
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V3</label>
+                    <input
+                      type="text"
+                      value={form.v3 || ""}
+                      onChange={(e) => setForm({...form, v3: e.target.value.toUpperCase()})}
+                      placeholder="OK"
+                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
+                    />
+                  </div>
+
+                  {/* V4 */}
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V4</label>
+                    <input
+                      type="text"
+                      value={form.v4 || ""}
+                      onChange={(e) => setForm({...form, v4: e.target.value.toUpperCase()})}
+                      placeholder="OK"
+                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
+                    />
+                  </div>
+
+                  {/* V5 */}
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V5</label>
+                    <input
+                      type="text"
+                      value={form.v5 || ""}
+                      onChange={(e) => setForm({...form, v5: e.target.value.toUpperCase()})}
+                      placeholder="OK"
+                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
+                    />
+                  </div>
+
+                  {/* V6 */}
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V6</label>
+                    <input
+                      type="text"
+                      value={form.v6 || ""}
+                      onChange={(e) => setForm({...form, v6: e.target.value.toUpperCase()})}
+                      placeholder="OK"
+                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
+                    />
+                  </div>
+
+                  {/* SG */}
+                  <div className="col-span-3 sm:col-span-1">
+                    <label className="block text-xs font-bold mb-1 text-amber-400 text-center">SG</label>
+                    <input
+                      type="text"
+                      value={form.sg || ""}
+                      onChange={(e) => setForm({...form, sg: e.target.value})}
+                      placeholder="Paq."
+                      className="w-full px-2 py-2 text-center rounded-lg border border-amber-500/30 bg-amber-500/10 text-sm font-bold text-amber-300 outline-none focus:border-amber-400 placeholder:text-amber-500/40"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Extras Row */}
