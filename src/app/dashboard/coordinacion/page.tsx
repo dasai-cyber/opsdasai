@@ -181,7 +181,7 @@ export default function CoordinacionPage() {
             <Search size={18} style={{ color: "#64748b" }} className="mr-3" />
             <input
               type="text"
-              placeholder="Buscar patente, chofer, local, etc..."
+              placeholder="Buscar PPU, chofer, local, etc..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="bg-transparent border-none text-sm focus:outline-none w-full"
@@ -197,7 +197,7 @@ export default function CoordinacionPage() {
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead style={{ background: "rgba(255,255,255,0.03)", color: "#94a3b8", fontSize: "11px", textTransform: "uppercase", letterSpacing: "1px" }}>
               <tr>
-                <th className="px-4 py-3 font-semibold">Vehículo</th>
+                <th className="px-4 py-3 font-semibold">PPU</th>
                                 <th className="px-4 py-3 font-semibold">Fecha / Hora</th>
                 <th className="px-4 py-3 font-semibold">Local / Folio</th>
                 <th className="px-4 py-3 font-semibold">Comuna</th>
@@ -295,7 +295,7 @@ export default function CoordinacionPage() {
                 </div>
                 
                 <div className="col-span-1">
-                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Patente Vehículo</label>
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>PPU</label>
                   <input
                     list="patentes-list"
                     type="text"
