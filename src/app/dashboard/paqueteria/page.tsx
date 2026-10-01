@@ -6,12 +6,7 @@ import { supabase } from "@/lib/supabase";
 import * as XLSX from "xlsx";
 
 const LOCALES_LIST = [
-  "L41 HUECHURABA",
-  "L45 MAIPU",
-  "L95 LA REINA",
   "WALMART PAQUETERIA",
-  "FALABELLA",
-  "DHL",
 ];
 
 const LOCALES_VALOR_MAP: Record<string, string> = {
@@ -83,7 +78,7 @@ export default function PaqueteriaPage() {
   
   const [form, setForm] = useState<Partial<PaqueteriaRow>>({
     patente: "", fecha: "", horaInicio: "", horaTermino: "",
-    local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
+    local: "WALMART PAQUETERIA", folio: "", puntos: "", comuna: "", asignadoA: "",
     valorDia: "", adicional: "", vueltas: "",
     v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
     sg1: "", sg2: "", sg3: "", sg4: "", sg5: "", sg6: "", sg7: "", sg: ""
@@ -150,7 +145,7 @@ export default function PaqueteriaPage() {
   const openAdd = () => {
     setForm({
       patente: "", fecha: new Date().toISOString().split('T')[0], 
-      horaInicio: "", horaTermino: "", local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
+      horaInicio: "", horaTermino: "", local: "WALMART PAQUETERIA", folio: "", puntos: "", comuna: "", asignadoA: "",
       valorDia: "", adicional: "", vueltas: "",
       v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
       sg1: "", sg2: "", sg3: "", sg4: "", sg5: "", sg6: "", sg7: "", sg: ""
@@ -514,29 +509,13 @@ export default function PaqueteriaPage() {
                 <div className="col-span-1">
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Local</label>
                   <select
-                    value={form.local || ""}
-                    onChange={(e) => {
-                      const selectedLocal = e.target.value;
-                      const autoPrice = LOCALES_VALOR_MAP[selectedLocal];
-                      setForm({
-                        ...form,
-                        local: selectedLocal,
-                        ...(autoPrice ? { valorDia: autoPrice } : {}),
-                      });
-                    }}
+                    value={form.local || "WALMART PAQUETERIA"}
+                    onChange={(e) => setForm({...form, local: e.target.value})}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-brand-500 cursor-pointer"
                   >
-                    <option value="">Seleccionar local...</option>
-                    {LOCALES_LIST.map((loc) => (
-                      <option key={loc} value={loc} className="bg-[#1e293b] text-white">
-                        {loc}
-                      </option>
-                    ))}
-                    {form.local && !LOCALES_LIST.includes(form.local) && (
-                      <option value={form.local} className="bg-[#1e293b] text-white">
-                        {form.local}
-                      </option>
-                    )}
+                    <option value="WALMART PAQUETERIA" className="bg-[#1e293b] text-white">
+                      WALMART PAQUETERIA
+                    </option>
                   </select>
                 </div>
 
