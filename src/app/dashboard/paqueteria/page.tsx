@@ -268,8 +268,8 @@ export default function PaqueteriaPage() {
       "SG6": d.sg6,
       "V7": d.v7,
       "SG7": d.sg7,
-      "Valor Día": d.valorDia,
-      "Adicional": d.adicional,
+      "Tarifa": d.valorDia,
+      "Segunda Vuelta": d.adicional,
       "Bono": d.vueltas,
       "Total": (parseMoneyValue(d.valorDia) + parseMoneyValue(d.adicional) + parseMoneyValue(d.vueltas)) > 0
         ? (parseMoneyValue(d.valorDia) + parseMoneyValue(d.adicional) + parseMoneyValue(d.vueltas)).toLocaleString("es-CL")
@@ -416,8 +416,8 @@ export default function PaqueteriaPage() {
                         row.v1 || row.v2 || row.v3 || row.v4 || row.v5 || row.v6 || row.v7 ||
                         row.sg1 || row.sg2 || row.sg3 || row.sg4 || row.sg5 || row.sg6 || row.sg7 || row.sg) ? (
                         <div className="flex flex-col gap-1 items-center">
-                          {(row.valorDia !== "" && row.valorDia !== undefined) && <span className="bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded text-[11px]">Valor día: {row.valorDia}</span>}
-                          {(row.adicional !== "" && row.adicional !== undefined) && <span className="bg-green-500/10 text-green-400 px-2 py-0.5 rounded text-[11px]">Adicional: {row.adicional}</span>}
+                          {(row.valorDia !== "" && row.valorDia !== undefined) && <span className="bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded text-[11px]">Tarifa: {row.valorDia}</span>}
+                          {(row.adicional !== "" && row.adicional !== undefined) && <span className="bg-green-500/10 text-green-400 px-2 py-0.5 rounded text-[11px]">Segunda vuelta: {row.adicional}</span>}
                           {(row.vueltas !== "" && row.vueltas !== undefined) && <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[11px]">Bono: {row.vueltas}</span>}
                           {((parseMoneyValue(row.valorDia) + parseMoneyValue(row.adicional) + parseMoneyValue(row.vueltas)) > 0) && (
                             <span className="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-500/30">
@@ -745,7 +745,7 @@ export default function PaqueteriaPage() {
                 <div className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>Opciones Adicionales</div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold mb-1.5 text-purple-400">Valor día</label>
+                    <label className="block text-xs font-semibold mb-1.5 text-purple-400">Tarifa</label>
                     <input
                       type="text"
                       value={form.valorDia}
@@ -756,7 +756,7 @@ export default function PaqueteriaPage() {
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <label className="block text-xs font-semibold text-green-400">Adicional</label>
+                      <label className="block text-xs font-semibold text-green-400">Segunda vuelta</label>
                       {parseFloat(form.puntos || "0") >= 21 && (
                         <span className="text-[10px] font-bold text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded border border-green-500/20">
                           Auto (+21 Pts)
