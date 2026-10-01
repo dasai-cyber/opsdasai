@@ -234,6 +234,16 @@ export default function CoordinacionPage() {
     XLSX.writeFile(wb, `Coordinacion-${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
+const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): string => {
+  if (puntosVal === undefined || puntosVal === null) return "";
+  const num = typeof puntosVal === "number" ? puntosVal : parseFloat(String(puntosVal).trim());
+  if (isNaN(num) || num <= 20) {
+    return "";
+  }
+  const totalExtra = (num - 20) * 2000;
+  return totalExtra.toLocaleString("es-CL");
+};
+
   const handleSgChange = (sgKey: keyof CoordinacionRow, val: string) => {
     const updated = { ...form, [sgKey]: val };
     let total = 0;
@@ -250,6 +260,11 @@ export default function CoordinacionPage() {
       }
     }
     updated.puntos = hasAnySg ? String(total) : "";
+    if (hasAnySg) {
+      updated.adicional = calculateAdicionalFromPuntos(total);
+    } else {
+      updated.adicional = "";
+    }
     setForm(updated);
   };
 
@@ -522,7 +537,15 @@ export default function CoordinacionPage() {
                   <input
                     type="text"
                     value={form.puntos}
-                    onChange={(e) => setForm({...form, puntos: e.target.value})}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const autoAdicional = calculateAdicionalFromPuntos(val);
+                      setForm({
+                        ...form,
+                        puntos: val,
+                        adicional: autoAdicional,
+                      });
+                    }}
                     placeholder="0"
                     className="w-full px-3 py-2 rounded-lg border border-amber-500/30 bg-amber-500/5 text-sm font-bold text-amber-300 outline-none focus:border-amber-400"
                   />
@@ -620,7 +643,14 @@ export default function CoordinacionPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold mb-1.5 text-green-400">Adicional</label>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-semibold text-green-400">Adicional</label>
+                      {parseFloat(form.puntos || "0") >= 21 && (
+                        <span className="text-[10px] font-bold text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded border border-green-500/20">
+                          Auto (+21 Pts)
+                        </span>
+                      )}
+                    </div>
                     <input
                       type="text"
                       value={form.adicional}
