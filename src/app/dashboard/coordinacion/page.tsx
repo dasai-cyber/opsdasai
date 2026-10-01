@@ -499,6 +499,7 @@ export default function CoordinacionPage() {
                     const vKey = `v${num}` as keyof CoordinacionRow;
                     const sgKey = `sg${num}` as keyof CoordinacionRow;
                     const currentV = (form[vKey] as string) || "";
+                    const isOk = currentV === "OK" || currentV === "SI" || currentV === "SÍ";
                     const currentSG = (form[sgKey] as string) || (num === 1 && !form.sg1 ? (form.sg || "") : "");
                     return (
                       <div key={num} className="p-2.5 rounded-xl border border-white/10 bg-black/30 flex flex-col gap-2">
@@ -506,14 +507,30 @@ export default function CoordinacionPage() {
                           Vuelta {num}
                         </div>
                         <div>
-                          <label className="block text-[10px] uppercase font-bold text-emerald-400 mb-1 text-center">V{num} (OK)</label>
-                          <input
-                            type="text"
-                            value={currentV}
-                            onChange={(e) => setForm({ ...form, [vKey]: e.target.value.toUpperCase() })}
-                            placeholder="OK"
-                            className="w-full px-2 py-1.5 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-xs font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
-                          />
+                          <label className="block text-[10px] uppercase font-bold text-slate-300 mb-1 text-center">V{num}</label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setForm({ ...form, [vKey]: isOk ? "NO" : "OK" });
+                            }}
+                            className={`w-full py-2 px-1 rounded-lg border text-xs font-black transition-all flex items-center justify-center gap-1 shadow-sm cursor-pointer select-none ${
+                              isOk
+                                ? "bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400 shadow-emerald-950/40 ring-1 ring-emerald-400/50"
+                                : "bg-red-950/70 hover:bg-red-900/80 text-red-300 border-red-500/50"
+                            }`}
+                          >
+                            {isOk ? (
+                              <>
+                                <span>✓</span>
+                                <span>OK</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>✕</span>
+                                <span>NO</span>
+                              </>
+                            )}
+                          </button>
                         </div>
                         <div>
                           <label className="block text-[10px] uppercase font-bold text-amber-400 mb-1 text-center">SG{num} (Paq.)</label>
