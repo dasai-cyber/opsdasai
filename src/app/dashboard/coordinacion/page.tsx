@@ -219,6 +219,25 @@ export default function CoordinacionPage() {
     XLSX.writeFile(wb, `Coordinacion-${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
+  const handleSgChange = (sgKey: keyof CoordinacionRow, val: string) => {
+    const updated = { ...form, [sgKey]: val };
+    let total = 0;
+    let hasAnySg = false;
+    for (let i = 1; i <= 7; i++) {
+      const k = `sg${i}` as keyof CoordinacionRow;
+      const v = updated[k] || (i === 1 && !updated.sg1 ? updated.sg : "");
+      if (v !== undefined && v !== null && String(v).trim() !== "") {
+        const num = parseFloat(String(v).trim());
+        if (!isNaN(num)) {
+          total += num;
+          hasAnySg = true;
+        }
+      }
+    }
+    updated.puntos = hasAnySg ? String(total) : "";
+    setForm(updated);
+  };
+
   const filtered = data.filter(d => 
     JSON.stringify(d).toLowerCase().includes(search.toLowerCase())
   );
@@ -462,12 +481,16 @@ export default function CoordinacionPage() {
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Puntos</label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-semibold" style={{ color: "#94a3b8" }}>Puntos</label>
+                    <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Auto (Suma SG)</span>
+                  </div>
                   <input
                     type="text"
                     value={form.puntos}
                     onChange={(e) => setForm({...form, puntos: e.target.value})}
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
+                    placeholder="0"
+                    className="w-full px-3 py-2 rounded-lg border border-amber-500/30 bg-amber-500/5 text-sm font-bold text-amber-300 outline-none focus:border-amber-400"
                   />
                 </div>
 
@@ -490,7 +513,7 @@ export default function CoordinacionPage() {
                     Control de Vueltas (V1 - V7) y Paquetes (SG1 - SG7)
                   </div>
                   <div className="text-[11px] text-slate-400">
-                    Coloca <span className="text-emerald-400 font-bold">OK</span> al terminar y los paquetes en <span className="text-amber-400 font-bold">SG</span>
+                    Coloca <span className="text-emerald-400 font-bold">OK</span> al terminar y los paquetes en <span className="text-amber-400 font-bold">SG</span> (se suman en Puntos)
                   </div>
                 </div>
                 
@@ -537,7 +560,7 @@ export default function CoordinacionPage() {
                           <input
                             type="text"
                             value={currentSG}
-                            onChange={(e) => setForm({ ...form, [sgKey]: e.target.value })}
+                            onChange={(e) => handleSgChange(sgKey, e.target.value)}
                             placeholder="Cant."
                             className="w-full px-2 py-1.5 text-center rounded-lg border border-amber-500/30 bg-amber-500/10 text-xs font-bold text-amber-300 outline-none focus:border-amber-400 placeholder:text-amber-500/40"
                           />
