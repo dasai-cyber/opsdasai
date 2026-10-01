@@ -14,6 +14,12 @@ const LOCALES_LIST = [
   "DHL",
 ];
 
+const LOCALES_VALOR_MAP: Record<string, string> = {
+  "L41 HUECHURABA": "75.000",
+  "L45 MAIPU": "70.000",
+  "L95 LA REINA": "70.000",
+};
+
 interface CoordinacionRow {
   id: string;
   patente: string;
@@ -473,7 +479,15 @@ export default function CoordinacionPage() {
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Local</label>
                   <select
                     value={form.local || ""}
-                    onChange={(e) => setForm({...form, local: e.target.value})}
+                    onChange={(e) => {
+                      const selectedLocal = e.target.value;
+                      const autoPrice = LOCALES_VALOR_MAP[selectedLocal];
+                      setForm({
+                        ...form,
+                        local: selectedLocal,
+                        ...(autoPrice ? { valorDia: autoPrice } : {}),
+                      });
+                    }}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-brand-500 cursor-pointer"
                   >
                     <option value="">Seleccionar local...</option>
