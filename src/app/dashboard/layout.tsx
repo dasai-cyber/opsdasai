@@ -7,7 +7,7 @@ import {
   Cpu, LayoutDashboard, ClipboardList, Monitor, Users, MapPin,
   Package, FileText, FolderOpen, BarChart3, ScrollText, Settings,
   Bell, Search, ChevronDown, LogOut, Menu, X, Circle, Zap, CalendarDays, ShieldCheck, Truck, FileSpreadsheet, Calculator,
-  Key, Heart, Send,
+  Key, Heart, Send, ShoppingBag,
 } from "lucide-react";
 import { CONFIG } from "@/lib/config";
 import { supabase } from "@/lib/supabase";
@@ -29,6 +29,7 @@ const navItems = [
   { href: "/dashboard/coordinacion", icon: CalendarDays,    label: "Coordinación",      badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/paqueteria",   icon: Package,         label: "Paquetería",        badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/dhl",          icon: Send,            label: "DHL",               badge: null,  roles: ['administrador','supervisor','operaria'] },
+  { href: "/dashboard/falabella",    icon: ShoppingBag,     label: "Falabella",         badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/programacion", icon: CalendarDays,    label: "Programación",      badge: null,  roles: ['administrador','supervisor','operaria'] },
 ];
 
