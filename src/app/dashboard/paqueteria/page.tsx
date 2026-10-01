@@ -27,6 +27,7 @@ const LOCALES_VALOR_MAP: Record<string, string> = {
 interface PaqueteriaRow {
   id: string;
   patente: string;
+  vehiculo?: string;
   fecha: string;
   horaInicio: string;
   horaTermino: string;
@@ -86,7 +87,7 @@ export default function PaqueteriaPage() {
   const [saving, setSaving] = useState(false);
   
   const [form, setForm] = useState<Partial<PaqueteriaRow>>({
-    patente: "", fecha: "", horaInicio: "", horaTermino: "",
+    patente: "", vehiculo: "", fecha: "", horaInicio: "", horaTermino: "",
     local: "WALMART PAQUETERIA", folio: "", puntos: "", comuna: "", asignadoA: "",
     valorDia: "", adicional: "", vueltas: "",
     v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
@@ -107,6 +108,7 @@ export default function PaqueteriaPage() {
         return {
           id: r.id,
           patente: dt.patente || "",
+          vehiculo: dt.vehiculo || "",
           fecha: dt.fecha || "",
           horaInicio: dt.horaInicio || "",
           horaTermino: dt.horaTermino || "",
@@ -156,7 +158,7 @@ export default function PaqueteriaPage() {
 
   const openAdd = () => {
     setForm({
-      patente: "", fecha: new Date().toISOString().split('T')[0], 
+      patente: "", vehiculo: "", fecha: new Date().toISOString().split('T')[0], 
       horaInicio: "", horaTermino: "", local: "WALMART PAQUETERIA", folio: "", puntos: "", comuna: "", asignadoA: "",
       valorDia: "", adicional: "", vueltas: "",
       v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
@@ -169,7 +171,7 @@ export default function PaqueteriaPage() {
   };
 
   const openEdit = (row: PaqueteriaRow) => {
-    setForm({ ...row });
+    setForm({ ...row, vehiculo: row.vehiculo || "" });
     if (COMUNAS_RM.includes(row.comuna || "")) {
       setComunaRM(row.comuna || "");
       setComunaRegiones("");
@@ -193,6 +195,7 @@ export default function PaqueteriaPage() {
         type: 'paqueteria',
         categoria: 'paqueteria',
         patente: form.patente,
+        vehiculo: form.vehiculo || "",
         fecha: form.fecha,
         horaInicio: form.horaInicio,
         horaTermino: form.horaTermino,
@@ -242,6 +245,7 @@ export default function PaqueteriaPage() {
   const exportExcel = () => {
     const formattedData = data.map(d => ({
       "PPU": d.patente,
+      "Vehículo": d.vehiculo || "",
       "Fecha": d.fecha,
       "Hora Inicio": d.horaInicio,
       "Hora Término": d.horaTermino,
@@ -358,7 +362,7 @@ export default function PaqueteriaPage() {
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead style={{ background: "rgba(255,255,255,0.03)", color: "#94a3b8", fontSize: "11px", textTransform: "uppercase", letterSpacing: "1px" }}>
               <tr>
-                <th className="px-4 py-3 font-semibold">PPU</th>
+                <th className="px-4 py-3 font-semibold">PPU / Vehículo</th>
                 <th className="px-4 py-3 font-semibold">Fecha / Hora</th>
                 <th className="px-4 py-3 font-semibold">Local / Folio</th>
                 <th className="px-4 py-3 font-semibold">Comuna</th>
@@ -380,7 +384,20 @@ export default function PaqueteriaPage() {
               ) : (
                 filtered.map((row) => (
                   <tr key={row.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-4 py-3 font-mono text-xs">{row.patente || "—"}</td>
+                    <td className="px-4 py-3">
+                      <div className="font-mono text-xs font-semibold">{row.patente || "—"}</div>
+                      {row.vehiculo && (
+                        <div className="mt-1">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+                            row.vehiculo.toLowerCase().includes('camión') || row.vehiculo.toLowerCase().includes('camion')
+                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                              : 'bg-sky-500/10 text-sky-400 border-sky-500/20'
+                          }`}>
+                            {row.vehiculo}
+                          </span>
+                        </div>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <div>{row.fecha || "—"}</div>
                       <div className="text-xs" style={{ color: "#64748b" }}>{row.horaInicio} - {row.horaTermino}</div>
@@ -498,6 +515,19 @@ export default function PaqueteriaPage() {
                   <datalist id="patentes-list-paq">
                     {choferes.filter(c => c.patente).map((c, i) => <option key={i} value={c.patente} />)}
                   </datalist>
+                </div>
+
+                <div className="col-span-1">
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Vehículo</label>
+                  <select
+                    value={form.vehiculo || ""}
+                    onChange={(e) => setForm({ ...form, vehiculo: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-brand-500 cursor-pointer"
+                  >
+                    <option value="" className="bg-[#1e293b] text-slate-400">Seleccionar vehículo...</option>
+                    <option value="Furgón" className="bg-[#1e293b] text-white">Furgón</option>
+                    <option value="Camión" className="bg-[#1e293b] text-white">Camión</option>
+                  </select>
                 </div>
 
                 <div className="col-span-1">
