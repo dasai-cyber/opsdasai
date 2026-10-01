@@ -533,7 +533,7 @@ export default function CoordinacionPage() {
                           </button>
                         </div>
                         <div>
-                          <label className="block text-[10px] uppercase font-bold text-amber-400 mb-1 text-center">SG{num} (Paq.)</label>
+                          <label className="block text-[10px] uppercase font-bold text-amber-400 mb-1 text-center">SG</label>
                           <input
                             type="text"
                             value={currentSG}
