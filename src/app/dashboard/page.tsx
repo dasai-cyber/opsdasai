@@ -8,7 +8,7 @@ import {
 import {
   Monitor, Users, ClipboardList, AlertTriangle, TrendingUp, TrendingDown,
   ArrowUpRight, CheckCircle2, Clock, XCircle, Wifi, WifiOff, Activity,
-  Zap, Package, ChevronRight, Building2, FileText, Calendar
+  Zap, Package, ChevronRight, Building2, FileText, Calendar, Send, ShoppingBag
 } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
@@ -334,29 +334,65 @@ export default function DashboardPage() {
             <div className="glass-card p-5">
               <div className="font-semibold text-sm mb-4" style={{ color: "#f1f5f9" }}>Accesos Rápidos</div>
               <div className="space-y-2">
-                <Link href="/dashboard/coordinacion" className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors" style={{ border: "1px solid rgba(255,255,255,0.05)" }}>
+                <Link href="/dashboard/coordinacion" className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/5 transition-colors" style={{ border: "1px solid rgba(255,255,255,0.05)" }}>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-500/10 text-blue-400">
-                      <Calendar size={18} />
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-500/10 text-blue-400">
+                      <Calendar size={16} />
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-slate-200">Ver Coordinación</div>
-                      <div className="text-xs text-slate-500">Gestiona la programación diaria</div>
+                      <div className="text-xs font-bold text-slate-200">Coordinación</div>
+                      <div className="text-[10px] text-slate-500">Gestión general de rutas</div>
                     </div>
                   </div>
-                  <ChevronRight size={16} className="text-slate-600" />
+                  <ChevronRight size={14} className="text-slate-600" />
                 </Link>
-                <Link href="/dashboard/technicians" className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors" style={{ border: "1px solid rgba(255,255,255,0.05)" }}>
+                <Link href="/dashboard/paqueteria" className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/5 transition-colors" style={{ border: "1px solid rgba(255,255,255,0.05)" }}>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-emerald-500/10 text-emerald-400">
-                      <Users size={18} />
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-brand-500/10 text-brand-500">
+                      <Package size={16} />
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-slate-200">Ver Técnicos</div>
-                      <div className="text-xs text-slate-500">Administrar personal en terreno</div>
+                      <div className="text-xs font-bold text-slate-200">Paquetería</div>
+                      <div className="text-[10px] text-slate-500">Rutas y entregas de paquetes</div>
                     </div>
                   </div>
-                  <ChevronRight size={16} className="text-slate-600" />
+                  <ChevronRight size={14} className="text-slate-600" />
+                </Link>
+                <Link href="/dashboard/dhl" className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/5 transition-colors" style={{ border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-500/10 text-amber-400">
+                      <Send size={16} />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-200">DHL</div>
+                      <div className="text-[10px] text-slate-500">Servicios y transportes DHL</div>
+                    </div>
+                  </div>
+                  <ChevronRight size={14} className="text-slate-600" />
+                </Link>
+                <Link href="/dashboard/falabella" className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/5 transition-colors" style={{ border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-500/10 text-emerald-400">
+                      <ShoppingBag size={16} />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-200">Falabella</div>
+                      <div className="text-[10px] text-slate-500">Rutas y entregas Falabella</div>
+                    </div>
+                  </div>
+                  <ChevronRight size={14} className="text-slate-600" />
+                </Link>
+                <Link href="/dashboard/technicians" className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/5 transition-colors" style={{ border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-purple-500/10 text-purple-400">
+                      <Users size={16} />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-200">Choferes</div>
+                      <div className="text-[10px] text-slate-500">Administrar choferes y PPU</div>
+                    </div>
+                  </div>
+                  <ChevronRight size={14} className="text-slate-600" />
                 </Link>
               </div>
             </div>
