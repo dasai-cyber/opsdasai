@@ -4,6 +4,15 @@ import { useState, useEffect } from "react";
 import { Search, Plus, Save, X, Edit, Trash2, Package } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import * as XLSX from "xlsx";
+import { CHILE_REGIONS } from "@/data/chileData";
+
+const COMUNAS_RM = (CHILE_REGIONS.find(r => r.region === "Metropolitana")?.comunas || []).slice().sort((a, b) => a.localeCompare(b, "es"));
+
+const COMUNAS_OTRAS_REGIONES = CHILE_REGIONS
+  .filter(r => r.region !== "Metropolitana")
+  .flatMap(r => r.comunas)
+  .filter((c, index, arr) => arr.indexOf(c) === index)
+  .sort((a, b) => a.localeCompare(b, "es"));
 
 const LOCALES_LIST = [
   "WALMART PAQUETERIA",
@@ -551,14 +560,56 @@ export default function PaqueteriaPage() {
                   />
                 </div>
 
+                {/* Casilla RM */}
                 <div className="col-span-1">
-                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Comuna</label>
-                  <input
-                    type="text"
-                    value={form.comuna}
-                    onChange={(e) => setForm({...form, comuna: e.target.value})}
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
-                  />
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-semibold text-sky-400">RM</label>
+                    {COMUNAS_RM.includes(form.comuna || "") && (
+                      <span className="text-[10px] font-bold text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20">
+                        Seleccionada
+                      </span>
+                    )}
+                  </div>
+                  <select
+                    value={COMUNAS_RM.includes(form.comuna || "") ? form.comuna : ""}
+                    onChange={(e) => {
+                      setForm({ ...form, comuna: e.target.value });
+                    }}
+                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-sky-500 cursor-pointer"
+                  >
+                    <option value="">Seleccionar comuna RM...</option>
+                    {COMUNAS_RM.map((c) => (
+                      <option key={c} value={c} className="bg-[#1e293b] text-white">
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Casilla Otras Regiones */}
+                <div className="col-span-1">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-semibold text-purple-400">Otras Regiones</label>
+                    {COMUNAS_OTRAS_REGIONES.includes(form.comuna || "") && (
+                      <span className="text-[10px] font-bold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20">
+                        Seleccionada
+                      </span>
+                    )}
+                  </div>
+                  <select
+                    value={COMUNAS_OTRAS_REGIONES.includes(form.comuna || "") ? form.comuna : ""}
+                    onChange={(e) => {
+                      setForm({ ...form, comuna: e.target.value });
+                    }}
+                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-purple-500 cursor-pointer"
+                  >
+                    <option value="">Seleccionar comuna regiones...</option>
+                    {COMUNAS_OTRAS_REGIONES.map((c) => (
+                      <option key={c} value={c} className="bg-[#1e293b] text-white">
+                        {c}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 
               </div>
