@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Plus, Save, X, Edit, Trash2, CalendarDays } from "lucide-react";
+import { Search, Plus, Save, X, Edit, Trash2, Package } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import * as XLSX from "xlsx";
 
@@ -20,7 +20,7 @@ const LOCALES_VALOR_MAP: Record<string, string> = {
   "L95 LA REINA": "70.000",
 };
 
-interface CoordinacionRow {
+interface PaqueteriaRow {
   id: string;
   patente: string;
   fecha: string;
@@ -33,7 +33,7 @@ interface CoordinacionRow {
   asignadoA: string;
   valorDia: string;
   adicional: string;
-  vueltas: string;
+  vueltas: string; // Bono
   v1: string;
   v2: string;
   v3: string;
@@ -51,8 +51,25 @@ interface CoordinacionRow {
   sg: string;
 }
 
-export default function CoordinacionPage() {
-  const [data, setData] = useState<CoordinacionRow[]>([]);
+const parseMoneyValue = (val: string | number | undefined): number => {
+  if (!val) return 0;
+  const cleaned = String(val).replace(/[^0-9]/g, "");
+  const num = parseInt(cleaned, 10);
+  return isNaN(num) ? 0 : num;
+};
+
+const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): string => {
+  if (puntosVal === undefined || puntosVal === null) return "";
+  const num = typeof puntosVal === "number" ? puntosVal : parseFloat(String(puntosVal).trim());
+  if (isNaN(num) || num <= 20) {
+    return "";
+  }
+  const totalExtra = (num - 20) * 2000;
+  return totalExtra.toLocaleString("es-CL");
+};
+
+export default function PaqueteriaPage() {
+  const [data, setData] = useState<PaqueteriaRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   
@@ -61,10 +78,10 @@ export default function CoordinacionPage() {
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingRow, setEditingRow] = useState<CoordinacionRow | null>(null);
+  const [editingRow, setEditingRow] = useState<PaqueteriaRow | null>(null);
   const [saving, setSaving] = useState(false);
   
-  const [form, setForm] = useState<Partial<CoordinacionRow>>({
+  const [form, setForm] = useState<Partial<PaqueteriaRow>>({
     patente: "", fecha: "", horaInicio: "", horaTermino: "",
     local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
     valorDia: "", adicional: "", vueltas: "",
@@ -76,12 +93,9 @@ export default function CoordinacionPage() {
     setLoading(true);
     const { data: rows, error } = await supabase.from('servicios').select('*');
     if (!error && rows) {
-      const coordRows = rows.filter(r => 
-        !r.id?.startsWith('paq-') && 
-        r.data?.type !== 'paqueteria' && 
-        r.data?.type !== 'programacion'
-      );
-      const parsed: CoordinacionRow[] = coordRows.map(r => {
+      // Filtrar solo registros pertenecientes a paquetería
+      const paqRows = rows.filter(r => r.id?.startsWith('paq-') || r.data?.type === 'paqueteria');
+      const parsed: PaqueteriaRow[] = paqRows.map(r => {
         const dt = r.data || {};
         return {
           id: r.id,
@@ -145,7 +159,7 @@ export default function CoordinacionPage() {
     setIsModalOpen(true);
   };
 
-  const openEdit = (row: CoordinacionRow) => {
+  const openEdit = (row: PaqueteriaRow) => {
     setForm({ ...row });
     setEditingRow(row);
     setIsModalOpen(true);
@@ -153,10 +167,11 @@ export default function CoordinacionPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    const newId = editingRow ? editingRow.id : `coord-${Date.now()}`;
+    const newId = editingRow ? editingRow.id : `paq-${Date.now()}`;
     const payload = {
       id: newId,
       data: {
+        type: 'paqueteria',
         patente: form.patente,
         fecha: form.fecha,
         horaInicio: form.horaInicio,
@@ -199,7 +214,7 @@ export default function CoordinacionPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Eliminar este registro?")) return;
+    if (!confirm("¿Eliminar este registro de paquetería?")) return;
     await supabase.from('servicios').delete().eq('id', id);
     fetchData();
   };
@@ -238,33 +253,16 @@ export default function CoordinacionPage() {
     }));
     const ws = XLSX.utils.json_to_sheet(formattedData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Coordinacion");
-    XLSX.writeFile(wb, `Coordinacion-${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, "Paqueteria");
+    XLSX.writeFile(wb, `Paqueteria-${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
-const parseMoneyValue = (val: string | number | undefined): number => {
-  if (!val) return 0;
-  const cleaned = String(val).replace(/[^0-9]/g, "");
-  const num = parseInt(cleaned, 10);
-  return isNaN(num) ? 0 : num;
-};
-
-const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): string => {
-  if (puntosVal === undefined || puntosVal === null) return "";
-  const num = typeof puntosVal === "number" ? puntosVal : parseFloat(String(puntosVal).trim());
-  if (isNaN(num) || num <= 20) {
-    return "";
-  }
-  const totalExtra = (num - 20) * 2000;
-  return totalExtra.toLocaleString("es-CL");
-};
-
-  const handleSgChange = (sgKey: keyof CoordinacionRow, val: string) => {
+  const handleSgChange = (sgKey: keyof PaqueteriaRow, val: string) => {
     const updated = { ...form, [sgKey]: val };
     let total = 0;
     let hasAnySg = false;
     for (let i = 1; i <= 7; i++) {
-      const k = `sg${i}` as keyof CoordinacionRow;
+      const k = `sg${i}` as keyof PaqueteriaRow;
       const v = updated[k] || (i === 1 && !updated.sg1 ? updated.sg : "");
       if (v !== undefined && v !== null && String(v).trim() !== "") {
         const num = parseFloat(String(v).trim());
@@ -293,9 +291,11 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
       <div className="p-6 border-b border-white/5" style={{ background: "rgba(255,255,255,0.02)" }}>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: "#f8fafc" }}>Coordinación</h1>
+            <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: "#f8fafc" }}>
+              <Package className="text-brand-500" size={24} /> Paquetería
+            </h1>
             <p className="text-sm mt-1" style={{ color: "#94a3b8" }}>
-              Gestión de vehículos, choferes y rutas
+              Gestión de entregas de paquetería, vehículos, choferes y rutas
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -308,10 +308,10 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
             </button>
             <button 
               onClick={openAdd}
-              className="px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg"
+              className="px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg cursor-pointer"
               style={{ background: "#72b01d", color: "white", border: "none" }}
             >
-              <Plus size={16} /> Nueva Coordinación
+              <Plus size={16} /> Nueva Paquetería
             </button>
           </div>
         </div>
@@ -339,7 +339,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
             <thead style={{ background: "rgba(255,255,255,0.03)", color: "#94a3b8", fontSize: "11px", textTransform: "uppercase", letterSpacing: "1px" }}>
               <tr>
                 <th className="px-4 py-3 font-semibold">PPU</th>
-                                <th className="px-4 py-3 font-semibold">Fecha / Hora</th>
+                <th className="px-4 py-3 font-semibold">Fecha / Hora</th>
                 <th className="px-4 py-3 font-semibold">Local / Folio</th>
                 <th className="px-4 py-3 font-semibold">Comuna</th>
                 <th className="px-4 py-3 font-semibold">Puntos</th>
@@ -355,13 +355,13 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="p-8 text-center" style={{ color: "#64748b" }}>No hay registros.</td>
+                  <td colSpan={8} className="p-8 text-center" style={{ color: "#64748b" }}>No hay registros de paquetería.</td>
                 </tr>
               ) : (
                 filtered.map((row) => (
                   <tr key={row.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3 font-mono text-xs">{row.patente || "—"}</td>
-                                        <td className="px-4 py-3">
+                    <td className="px-4 py-3">
                       <div>{row.fecha || "—"}</div>
                       <div className="text-xs" style={{ color: "#64748b" }}>{row.horaInicio} - {row.horaTermino}</div>
                     </td>
@@ -404,10 +404,10 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                       ) : "—"}
                     </td>
                     <td className="px-4 py-3 text-right space-x-2">
-                      <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-white/10 rounded-lg transition-colors" style={{ color: "#94a3b8" }}>
+                      <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-white/10 rounded-lg transition-colors cursor-pointer" style={{ color: "#94a3b8" }}>
                         <Edit size={16} />
                       </button>
-                      <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors" style={{ color: "#ef4444" }}>
+                      <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors cursor-pointer" style={{ color: "#ef4444" }}>
                         <Trash2 size={16} />
                       </button>
                     </td>
@@ -424,10 +424,10 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="w-full max-w-4xl rounded-2xl border border-white/10 flex flex-col max-h-[90vh]" style={{ background: "#1e293b", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}>
             <div className="flex items-center justify-between p-5 border-b border-white/10">
-              <h2 className="text-lg font-bold" style={{ color: "#f8fafc" }}>
-                {editingRow ? "Editar Coordinación" : "Nueva Coordinación"}
+              <h2 className="text-lg font-bold flex items-center gap-2" style={{ color: "#f8fafc" }}>
+                <Package size={20} className="text-brand-500" /> {editingRow ? "Editar Paquetería" : "Nueva Paquetería"}
               </h2>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-white/10 rounded-lg text-slate-400">
+              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-white/10 rounded-lg text-slate-400 cursor-pointer">
                 <X size={20} />
               </button>
             </div>
@@ -438,7 +438,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Asignado a</label>
                   <input
                     type="text"
-                    list="choferes-list"
+                    list="choferes-list-paq"
                     value={form.asignadoA}
                     onChange={(e) => {
                       const selectedName = e.target.value;
@@ -452,7 +452,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
                     placeholder="Escriba o seleccione..."
                   />
-                  <datalist id="choferes-list">
+                  <datalist id="choferes-list-paq">
                     {choferes.map((c, i) => <option key={i} value={c.name} />)}
                   </datalist>
                 </div>
@@ -460,7 +460,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                 <div className="col-span-1">
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>PPU</label>
                   <input
-                    list="patentes-list"
+                    list="patentes-list-paq"
                     type="text"
                     value={form.patente}
                     onChange={(e) => {
@@ -475,7 +475,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
                     placeholder="Ej: AB-CD-12"
                   />
-                  <datalist id="patentes-list">
+                  <datalist id="patentes-list-paq">
                     {choferes.filter(c => c.patente).map((c, i) => <option key={i} value={c.patente} />)}
                   </datalist>
                 </div>
@@ -596,8 +596,8 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                 
                 <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
                   {[1, 2, 3, 4, 5, 6, 7].map((num) => {
-                    const vKey = `v${num}` as keyof CoordinacionRow;
-                    const sgKey = `sg${num}` as keyof CoordinacionRow;
+                    const vKey = `v${num}` as keyof PaqueteriaRow;
+                    const sgKey = `sg${num}` as keyof PaqueteriaRow;
                     const currentV = (form[vKey] as string) || "";
                     const isOk = currentV === "OK" || currentV === "SI" || currentV === "SÍ";
                     const currentSG = (form[sgKey] as string) || (num === 1 && !form.sg1 ? (form.sg || "") : "");
@@ -715,7 +715,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
             <div className="p-5 border-t border-white/10 flex justify-end gap-3" style={{ background: "rgba(0,0,0,0.2)" }}>
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                className="px-4 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer"
                 style={{ background: "rgba(255,255,255,0.05)", color: "#e2e8f0" }}
               >
                 Cancelar
@@ -723,7 +723,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
               <button 
                 onClick={handleSave}
                 disabled={saving}
-                className="px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors disabled:opacity-50"
+                className="px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors disabled:opacity-50 cursor-pointer"
                 style={{ background: "#72b01d", color: "white" }}
               >
                 <Save size={16} /> {saving ? "Guardando..." : "Guardar Registro"}
