@@ -63,6 +63,111 @@ const parseMoneyValue = (val: string | number | undefined): number => {
   return isNaN(num) ? 0 : num;
 };
 
+const normalizeString = (str: string) =>
+  (str || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+
+export interface TarifaZonaInfo {
+  tarifa: string;
+  segundaVuelta: string;
+  zona: string;
+}
+
+export const getTarifaByVehiculoYComuna = (vehiculo?: string, comuna?: string): TarifaZonaInfo => {
+  if (!vehiculo) {
+    return { tarifa: "", segundaVuelta: "", zona: "" };
+  }
+
+  const isCamion = normalizeString(vehiculo).includes("camion");
+  const isFurgon = normalizeString(vehiculo).includes("furgon");
+
+  if (!isCamion && !isFurgon) {
+    return { tarifa: "", segundaVuelta: "", zona: "" };
+  }
+
+  const c = normalizeString(comuna || "");
+
+  // 1. ALGARROBO / CARTAGENA / CASABLANCA
+  const zona1 = ["algarrobo", "cartagena", "casablanca"];
+  if (zona1.some(z => c.includes(z))) {
+    return {
+      zona: "ALGARROBO / CARTAGENA / CASABLANCA",
+      tarifa: isCamion ? "200.000" : "130.000",
+      segundaVuelta: isCamion ? "180.000" : "120.000",
+    };
+  }
+
+  // 2. EL QUISCO / EL TABO / SAN ANTONIO / SANTO DOMINGO
+  const zona2 = ["el quisco", "el tabo", "san antonio", "santo domingo"];
+  if (zona2.some(z => c.includes(z))) {
+    return {
+      zona: "EL QUISCO / EL TABO / SAN ANTONIO / SANTO DOMINGO",
+      tarifa: isCamion ? "200.000" : "130.000",
+      segundaVuelta: isCamion ? "180.000" : "120.000",
+    };
+  }
+
+  // 3. LOS ANDES / SAN FELIPE
+  const zona3 = ["los andes", "san felipe", "calle larga", "rinconada", "san esteban", "catemu", "panquehue", "putaendo", "santa maria"];
+  if (zona3.some(z => c.includes(z))) {
+    return {
+      zona: "LOS ANDES / SAN FELIPE",
+      tarifa: isCamion ? "180.000" : "120.000",
+      segundaVuelta: isCamion ? "160.000" : "110.000",
+    };
+  }
+
+  // 4. COLINA / LAMPA
+  const zona4 = ["colina", "lampa", "tiltil", "til til"];
+  if (zona4.some(z => c.includes(z))) {
+    return {
+      zona: "COLINA / LAMPA",
+      tarifa: isCamion ? "145.000" : "90.000",
+      segundaVuelta: isCamion ? "125.000" : "80.000",
+    };
+  }
+
+  // 5. BUIN / PAINE
+  const zona5 = ["buin", "paine"];
+  if (zona5.some(z => c.includes(z))) {
+    return {
+      zona: "BUIN / PAINE",
+      tarifa: isCamion ? "145.000" : "90.000",
+      segundaVuelta: isCamion ? "125.000" : "80.000",
+    };
+  }
+
+  // 6. PEÑAFLOR / TALAGANTE / CALERA DE TANGO
+  const zona6 = ["penaflor", "talagante", "calera de tango", "padre hurtado"];
+  if (zona6.some(z => c.includes(z))) {
+    return {
+      zona: "PEÑAFLOR / TALAGANTE / CALERA DE TANGO",
+      tarifa: isCamion ? "145.000" : "90.000",
+      segundaVuelta: isCamion ? "125.000" : "80.000",
+    };
+  }
+
+  // 7. MELIPILLA / ISLA DE MAIPO / EL MONTE
+  const zona7 = ["melipilla", "isla de maipo", "el monte", "curacavi", "maria pinto", "san pedro", "alhue"];
+  if (zona7.some(z => c.includes(z))) {
+    return {
+      zona: "MELIPILLA / ISLA DE MAIPO / EL MONTE",
+      tarifa: isCamion ? "145.000" : "90.000",
+      segundaVuelta: isCamion ? "125.000" : "80.000",
+    };
+  }
+
+  // 8. NODO RM (Default)
+  return {
+    zona: "NODO RM",
+    tarifa: isCamion ? "130.000" : "70.000",
+    segundaVuelta: isCamion ? "110.000" : "60.000",
+  };
+};
+
 const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): string => {
   if (puntosVal === undefined || puntosVal === null) return "";
   const num = typeof puntosVal === "number" ? puntosVal : parseFloat(String(puntosVal).trim());
@@ -521,7 +626,15 @@ export default function PaqueteriaPage() {
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Vehículo</label>
                   <select
                     value={form.vehiculo || ""}
-                    onChange={(e) => setForm({ ...form, vehiculo: e.target.value })}
+                    onChange={(e) => {
+                      const newVehiculo = e.target.value;
+                      const info = getTarifaByVehiculoYComuna(newVehiculo, form.comuna);
+                      setForm({
+                        ...form,
+                        vehiculo: newVehiculo,
+                        valorDia: newVehiculo ? (info.tarifa || form.valorDia || "") : form.valorDia,
+                      });
+                    }}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-brand-500 cursor-pointer"
                   >
                     <option value="" className="bg-[#1e293b] text-slate-400">Seleccionar vehículo...</option>
@@ -624,7 +737,12 @@ export default function PaqueteriaPage() {
                       setComunaRM(val);
                       if (val) {
                         setComunaRegiones("");
-                        setForm({ ...form, comuna: val });
+                        const info = getTarifaByVehiculoYComuna(form.vehiculo, val);
+                        setForm({
+                          ...form,
+                          comuna: val,
+                          valorDia: form.vehiculo ? (info.tarifa || form.valorDia || "") : form.valorDia,
+                        });
                       } else {
                         setForm({ ...form, comuna: "" });
                       }
@@ -658,7 +776,12 @@ export default function PaqueteriaPage() {
                       setComunaRegiones(val);
                       if (val) {
                         setComunaRM("");
-                        setForm({ ...form, comuna: val });
+                        const info = getTarifaByVehiculoYComuna(form.vehiculo, val);
+                        setForm({
+                          ...form,
+                          comuna: val,
+                          valorDia: form.vehiculo ? (info.tarifa || form.valorDia || "") : form.valorDia,
+                        });
                       } else {
                         setForm({ ...form, comuna: "" });
                       }
@@ -703,7 +826,17 @@ export default function PaqueteriaPage() {
                           <button
                             type="button"
                             onClick={() => {
-                              setForm({ ...form, [vKey]: isOk ? "NO" : "OK" });
+                              const willBeOk = !isOk;
+                              const nextForm = { ...form, [vKey]: willBeOk ? "OK" : "NO" };
+                              if (num === 2) {
+                                const info = getTarifaByVehiculoYComuna(form.vehiculo, form.comuna);
+                                if (willBeOk && (!form.adicional || form.adicional === "$0")) {
+                                  nextForm.adicional = info.segundaVuelta;
+                                } else if (!willBeOk && form.adicional === info.segundaVuelta) {
+                                  nextForm.adicional = "";
+                                }
+                              }
+                              setForm(nextForm);
                             }}
                             className={`w-full py-2 px-1 rounded-lg border text-xs font-black transition-all flex items-center justify-center gap-1 shadow-sm cursor-pointer select-none ${
                               isOk
@@ -745,7 +878,14 @@ export default function PaqueteriaPage() {
                 <div className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>Opciones Adicionales</div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold mb-1.5 text-purple-400">Tarifa</label>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-semibold text-purple-400">Tarifa</label>
+                      {form.vehiculo && (
+                        <span className="text-[10px] font-bold text-purple-300 bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20 truncate max-w-[120px]" title={getTarifaByVehiculoYComuna(form.vehiculo, form.comuna).zona}>
+                          {getTarifaByVehiculoYComuna(form.vehiculo, form.comuna).zona.split('/')[0]}
+                        </span>
+                      )}
+                    </div>
                     <input
                       type="text"
                       value={form.valorDia}
@@ -757,10 +897,18 @@ export default function PaqueteriaPage() {
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="block text-xs font-semibold text-green-400">Segunda vuelta</label>
-                      {parseFloat(form.puntos || "0") >= 21 && (
-                        <span className="text-[10px] font-bold text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded border border-green-500/20">
-                          Auto (+21 Pts)
-                        </span>
+                      {form.vehiculo && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const info = getTarifaByVehiculoYComuna(form.vehiculo, form.comuna);
+                            setForm({ ...form, adicional: info.segundaVuelta });
+                          }}
+                          className="text-[10px] font-bold text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-1.5 py-0.5 rounded border border-green-500/20 cursor-pointer transition-colors"
+                          title="Clic para fijar tarifa según tabla"
+                        >
+                          ${getTarifaByVehiculoYComuna(form.vehiculo, form.comuna).segundaVuelta}
+                        </button>
                       )}
                     </div>
                     <input
