@@ -5,6 +5,15 @@ import { Search, Plus, Save, X, Edit, Trash2, CalendarDays } from "lucide-react"
 import { supabase } from "@/lib/supabase";
 import * as XLSX from "xlsx";
 
+const LOCALES_LIST = [
+  "L41 HUECHURABA",
+  "L45 MAIPU",
+  "L95 LA REINA",
+  "WALMART PAQUETERIA",
+  "FALABELLA",
+  "DHL",
+];
+
 interface CoordinacionRow {
   id: string;
   patente: string;
@@ -462,12 +471,23 @@ export default function CoordinacionPage() {
 
                 <div className="col-span-1">
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Local</label>
-                  <input
-                    type="text"
-                    value={form.local}
+                  <select
+                    value={form.local || ""}
                     onChange={(e) => setForm({...form, local: e.target.value})}
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
-                  />
+                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-brand-500 cursor-pointer"
+                  >
+                    <option value="">Seleccionar local...</option>
+                    {LOCALES_LIST.map((loc) => (
+                      <option key={loc} value={loc} className="bg-[#1e293b] text-white">
+                        {loc}
+                      </option>
+                    ))}
+                    {form.local && !LOCALES_LIST.includes(form.local) && (
+                      <option value={form.local} className="bg-[#1e293b] text-white">
+                        {form.local}
+                      </option>
+                    )}
+                  </select>
                 </div>
 
                 <div className="col-span-1">
