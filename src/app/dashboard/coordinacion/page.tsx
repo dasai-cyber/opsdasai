@@ -25,6 +25,14 @@ interface CoordinacionRow {
   v4: string;
   v5: string;
   v6: string;
+  v7: string;
+  sg1: string;
+  sg2: string;
+  sg3: string;
+  sg4: string;
+  sg5: string;
+  sg6: string;
+  sg7: string;
   sg: string;
 }
 
@@ -45,7 +53,8 @@ export default function CoordinacionPage() {
     patente: "", fecha: "", horaInicio: "", horaTermino: "",
     local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
     valorDia: "", adicional: "", vueltas: "",
-    v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", sg: ""
+    v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
+    sg1: "", sg2: "", sg3: "", sg4: "", sg5: "", sg6: "", sg7: "", sg: ""
   });
 
   const fetchData = async () => {
@@ -74,7 +83,15 @@ export default function CoordinacionPage() {
           v4: dt.v4 || "",
           v5: dt.v5 || "",
           v6: dt.v6 || "",
-          sg: dt.sg || ""
+          v7: dt.v7 || "",
+          sg1: dt.sg1 || dt.sg || "",
+          sg2: dt.sg2 || "",
+          sg3: dt.sg3 || "",
+          sg4: dt.sg4 || "",
+          sg5: dt.sg5 || "",
+          sg6: dt.sg6 || "",
+          sg7: dt.sg7 || "",
+          sg: dt.sg || dt.sg1 || ""
         };
       });
       // Sort by newer first
@@ -101,7 +118,8 @@ export default function CoordinacionPage() {
       patente: "", fecha: new Date().toISOString().split('T')[0], 
       horaInicio: "", horaTermino: "", local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
       valorDia: "", adicional: "", vueltas: "",
-      v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", sg: ""
+      v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
+      sg1: "", sg2: "", sg3: "", sg4: "", sg5: "", sg6: "", sg7: "", sg: ""
     });
     setEditingRow(null);
     setIsModalOpen(true);
@@ -137,7 +155,15 @@ export default function CoordinacionPage() {
         v4: form.v4,
         v5: form.v5,
         v6: form.v6,
-        sg: form.sg
+        v7: form.v7,
+        sg1: form.sg1,
+        sg2: form.sg2,
+        sg3: form.sg3,
+        sg4: form.sg4,
+        sg5: form.sg5,
+        sg6: form.sg6,
+        sg7: form.sg7,
+        sg: form.sg1 || form.sg
       }
     };
 
@@ -170,12 +196,19 @@ export default function CoordinacionPage() {
       "Puntos": d.puntos,
       "Asignado a": d.asignadoA,
       "V1": d.v1,
+      "SG1": d.sg1 || d.sg,
       "V2": d.v2,
+      "SG2": d.sg2,
       "V3": d.v3,
+      "SG3": d.sg3,
       "V4": d.v4,
+      "SG4": d.sg4,
       "V5": d.v5,
+      "SG5": d.sg5,
       "V6": d.v6,
-      "SG (Paquetes)": d.sg,
+      "SG6": d.sg6,
+      "V7": d.v7,
+      "SG7": d.sg7,
       "Valor Día": d.valorDia,
       "Adicional": d.adicional,
       "Vueltas": d.vueltas,
@@ -279,22 +312,25 @@ export default function CoordinacionPage() {
                       {((row.valorDia !== "" && row.valorDia !== undefined) || 
                         (row.adicional !== "" && row.adicional !== undefined) || 
                         (row.vueltas !== "" && row.vueltas !== undefined) ||
-                        row.v1 || row.v2 || row.v3 || row.v4 || row.v5 || row.v6 || row.sg) ? (
+                        row.v1 || row.v2 || row.v3 || row.v4 || row.v5 || row.v6 || row.v7 ||
+                        row.sg1 || row.sg2 || row.sg3 || row.sg4 || row.sg5 || row.sg6 || row.sg7 || row.sg) ? (
                         <div className="flex flex-col gap-1 items-center">
                           {(row.valorDia !== "" && row.valorDia !== undefined) && <span className="bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded text-[11px]">Valor día: {row.valorDia}</span>}
                           {(row.adicional !== "" && row.adicional !== undefined) && <span className="bg-green-500/10 text-green-400 px-2 py-0.5 rounded text-[11px]">Adicional: {row.adicional}</span>}
                           {(row.vueltas !== "" && row.vueltas !== undefined) && <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[11px]">Vueltas: {row.vueltas}</span>}
-                          {(row.v1 || row.v2 || row.v3 || row.v4 || row.v5 || row.v6 || row.sg) && (
-                            <div className="flex flex-wrap gap-1 justify-center mt-1">
-                              {row.v1 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V1: {row.v1}</span>}
-                              {row.v2 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V2: {row.v2}</span>}
-                              {row.v3 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V3: {row.v3}</span>}
-                              {row.v4 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V4: {row.v4}</span>}
-                              {row.v5 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V5: {row.v5}</span>}
-                              {row.v6 && <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">V6: {row.v6}</span>}
-                              {row.sg && <span className="bg-amber-500/15 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">SG: {row.sg} paq.</span>}
-                            </div>
-                          )}
+                          <div className="flex flex-wrap gap-1 justify-center mt-1 max-w-[280px]">
+                            {[1, 2, 3, 4, 5, 6, 7].map((num) => {
+                              const vVal = (row as any)[`v${num}`];
+                              const sgVal = (row as any)[`sg${num}`] || (num === 1 ? row.sg : "");
+                              if (!vVal && !sgVal) return null;
+                              return (
+                                <span key={num} className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold flex items-center gap-1">
+                                  <span>V{num}{vVal ? `: ${vVal}` : ""}</span>
+                                  {sgVal && <span className="text-amber-300 font-semibold">(SG: {sgVal})</span>}
+                                </span>
+                              );
+                            })}
+                          </div>
                         </div>
                       ) : "—"}
                     </td>
@@ -317,7 +353,7 @@ export default function CoordinacionPage() {
       {/* Modal Agregar / Editar */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-3xl rounded-2xl border border-white/10 flex flex-col max-h-[90vh]" style={{ background: "#1e293b", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}>
+          <div className="w-full max-w-4xl rounded-2xl border border-white/10 flex flex-col max-h-[90vh]" style={{ background: "#1e293b", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}>
             <div className="flex items-center justify-between p-5 border-b border-white/10">
               <h2 className="text-lg font-bold" style={{ color: "#f8fafc" }}>
                 {editingRow ? "Editar Coordinación" : "Nueva Coordinación"}
@@ -447,101 +483,51 @@ export default function CoordinacionPage() {
                 
               </div>
 
-              {/* Casillas V1..V6 y SG (Paquetes) */}
+              {/* Casillas V1..V7 y SG1..SG7 */}
               <div className="mt-6 p-4 rounded-xl border border-white/5" style={{ background: "rgba(255,255,255,0.02)" }}>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Control de Vueltas (V1 - V6) y Paquetes (SG)
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-4 border-b border-white/5 pb-2">
+                  <div className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                    Control de Vueltas (V1 - V7) y Paquetes (SG1 - SG7)
                   </div>
                   <div className="text-[11px] text-slate-400">
-                    Coloca <span className="text-emerald-400 font-bold">OK</span> al terminar cada vuelta
+                    Coloca <span className="text-emerald-400 font-bold">OK</span> al terminar y los paquetes en <span className="text-amber-400 font-bold">SG</span>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-3 sm:grid-cols-7 gap-2.5">
-                  {/* V1 */}
-                  <div>
-                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V1</label>
-                    <input
-                      type="text"
-                      value={form.v1 || ""}
-                      onChange={(e) => setForm({...form, v1: e.target.value.toUpperCase()})}
-                      placeholder="OK"
-                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
-                    />
-                  </div>
-
-                  {/* V2 */}
-                  <div>
-                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V2</label>
-                    <input
-                      type="text"
-                      value={form.v2 || ""}
-                      onChange={(e) => setForm({...form, v2: e.target.value.toUpperCase()})}
-                      placeholder="OK"
-                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
-                    />
-                  </div>
-
-                  {/* V3 */}
-                  <div>
-                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V3</label>
-                    <input
-                      type="text"
-                      value={form.v3 || ""}
-                      onChange={(e) => setForm({...form, v3: e.target.value.toUpperCase()})}
-                      placeholder="OK"
-                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
-                    />
-                  </div>
-
-                  {/* V4 */}
-                  <div>
-                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V4</label>
-                    <input
-                      type="text"
-                      value={form.v4 || ""}
-                      onChange={(e) => setForm({...form, v4: e.target.value.toUpperCase()})}
-                      placeholder="OK"
-                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
-                    />
-                  </div>
-
-                  {/* V5 */}
-                  <div>
-                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V5</label>
-                    <input
-                      type="text"
-                      value={form.v5 || ""}
-                      onChange={(e) => setForm({...form, v5: e.target.value.toUpperCase()})}
-                      placeholder="OK"
-                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
-                    />
-                  </div>
-
-                  {/* V6 */}
-                  <div>
-                    <label className="block text-xs font-bold mb-1 text-emerald-400 text-center">V6</label>
-                    <input
-                      type="text"
-                      value={form.v6 || ""}
-                      onChange={(e) => setForm({...form, v6: e.target.value.toUpperCase()})}
-                      placeholder="OK"
-                      className="w-full px-2 py-2 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
-                    />
-                  </div>
-
-                  {/* SG */}
-                  <div className="col-span-3 sm:col-span-1">
-                    <label className="block text-xs font-bold mb-1 text-amber-400 text-center">SG</label>
-                    <input
-                      type="text"
-                      value={form.sg || ""}
-                      onChange={(e) => setForm({...form, sg: e.target.value})}
-                      placeholder="Paq."
-                      className="w-full px-2 py-2 text-center rounded-lg border border-amber-500/30 bg-amber-500/10 text-sm font-bold text-amber-300 outline-none focus:border-amber-400 placeholder:text-amber-500/40"
-                    />
-                  </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+                  {[1, 2, 3, 4, 5, 6, 7].map((num) => {
+                    const vKey = `v${num}` as keyof CoordinacionRow;
+                    const sgKey = `sg${num}` as keyof CoordinacionRow;
+                    const currentV = (form[vKey] as string) || "";
+                    const currentSG = (form[sgKey] as string) || (num === 1 && !form.sg1 ? (form.sg || "") : "");
+                    return (
+                      <div key={num} className="p-2.5 rounded-xl border border-white/10 bg-black/30 flex flex-col gap-2">
+                        <div className="text-center font-extrabold text-xs text-white border-b border-white/5 pb-1">
+                          Vuelta {num}
+                        </div>
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-emerald-400 mb-1 text-center">V{num} (OK)</label>
+                          <input
+                            type="text"
+                            value={currentV}
+                            onChange={(e) => setForm({ ...form, [vKey]: e.target.value.toUpperCase() })}
+                            placeholder="OK"
+                            className="w-full px-2 py-1.5 text-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-xs font-bold text-emerald-300 outline-none focus:border-emerald-400 placeholder:text-emerald-600/40"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-amber-400 mb-1 text-center">SG{num} (Paq.)</label>
+                          <input
+                            type="text"
+                            value={currentSG}
+                            onChange={(e) => setForm({ ...form, [sgKey]: e.target.value })}
+                            placeholder="Cant."
+                            className="w-full px-2 py-1.5 text-center rounded-lg border border-amber-500/30 bg-amber-500/10 text-xs font-bold text-amber-300 outline-none focus:border-amber-400 placeholder:text-amber-500/40"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
