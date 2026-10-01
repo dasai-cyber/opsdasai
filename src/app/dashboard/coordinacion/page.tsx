@@ -157,6 +157,8 @@ export default function CoordinacionPage() {
     const payload = {
       id: newId,
       data: {
+        type: 'coordinacion',
+        categoria: 'coordinacion',
         patente: form.patente,
         fecha: form.fecha,
         horaInicio: form.horaInicio,

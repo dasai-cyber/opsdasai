@@ -94,7 +94,7 @@ export default function PaqueteriaPage() {
     const { data: rows, error } = await supabase.from('servicios').select('*');
     if (!error && rows) {
       // Filtrar solo registros pertenecientes a paquetería
-      const paqRows = rows.filter(r => r.id?.startsWith('paq-') || r.data?.type === 'paqueteria');
+      const paqRows = rows.filter(r => r.id?.startsWith('paq-') || r.data?.type === 'paqueteria' || r.data?.categoria === 'paqueteria');
       const parsed: PaqueteriaRow[] = paqRows.map(r => {
         const dt = r.data || {};
         return {
@@ -172,6 +172,7 @@ export default function PaqueteriaPage() {
       id: newId,
       data: {
         type: 'paqueteria',
+        categoria: 'paqueteria',
         patente: form.patente,
         fecha: form.fecha,
         horaInicio: form.horaInicio,
