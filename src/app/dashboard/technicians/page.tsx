@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import {
   Search, Phone, Mail, MapPin, Award, X, TrendingUp,
   CheckCircle2, Plus, Save, User, Pencil, Truck, Trash2, Download, FileText,
-  Building2, CreditCard, ShieldCheck, FileCheck, HelpCircle, Briefcase, ChevronRight
+  CreditCard, FileCheck
 } from "lucide-react";
 import { getStatusBg } from "@/lib/utils";
 import type { Technician, TechnicianStatus } from "@/types";
@@ -34,11 +34,11 @@ const uploadDocument = async (file: File | null, id: string, name: string) => {
 const inputStyle: React.CSSProperties = {
   width: "100%",
   background: "rgba(27,30,36,0.95)",
-  border: "1px solid rgba(255,255,255,0.09)",
+  border: "1px solid rgba(255,255,255,0.12)",
   borderRadius: 8,
   padding: "9px 12px",
   fontSize: 13,
-  color: "#e2e8f0",
+  color: "#f1f5f9",
   outline: "none",
   fontFamily: "inherit",
 };
@@ -46,24 +46,11 @@ const inputStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   display: "block",
   fontSize: 12,
-  fontWeight: 600,
+  fontWeight: 700,
   color: "#94a3b8",
   marginBottom: 5,
-};
-
-const sectionTitleStyle: React.CSSProperties = {
-  fontSize: 13,
-  fontWeight: 700,
-  color: "#93c947",
-  textTransform: "uppercase",
-  letterSpacing: "0.05em",
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  marginBottom: 12,
-  marginTop: 6,
-  paddingBottom: 4,
-  borderBottom: "1px solid rgba(147,201,71,0.2)",
+  letterSpacing: "0.02em",
+  textTransform: "uppercase"
 };
 
 const errStyle: React.CSSProperties = { color: "#f87171", fontSize: 11, marginTop: 3 };
@@ -77,42 +64,32 @@ function AddTechModal({
   onAdd: (tech: Technician) => void;
 }) {
   const [form, setForm] = useState({
+    patente: "",
     name: "",
     rut: "",
     phone: "",
     phone2: "",
     email: "",
-    comuna: "",
-    direccion: "",
-    licencia: "B",
-    
-    patente: "",
-    tipoVehiculo: "FURGON SIMPLE",
-    duenoFurgon: "",
-    gps: "NO",
     gpsCccs: "SI",
     beetrack: "",
-    seguro: "NO",
-    
     induccion: "SI",
     carpeta: "SI",
     contrato: "FIRMADO",
     anexo: "",
-    tipoServicio: "Paquetería",
-    nLocal: "",
-    
+    duenoFurgon: "",
+    tipoVehiculo: "FURGON SIMPLE",
     facturacion: "COMODATO",
     nombreEmpresa: "",
     rutEmpresa: "",
     banco: "ESTADO",
     tipoCuenta: "CORRIENTE",
     numeroCuenta: "",
-    
+    comuna: "",
+    direccion: "",
+    licencia: "B",
+    gps: "NO",
+    seguro: "NO",
     status: "disponible" as TechnicianStatus,
-    estadoCivil: "",
-    estudios: "",
-    modeloAuto: "",
-    anioAuto: "",
   });
 
   const confirmClose = () => {
@@ -141,9 +118,9 @@ function AddTechModal({
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!form.name.trim()) e.name = "El nombre del conductor es obligatorio";
-    if (!form.rut.trim()) e.rut = "El RUT es obligatorio";
-    if (!form.phone.trim()) e.phone = "El teléfono celular es obligatorio";
+    if (!form.name.trim()) e.name = "CONDUCTOR es obligatorio";
+    if (!form.rut.trim()) e.rut = "RUT es obligatorio";
+    if (!form.phone.trim()) e.phone = "CELULAR es obligatorio";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -165,44 +142,35 @@ function AddTechModal({
 
       const newTech: Technician = {
         id: newId,
+        patente: form.patente.trim().toUpperCase(),
         name: form.name.trim().toUpperCase(),
         rut: form.rut.trim(),
         phone: form.phone.trim(),
         phone2: form.phone2.trim(),
         whatsapp: form.phone2.trim(),
         email: form.email.trim().toLowerCase(),
-        comuna: form.comuna.trim(),
-        direccion: form.direccion.trim(),
-        licencia: form.licencia.trim().toUpperCase(),
-        
-        patente: form.patente.trim().toUpperCase(),
-        tipoVehiculo: form.tipoVehiculo.trim().toUpperCase(),
-        duenoFurgon: form.duenoFurgon.trim().toUpperCase(),
-        gps: form.gps.trim().toUpperCase(),
         gpsCccs: form.gpsCccs.trim().toUpperCase(),
         beetrack: form.beetrack.trim(),
-        seguro: form.seguro.trim().toUpperCase(),
-        
         induccion: form.induccion.trim().toUpperCase(),
         carpeta: form.carpeta.trim().toUpperCase(),
         contrato: form.contrato.trim().toUpperCase(),
         anexo: form.anexo.trim(),
-        tipoServicio: form.tipoServicio,
-        nLocal: form.nLocal.trim(),
-        
+        duenoFurgon: form.duenoFurgon.trim().toUpperCase(),
+        tipoVehiculo: form.tipoVehiculo.trim().toUpperCase(),
         facturacion: form.facturacion.trim().toUpperCase(),
         nombreEmpresa: form.nombreEmpresa.trim().toUpperCase(),
         rutEmpresa: form.rutEmpresa.trim(),
         banco: form.banco.trim().toUpperCase(),
         tipoCuenta: form.tipoCuenta.trim().toUpperCase(),
         numeroCuenta: form.numeroCuenta.trim(),
-        
-        estadoCivil: form.estadoCivil.trim(),
-        estudios: form.estudios.trim(),
-        modeloAuto: form.modeloAuto.trim(),
-        anioAuto: form.anioAuto.trim(),
+        comuna: form.comuna.trim(),
+        direccion: form.direccion.trim(),
+        licencia: form.licencia.trim().toUpperCase(),
+        gps: form.gps.trim().toUpperCase(),
+        seguro: form.seguro.trim().toUpperCase(),
         
         status: form.status,
+        tipoServicio: "Paquetería",
         completedOrders: 0,
         avgTime: 0,
         productivity: 0,
@@ -216,7 +184,7 @@ function AddTechModal({
         return;
       }
       setSaved(true);
-      setTimeout(() => { onAdd(newTech); onClose(); }, 700);
+      setTimeout(() => { onAdd(newTech); onClose(); }, 600);
     } catch (e: any) {
       setSaveError("Error al subir archivos: " + e.message);
     } finally {
@@ -225,234 +193,240 @@ function AddTechModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}>
+    <div className="fixed inset-0 z-50 overflow-y-auto" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)" }}>
       <div className="min-h-screen py-8 px-4 flex items-start justify-center">
-        <div className="w-full max-w-2xl rounded-2xl overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.1)" }}>
 
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid rgba(114,176,29,0.12)" }}>
+          <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid rgba(114,176,29,0.15)", background: "rgba(255,255,255,0.01)" }}>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(114,176,29,0.12)" }}>
-                <User size={18} style={{ color: "#72b01d" }} />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(114,176,29,0.15)" }}>
+                <User size={20} style={{ color: "#93c947" }} />
               </div>
               <div>
-                <div className="font-bold text-lg" style={{ color: "#f1f5f9" }}>Nuevo Chofer / Flota</div>
-                <div className="text-xs" style={{ color: "#475569" }}>Formulario de alta con campos de la flota Dasai</div>
+                <div className="font-bold text-lg text-slate-100">Agregar Chofer</div>
+                <div className="text-xs text-slate-400">Completa los 25 campos de la flota Dasai</div>
               </div>
             </div>
-            <button onClick={confirmClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}>
-              <X size={20} />
+            <button onClick={confirmClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b" }} className="hover:text-slate-200">
+              <X size={22} />
             </button>
           </div>
 
           {/* Form */}
-          <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+          <div className="p-6 space-y-4 max-h-[82vh] overflow-y-auto">
 
-            {/* SECCION 1: DATOS PERSONALES / CONDUCTOR */}
-            <div>
-              <div style={sectionTitleStyle}>
-                <User size={15} /> 1. Datos del Conductor
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+              
+              {/* 1. PPU */}
+              <div>
+                <label style={labelStyle}>PPU</label>
+                <input style={{ ...inputStyle, textTransform: "uppercase" }} placeholder="Ej: LHRK71" value={form.patente} onChange={set("patente")} />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label style={labelStyle}>CONDUCTOR (Nombre completo) <span style={{ color: "#72b01d" }}>*</span></label>
-                  <input style={inputStyle} placeholder="Ej: RODRIGO ALFREDO MARQUEZ" value={form.name} onChange={set("name")} />
-                  {errors.name && <div style={errStyle}>{errors.name}</div>}
-                </div>
-                <div>
-                  <label style={labelStyle}>RUT <span style={{ color: "#72b01d" }}>*</span></label>
-                  <input style={inputStyle} placeholder="Ej: 15793535-6" value={form.rut} onChange={set("rut")} />
-                  {errors.rut && <div style={errStyle}>{errors.rut}</div>}
-                </div>
-                <div>
-                  <label style={labelStyle}>CELULAR <span style={{ color: "#72b01d" }}>*</span></label>
-                  <input style={inputStyle} placeholder="Ej: +569 79472968" value={form.phone} onChange={set("phone")} />
-                  {errors.phone && <div style={errStyle}>{errors.phone}</div>}
-                </div>
-                <div>
-                  <label style={labelStyle}>WHATSAPP</label>
-                  <input style={inputStyle} placeholder="Ej: +569 986878220" value={form.phone2} onChange={set("phone2")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>MAIL CONDUCTOR</label>
-                  <input style={inputStyle} type="email" placeholder="correo@ejemplo.com" value={form.email} onChange={set("email")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>LICENCIA</label>
-                  <input style={inputStyle} placeholder="Ej: B, B C, B A4 A2" value={form.licencia} onChange={set("licencia")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>COMUNA</label>
-                  <input style={inputStyle} placeholder="Ej: Maipú, La Florida, Puente Alto" value={form.comuna} onChange={set("comuna")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>DIRECCIÓN</label>
-                  <input style={inputStyle} placeholder="Ej: PASAJE TAMARA 834" value={form.direccion} onChange={set("direccion")} />
-                </div>
+
+              {/* 2. CONDUCTOR */}
+              <div className="sm:col-span-2">
+                <label style={labelStyle}>CONDUCTOR <span style={{ color: "#72b01d" }}>*</span></label>
+                <input style={inputStyle} placeholder="Nombre completo del conductor" value={form.name} onChange={set("name")} />
+                {errors.name && <div style={errStyle}>{errors.name}</div>}
               </div>
+
+              {/* 3. RUT */}
+              <div>
+                <label style={labelStyle}>RUT <span style={{ color: "#72b01d" }}>*</span></label>
+                <input style={inputStyle} placeholder="Ej: 15793535-6" value={form.rut} onChange={set("rut")} />
+                {errors.rut && <div style={errStyle}>{errors.rut}</div>}
+              </div>
+
+              {/* 4. CELULAR */}
+              <div>
+                <label style={labelStyle}>CELULAR <span style={{ color: "#72b01d" }}>*</span></label>
+                <input style={inputStyle} placeholder="Ej: +569 79472968" value={form.phone} onChange={set("phone")} />
+                {errors.phone && <div style={errStyle}>{errors.phone}</div>}
+              </div>
+
+              {/* 5. WHATSAPP */}
+              <div>
+                <label style={labelStyle}>WHATSAPP</label>
+                <input style={inputStyle} placeholder="Ej: +569 986878220" value={form.phone2} onChange={set("phone2")} />
+              </div>
+
+              {/* 6. MAIL CONDUCTOR */}
+              <div className="md:col-span-2">
+                <label style={labelStyle}>MAIL CONDUCTOR</label>
+                <input style={inputStyle} type="email" placeholder="correo@ejemplo.com" value={form.email} onChange={set("email")} />
+              </div>
+
+              {/* 7. GPS CCCS */}
+              <div>
+                <label style={labelStyle}>GPS CCCS</label>
+                <select style={inputStyle} value={form.gpsCccs} onChange={set("gpsCccs")}>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
+              {/* 8. BEETRACK */}
+              <div>
+                <label style={labelStyle}>BEETRACK</label>
+                <input style={inputStyle} placeholder="Ej: cc157935356" value={form.beetrack} onChange={set("beetrack")} />
+              </div>
+
+              {/* 9. INDUCCION */}
+              <div>
+                <label style={labelStyle}>INDUCCION</label>
+                <select style={inputStyle} value={form.induccion} onChange={set("induccion")}>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
+              {/* 10. CARPETA */}
+              <div>
+                <label style={labelStyle}>CARPETA</label>
+                <select style={inputStyle} value={form.carpeta} onChange={set("carpeta")}>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
+              {/* 11. CONTRATO */}
+              <div>
+                <label style={labelStyle}>CONTRATO</label>
+                <select style={inputStyle} value={form.contrato} onChange={set("contrato")}>
+                  <option value="FIRMADO">FIRMADO</option>
+                  <option value="FALTA FIRMAR">FALTA FIRMAR</option>
+                  <option value="PENDIENTE">PENDIENTE</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
+              {/* 12. ANEXO */}
+              <div>
+                <label style={labelStyle}>ANEXO</label>
+                <input style={inputStyle} placeholder="Anexo" value={form.anexo} onChange={set("anexo")} />
+              </div>
+
+              {/* 13. DUEÑO FURGON */}
+              <div>
+                <label style={labelStyle}>DUEÑO FURGON</label>
+                <input style={inputStyle} placeholder="Dueño furgón" value={form.duenoFurgon} onChange={set("duenoFurgon")} />
+              </div>
+
+              {/* 14. TIPO VEHIC */}
+              <div>
+                <label style={labelStyle}>TIPO VEHIC</label>
+                <select style={inputStyle} value={form.tipoVehiculo} onChange={set("tipoVehiculo")}>
+                  <option value="FURGON SIMPLE">FURGON SIMPLE</option>
+                  <option value="FURGON MEDIO">FURGON MEDIO</option>
+                  <option value="FURGON GRANDE">FURGON GRANDE</option>
+                  <option value="CAMION">CAMION</option>
+                  <option value="AUTO">AUTO</option>
+                </select>
+              </div>
+
+              {/* 15. FACTURACION */}
+              <div>
+                <label style={labelStyle}>FACTURACION</label>
+                <select style={inputStyle} value={form.facturacion} onChange={set("facturacion")}>
+                  <option value="COMODATO">COMODATO</option>
+                  <option value="EMPRESA">EMPRESA</option>
+                  <option value="HONORARIOS">HONORARIOS</option>
+                  <option value="OTRO">OTRO</option>
+                </select>
+              </div>
+
+              {/* 16. NOMBRE EMPRESA */}
+              <div className="md:col-span-2">
+                <label style={labelStyle}>NOMBRE EMPRESA</label>
+                <input style={inputStyle} placeholder="Ej: DASAI SPA" value={form.nombreEmpresa} onChange={set("nombreEmpresa")} />
+              </div>
+
+              {/* 17. RUT EMPRESA */}
+              <div>
+                <label style={labelStyle}>RUT EMPRESA</label>
+                <input style={inputStyle} placeholder="Ej: 77361303-6" value={form.rutEmpresa} onChange={set("rutEmpresa")} />
+              </div>
+
+              {/* 18. BANCO */}
+              <div>
+                <label style={labelStyle}>BANCO</label>
+                <select style={inputStyle} value={form.banco} onChange={set("banco")}>
+                  <option value="SANTANDER">SANTANDER</option>
+                  <option value="ESTADO">BANCO ESTADO</option>
+                  <option value="BCI">BCI</option>
+                  <option value="CHILE">BANCO DE CHILE</option>
+                  <option value="SCOTIABANK">SCOTIABANK</option>
+                  <option value="ITAU">ITAU</option>
+                  <option value="FALABELLA">BANCO FALABELLA</option>
+                  <option value="MERCADO PAGO">MERCADO PAGO</option>
+                  <option value="SECURITY">BANCO SECURITY</option>
+                  <option value="BICE">BICE</option>
+                  <option value="OTRO">OTRO</option>
+                </select>
+              </div>
+
+              {/* 19. TIPO CUENTA */}
+              <div>
+                <label style={labelStyle}>TIPO CUENTA</label>
+                <select style={inputStyle} value={form.tipoCuenta} onChange={set("tipoCuenta")}>
+                  <option value="CORRIENTE">CORRIENTE</option>
+                  <option value="VISTA">VISTA / CUENTA RUT</option>
+                  <option value="CHEQUERA ELECTRONICA">CHEQUERA ELECTRÓNICA</option>
+                  <option value="AHORRO">AHORRO</option>
+                </select>
+              </div>
+
+              {/* 20. NUMERO CUENTA */}
+              <div>
+                <label style={labelStyle}>NUMERO CUENTA</label>
+                <input style={inputStyle} placeholder="Ej: 77738150" value={form.numeroCuenta} onChange={set("numeroCuenta")} />
+              </div>
+
+              {/* 21. COMUNA */}
+              <div>
+                <label style={labelStyle}>COMUNA</label>
+                <input style={inputStyle} placeholder="Ej: Maipú" value={form.comuna} onChange={set("comuna")} />
+              </div>
+
+              {/* 22. DIRECCIÓN */}
+              <div className="md:col-span-2">
+                <label style={labelStyle}>DIRECCIÓN</label>
+                <input style={inputStyle} placeholder="Ej: PASAJE TAMARA 834" value={form.direccion} onChange={set("direccion")} />
+              </div>
+
+              {/* 23. LICENCIA */}
+              <div>
+                <label style={labelStyle}>LICENCIA</label>
+                <input style={inputStyle} placeholder="Ej: B, B C, B A4 A2" value={form.licencia} onChange={set("licencia")} />
+              </div>
+
+              {/* 24. GPS */}
+              <div>
+                <label style={labelStyle}>GPS</label>
+                <select style={inputStyle} value={form.gps} onChange={set("gps")}>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
+              {/* 25. SEGURO */}
+              <div>
+                <label style={labelStyle}>SEGURO</label>
+                <select style={inputStyle} value={form.seguro} onChange={set("seguro")}>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
             </div>
 
-            {/* SECCION 2: VEHÍCULO Y FLOTA */}
-            <div>
-              <div style={sectionTitleStyle}>
-                <Truck size={15} /> 2. Vehículo y Flota
+            {/* Documentos Adjuntos Opcionales */}
+            <div style={{ background: "rgba(255,255,255,0.02)", padding: 14, borderRadius: 12, border: "1px dashed rgba(255,255,255,0.1)", marginTop: 16 }}>
+              <div className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <FileText size={14} className="text-[#93c947]" /> Documentos Adjuntos (Opcional)
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                  <label style={labelStyle}>PPU (Patente)</label>
-                  <input style={{ ...inputStyle, textTransform: "uppercase" }} placeholder="Ej: LHRK71" value={form.patente} onChange={set("patente")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>TIPO VEHIC</label>
-                  <select style={inputStyle} value={form.tipoVehiculo} onChange={set("tipoVehiculo")}>
-                    <option value="FURGON SIMPLE">FURGON SIMPLE</option>
-                    <option value="FURGON MEDIO">FURGON MEDIO</option>
-                    <option value="FURGON GRANDE">FURGON GRANDE</option>
-                    <option value="CAMION">CAMION</option>
-                    <option value="AUTO">AUTO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>DUEÑO FURGON</label>
-                  <input style={inputStyle} placeholder="Nombre dueño (si aplica)" value={form.duenoFurgon} onChange={set("duenoFurgon")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>GPS</label>
-                  <select style={inputStyle} value={form.gps} onChange={set("gps")}>
-                    <option value="SI">SI</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>GPS CCCS</label>
-                  <select style={inputStyle} value={form.gpsCccs} onChange={set("gpsCccs")}>
-                    <option value="SI">SI</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>SEGURO</label>
-                  <select style={inputStyle} value={form.seguro} onChange={set("seguro")}>
-                    <option value="SI">SI</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div className="md:col-span-3">
-                  <label style={labelStyle}>BEETRACK</label>
-                  <input style={inputStyle} placeholder="Ej: cc157935356" value={form.beetrack} onChange={set("beetrack")} />
-                </div>
-              </div>
-            </div>
-
-            {/* SECCION 3: CONTRATACIÓN Y OPERACIONES */}
-            <div>
-              <div style={sectionTitleStyle}>
-                <FileCheck size={15} /> 3. Contrato y Documentación
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                  <label style={labelStyle}>INDUCCION</label>
-                  <select style={inputStyle} value={form.induccion} onChange={set("induccion")}>
-                    <option value="SI">SI</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>CARPETA</label>
-                  <select style={inputStyle} value={form.carpeta} onChange={set("carpeta")}>
-                    <option value="SI">SI</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>CONTRATO</label>
-                  <select style={inputStyle} value={form.contrato} onChange={set("contrato")}>
-                    <option value="FIRMADO">FIRMADO</option>
-                    <option value="FALTA FIRMAR">FALTA FIRMAR</option>
-                    <option value="PENDIENTE">PENDIENTE</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>ANEXO</label>
-                  <input style={inputStyle} placeholder="Anexo de contrato" value={form.anexo} onChange={set("anexo")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>TIPO SERVICIO</label>
-                  <select style={inputStyle} value={form.tipoServicio} onChange={set("tipoServicio")}>
-                    <option value="Paquetería">Paquetería</option>
-                    <option value="Supermercado">Supermercado</option>
-                    <option value="Ambas">Ambas</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>N° LOCAL</label>
-                  <input style={inputStyle} placeholder="Ej: 123" value={form.nLocal} onChange={set("nLocal")} />
-                </div>
-              </div>
-            </div>
-
-            {/* SECCION 4: FACTURACIÓN Y BANCO */}
-            <div>
-              <div style={sectionTitleStyle}>
-                <CreditCard size={15} /> 4. Facturación y Datos Bancarios
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                  <label style={labelStyle}>FACTURACION</label>
-                  <select style={inputStyle} value={form.facturacion} onChange={set("facturacion")}>
-                    <option value="COMODATO">COMODATO</option>
-                    <option value="EMPRESA">EMPRESA</option>
-                    <option value="HONORARIOS">HONORARIOS</option>
-                    <option value="OTRO">OTRO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>NOMBRE EMPRESA</label>
-                  <input style={inputStyle} placeholder="Ej: DASAI SPA" value={form.nombreEmpresa} onChange={set("nombreEmpresa")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>RUT EMPRESA</label>
-                  <input style={inputStyle} placeholder="Ej: 77361303-6" value={form.rutEmpresa} onChange={set("rutEmpresa")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>BANCO</label>
-                  <select style={inputStyle} value={form.banco} onChange={set("banco")}>
-                    <option value="SANTANDER">SANTANDER</option>
-                    <option value="ESTADO">BANCO ESTADO</option>
-                    <option value="BCI">BCI</option>
-                    <option value="CHILE">BANCO DE CHILE</option>
-                    <option value="SCOTIABANK">SCOTIABANK</option>
-                    <option value="ITAU">ITAU</option>
-                    <option value="FALABELLA">BANCO FALABELLA</option>
-                    <option value="MERCADO PAGO">MERCADO PAGO</option>
-                    <option value="SECURITY">BANCO SECURITY</option>
-                    <option value="BICE">BICE</option>
-                    <option value="OTRO">OTRO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>TIPO CUENTA</label>
-                  <select style={inputStyle} value={form.tipoCuenta} onChange={set("tipoCuenta")}>
-                    <option value="CORRIENTE">CORRIENTE</option>
-                    <option value="VISTA">VISTA / CUENTA RUT</option>
-                    <option value="CHEQUERA ELECTRONICA">CHEQUERA ELECTRÓNICA</option>
-                    <option value="AHORRO">AHORRO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>NUMERO CUENTA</label>
-                  <input style={inputStyle} placeholder="Ej: 77738150" value={form.numeroCuenta} onChange={set("numeroCuenta")} />
-                </div>
-              </div>
-            </div>
-
-            {/* SECCION 5: DOCUMENTOS ADJUNTOS */}
-            <div style={{ background: "rgba(255,255,255,0.02)", padding: 14, borderRadius: 12, border: "1px dashed rgba(255,255,255,0.1)" }}>
-              <div style={{ ...sectionTitleStyle, borderBottom: "none", marginBottom: 8 }}>
-                <FileText size={15} /> 5. Documentos Adjuntos (PDF o Imagen)
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {[
                   { key: 'hojaConductor', label: 'Hoja de Vida Conductor' },
                   { key: 'licenciaFrontal', label: 'Licencia (Frontal)' },
@@ -477,11 +451,11 @@ function AddTechModal({
               </div>
             </div>
 
-            {/* SECCION 6: ESTADO INICIAL */}
-            <div>
+            {/* Estado Inicial */}
+            <div className="pt-2">
               <label style={labelStyle}>Estado inicial del chofer</label>
               <select
-                style={{ ...inputStyle, cursor: "pointer" }}
+                style={{ ...inputStyle, cursor: "pointer", maxWidth: 260 }}
                 value={form.status}
                 onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as TechnicianStatus }))}
               >
@@ -498,7 +472,7 @@ function AddTechModal({
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="flex items-center justify-between pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
               <button onClick={confirmClose} className="btn-secondary text-sm">Cancelar</button>
               <button
                 onClick={handleSave}
@@ -532,42 +506,32 @@ function EditTechModal({
   onSave: (updated: Technician) => void;
 }) {
   const [form, setForm] = useState({
+    patente: tech.patente || "",
     name: tech.name || "",
     rut: tech.rut || "",
     phone: tech.phone || "",
     phone2: tech.phone2 || tech.whatsapp || "",
     email: tech.email || "",
-    comuna: tech.comuna || "",
-    direccion: tech.direccion || "",
-    licencia: tech.licencia || "B",
-    
-    patente: tech.patente || "",
-    tipoVehiculo: tech.tipoVehiculo || "FURGON SIMPLE",
-    duenoFurgon: tech.duenoFurgon || "",
-    gps: tech.gps || "NO",
     gpsCccs: tech.gpsCccs || "SI",
     beetrack: tech.beetrack || "",
-    seguro: tech.seguro || "NO",
-    
     induccion: tech.induccion || "SI",
     carpeta: tech.carpeta || "SI",
     contrato: tech.contrato || "FIRMADO",
     anexo: tech.anexo || "",
-    tipoServicio: tech.tipoServicio || "Paquetería",
-    nLocal: tech.nLocal || "",
-    
+    duenoFurgon: tech.duenoFurgon || "",
+    tipoVehiculo: tech.tipoVehiculo || "FURGON SIMPLE",
     facturacion: tech.facturacion || "COMODATO",
     nombreEmpresa: tech.nombreEmpresa || "",
     rutEmpresa: tech.rutEmpresa || "",
     banco: tech.banco || "ESTADO",
     tipoCuenta: tech.tipoCuenta || "CORRIENTE",
     numeroCuenta: tech.numeroCuenta || "",
-    
+    comuna: tech.comuna || "",
+    direccion: tech.direccion || "",
+    licencia: tech.licencia || "B",
+    gps: tech.gps || "NO",
+    seguro: tech.seguro || "NO",
     status: tech.status,
-    estadoCivil: tech.estadoCivil || "",
-    estudios: tech.estudios || "",
-    modeloAuto: tech.modeloAuto || "",
-    anioAuto: tech.anioAuto || "",
   });
 
   const [saving, setSaving] = useState(false);
@@ -618,7 +582,7 @@ function EditTechModal({
       const { error } = await supabase.from('tecnicos').update({ data: updated }).eq('id', tech.id);
       if (error) throw error;
       setSaved(true);
-      setTimeout(() => { onSave(updated); onClose(); }, 700);
+      setTimeout(() => { onSave(updated); onClose(); }, 600);
     } catch (e: any) {
       setSaveError('Error: ' + e.message);
     } finally {
@@ -629,214 +593,230 @@ function EditTechModal({
   return (
     <div className="fixed inset-0 z-[60] overflow-y-auto" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)" }}>
       <div className="min-h-screen py-8 px-4 flex items-start justify-center">
-        <div className="w-full max-w-2xl rounded-2xl overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.1)" }}>
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid rgba(114,176,29,0.12)" }}>
+          <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid rgba(114,176,29,0.15)", background: "rgba(255,255,255,0.01)" }}>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(114,176,29,0.12)" }}>
-                <Pencil size={18} style={{ color: "#72b01d" }} />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(114,176,29,0.15)" }}>
+                <Pencil size={18} style={{ color: "#93c947" }} />
               </div>
               <div>
-                <div className="font-bold text-lg" style={{ color: "#f1f5f9" }}>Editar Chofer</div>
-                <div className="text-xs" style={{ color: "#475569" }}>{tech.name} — {tech.rut}</div>
+                <div className="font-bold text-lg text-slate-100">Editar Chofer</div>
+                <div className="text-xs text-slate-400">{tech.name} — {tech.rut}</div>
               </div>
             </div>
-            <button onClick={confirmClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}><X size={20} /></button>
+            <button onClick={confirmClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b" }} className="hover:text-slate-200"><X size={22} /></button>
           </div>
 
-          <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
-            {/* 1. Conductor */}
-            <div>
-              <div style={sectionTitleStyle}><User size={15} /> 1. Datos del Conductor</div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label style={labelStyle}>CONDUCTOR (Nombre completo) *</label>
-                  <input style={inputStyle} value={form.name} onChange={set("name")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>RUT</label>
-                  <input style={inputStyle} value={form.rut} onChange={set("rut")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>CELULAR</label>
-                  <input style={inputStyle} value={form.phone} onChange={set("phone")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>WHATSAPP</label>
-                  <input style={inputStyle} value={form.phone2} onChange={set("phone2")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>MAIL CONDUCTOR</label>
-                  <input style={inputStyle} type="email" value={form.email} onChange={set("email")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>LICENCIA</label>
-                  <input style={inputStyle} value={form.licencia} onChange={set("licencia")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>COMUNA</label>
-                  <input style={inputStyle} value={form.comuna} onChange={set("comuna")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>DIRECCIÓN</label>
-                  <input style={inputStyle} value={form.direccion} onChange={set("direccion")} />
-                </div>
+          <div className="p-6 space-y-4 max-h-[82vh] overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+              
+              {/* 1. PPU */}
+              <div>
+                <label style={labelStyle}>PPU</label>
+                <input style={{ ...inputStyle, textTransform: "uppercase" }} value={form.patente} onChange={set("patente")} />
               </div>
+
+              {/* 2. CONDUCTOR */}
+              <div className="sm:col-span-2">
+                <label style={labelStyle}>CONDUCTOR *</label>
+                <input style={inputStyle} value={form.name} onChange={set("name")} />
+              </div>
+
+              {/* 3. RUT */}
+              <div>
+                <label style={labelStyle}>RUT</label>
+                <input style={inputStyle} value={form.rut} onChange={set("rut")} />
+              </div>
+
+              {/* 4. CELULAR */}
+              <div>
+                <label style={labelStyle}>CELULAR</label>
+                <input style={inputStyle} value={form.phone} onChange={set("phone")} />
+              </div>
+
+              {/* 5. WHATSAPP */}
+              <div>
+                <label style={labelStyle}>WHATSAPP</label>
+                <input style={inputStyle} value={form.phone2} onChange={set("phone2")} />
+              </div>
+
+              {/* 6. MAIL CONDUCTOR */}
+              <div className="md:col-span-2">
+                <label style={labelStyle}>MAIL CONDUCTOR</label>
+                <input style={inputStyle} type="email" value={form.email} onChange={set("email")} />
+              </div>
+
+              {/* 7. GPS CCCS */}
+              <div>
+                <label style={labelStyle}>GPS CCCS</label>
+                <select style={inputStyle} value={form.gpsCccs} onChange={set("gpsCccs")}>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
+              {/* 8. BEETRACK */}
+              <div>
+                <label style={labelStyle}>BEETRACK</label>
+                <input style={inputStyle} value={form.beetrack} onChange={set("beetrack")} />
+              </div>
+
+              {/* 9. INDUCCION */}
+              <div>
+                <label style={labelStyle}>INDUCCION</label>
+                <select style={inputStyle} value={form.induccion} onChange={set("induccion")}>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
+              {/* 10. CARPETA */}
+              <div>
+                <label style={labelStyle}>CARPETA</label>
+                <select style={inputStyle} value={form.carpeta} onChange={set("carpeta")}>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
+              {/* 11. CONTRATO */}
+              <div>
+                <label style={labelStyle}>CONTRATO</label>
+                <select style={inputStyle} value={form.contrato} onChange={set("contrato")}>
+                  <option value="FIRMADO">FIRMADO</option>
+                  <option value="FALTA FIRMAR">FALTA FIRMAR</option>
+                  <option value="PENDIENTE">PENDIENTE</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
+              {/* 12. ANEXO */}
+              <div>
+                <label style={labelStyle}>ANEXO</label>
+                <input style={inputStyle} value={form.anexo} onChange={set("anexo")} />
+              </div>
+
+              {/* 13. DUEÑO FURGON */}
+              <div>
+                <label style={labelStyle}>DUEÑO FURGON</label>
+                <input style={inputStyle} value={form.duenoFurgon} onChange={set("duenoFurgon")} />
+              </div>
+
+              {/* 14. TIPO VEHIC */}
+              <div>
+                <label style={labelStyle}>TIPO VEHIC</label>
+                <select style={inputStyle} value={form.tipoVehiculo} onChange={set("tipoVehiculo")}>
+                  <option value="FURGON SIMPLE">FURGON SIMPLE</option>
+                  <option value="FURGON MEDIO">FURGON MEDIO</option>
+                  <option value="FURGON GRANDE">FURGON GRANDE</option>
+                  <option value="CAMION">CAMION</option>
+                  <option value="AUTO">AUTO</option>
+                </select>
+              </div>
+
+              {/* 15. FACTURACION */}
+              <div>
+                <label style={labelStyle}>FACTURACION</label>
+                <select style={inputStyle} value={form.facturacion} onChange={set("facturacion")}>
+                  <option value="COMODATO">COMODATO</option>
+                  <option value="EMPRESA">EMPRESA</option>
+                  <option value="HONORARIOS">HONORARIOS</option>
+                  <option value="OTRO">OTRO</option>
+                </select>
+              </div>
+
+              {/* 16. NOMBRE EMPRESA */}
+              <div className="md:col-span-2">
+                <label style={labelStyle}>NOMBRE EMPRESA</label>
+                <input style={inputStyle} value={form.nombreEmpresa} onChange={set("nombreEmpresa")} />
+              </div>
+
+              {/* 17. RUT EMPRESA */}
+              <div>
+                <label style={labelStyle}>RUT EMPRESA</label>
+                <input style={inputStyle} value={form.rutEmpresa} onChange={set("rutEmpresa")} />
+              </div>
+
+              {/* 18. BANCO */}
+              <div>
+                <label style={labelStyle}>BANCO</label>
+                <select style={inputStyle} value={form.banco} onChange={set("banco")}>
+                  <option value="SANTANDER">SANTANDER</option>
+                  <option value="ESTADO">BANCO ESTADO</option>
+                  <option value="BCI">BCI</option>
+                  <option value="CHILE">BANCO DE CHILE</option>
+                  <option value="SCOTIABANK">SCOTIABANK</option>
+                  <option value="ITAU">ITAU</option>
+                  <option value="FALABELLA">BANCO FALABELLA</option>
+                  <option value="MERCADO PAGO">MERCADO PAGO</option>
+                  <option value="SECURITY">BANCO SECURITY</option>
+                  <option value="BICE">BICE</option>
+                  <option value="OTRO">OTRO</option>
+                </select>
+              </div>
+
+              {/* 19. TIPO CUENTA */}
+              <div>
+                <label style={labelStyle}>TIPO CUENTA</label>
+                <select style={inputStyle} value={form.tipoCuenta} onChange={set("tipoCuenta")}>
+                  <option value="CORRIENTE">CORRIENTE</option>
+                  <option value="VISTA">VISTA / CUENTA RUT</option>
+                  <option value="CHEQUERA ELECTRONICA">CHEQUERA ELECTRÓNICA</option>
+                  <option value="AHORRO">AHORRO</option>
+                </select>
+              </div>
+
+              {/* 20. NUMERO CUENTA */}
+              <div>
+                <label style={labelStyle}>NUMERO CUENTA</label>
+                <input style={inputStyle} value={form.numeroCuenta} onChange={set("numeroCuenta")} />
+              </div>
+
+              {/* 21. COMUNA */}
+              <div>
+                <label style={labelStyle}>COMUNA</label>
+                <input style={inputStyle} value={form.comuna} onChange={set("comuna")} />
+              </div>
+
+              {/* 22. DIRECCIÓN */}
+              <div className="md:col-span-2">
+                <label style={labelStyle}>DIRECCIÓN</label>
+                <input style={inputStyle} value={form.direccion} onChange={set("direccion")} />
+              </div>
+
+              {/* 23. LICENCIA */}
+              <div>
+                <label style={labelStyle}>LICENCIA</label>
+                <input style={inputStyle} value={form.licencia} onChange={set("licencia")} />
+              </div>
+
+              {/* 24. GPS */}
+              <div>
+                <label style={labelStyle}>GPS</label>
+                <select style={inputStyle} value={form.gps} onChange={set("gps")}>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
+              {/* 25. SEGURO */}
+              <div>
+                <label style={labelStyle}>SEGURO</label>
+                <select style={inputStyle} value={form.seguro} onChange={set("seguro")}>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+              </div>
+
             </div>
 
-            {/* 2. Vehiculo */}
-            <div>
-              <div style={sectionTitleStyle}><Truck size={15} /> 2. Vehículo y Flota</div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                  <label style={labelStyle}>PPU (Patente)</label>
-                  <input style={{ ...inputStyle, textTransform: "uppercase" }} value={form.patente} onChange={set("patente")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>TIPO VEHIC</label>
-                  <select style={inputStyle} value={form.tipoVehiculo} onChange={set("tipoVehiculo")}>
-                    <option value="FURGON SIMPLE">FURGON SIMPLE</option>
-                    <option value="FURGON MEDIO">FURGON MEDIO</option>
-                    <option value="FURGON GRANDE">FURGON GRANDE</option>
-                    <option value="CAMION">CAMION</option>
-                    <option value="AUTO">AUTO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>DUEÑO FURGON</label>
-                  <input style={inputStyle} value={form.duenoFurgon} onChange={set("duenoFurgon")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>GPS</label>
-                  <select style={inputStyle} value={form.gps} onChange={set("gps")}>
-                    <option value="SI">SI</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>GPS CCCS</label>
-                  <select style={inputStyle} value={form.gpsCccs} onChange={set("gpsCccs")}>
-                    <option value="SI">SI</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>SEGURO</label>
-                  <select style={inputStyle} value={form.seguro} onChange={set("seguro")}>
-                    <option value="SI">SI</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div className="md:col-span-3">
-                  <label style={labelStyle}>BEETRACK</label>
-                  <input style={inputStyle} value={form.beetrack} onChange={set("beetrack")} />
-                </div>
+            {/* Documentos */}
+            <div style={{ background: "rgba(255,255,255,0.02)", padding: 14, borderRadius: 12, border: "1px dashed rgba(255,255,255,0.1)", marginTop: 16 }}>
+              <div className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <FileText size={14} className="text-[#93c947]" /> Documentos Adjuntos
               </div>
-            </div>
-
-            {/* 3. Contrato */}
-            <div>
-              <div style={sectionTitleStyle}><FileCheck size={15} /> 3. Contrato y Operaciones</div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                  <label style={labelStyle}>INDUCCION</label>
-                  <select style={inputStyle} value={form.induccion} onChange={set("induccion")}>
-                    <option value="SI">SI</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>CARPETA</label>
-                  <select style={inputStyle} value={form.carpeta} onChange={set("carpeta")}>
-                    <option value="SI">SI</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>CONTRATO</label>
-                  <select style={inputStyle} value={form.contrato} onChange={set("contrato")}>
-                    <option value="FIRMADO">FIRMADO</option>
-                    <option value="FALTA FIRMAR">FALTA FIRMAR</option>
-                    <option value="PENDIENTE">PENDIENTE</option>
-                    <option value="NO">NO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>ANEXO</label>
-                  <input style={inputStyle} value={form.anexo} onChange={set("anexo")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>TIPO SERVICIO</label>
-                  <select style={inputStyle} value={form.tipoServicio} onChange={set("tipoServicio")}>
-                    <option value="Paquetería">Paquetería</option>
-                    <option value="Supermercado">Supermercado</option>
-                    <option value="Ambas">Ambas</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>N° LOCAL</label>
-                  <input style={inputStyle} value={form.nLocal} onChange={set("nLocal")} />
-                </div>
-              </div>
-            </div>
-
-            {/* 4. Facturación */}
-            <div>
-              <div style={sectionTitleStyle}><CreditCard size={15} /> 4. Facturación y Datos Bancarios</div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                  <label style={labelStyle}>FACTURACION</label>
-                  <select style={inputStyle} value={form.facturacion} onChange={set("facturacion")}>
-                    <option value="COMODATO">COMODATO</option>
-                    <option value="EMPRESA">EMPRESA</option>
-                    <option value="HONORARIOS">HONORARIOS</option>
-                    <option value="OTRO">OTRO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>NOMBRE EMPRESA</label>
-                  <input style={inputStyle} value={form.nombreEmpresa} onChange={set("nombreEmpresa")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>RUT EMPRESA</label>
-                  <input style={inputStyle} value={form.rutEmpresa} onChange={set("rutEmpresa")} />
-                </div>
-                <div>
-                  <label style={labelStyle}>BANCO</label>
-                  <select style={inputStyle} value={form.banco} onChange={set("banco")}>
-                    <option value="SANTANDER">SANTANDER</option>
-                    <option value="ESTADO">BANCO ESTADO</option>
-                    <option value="BCI">BCI</option>
-                    <option value="CHILE">BANCO DE CHILE</option>
-                    <option value="SCOTIABANK">SCOTIABANK</option>
-                    <option value="ITAU">ITAU</option>
-                    <option value="FALABELLA">BANCO FALABELLA</option>
-                    <option value="MERCADO PAGO">MERCADO PAGO</option>
-                    <option value="SECURITY">BANCO SECURITY</option>
-                    <option value="BICE">BICE</option>
-                    <option value="OTRO">OTRO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>TIPO CUENTA</label>
-                  <select style={inputStyle} value={form.tipoCuenta} onChange={set("tipoCuenta")}>
-                    <option value="CORRIENTE">CORRIENTE</option>
-                    <option value="VISTA">VISTA / CUENTA RUT</option>
-                    <option value="CHEQUERA ELECTRONICA">CHEQUERA ELECTRÓNICA</option>
-                    <option value="AHORRO">AHORRO</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>NUMERO CUENTA</label>
-                  <input style={inputStyle} value={form.numeroCuenta} onChange={set("numeroCuenta")} />
-                </div>
-              </div>
-            </div>
-
-            {/* 5. Documentos */}
-            <div style={{ background: "rgba(255,255,255,0.02)", padding: 14, borderRadius: 12, border: "1px dashed rgba(255,255,255,0.1)" }}>
-              <div style={{ ...sectionTitleStyle, borderBottom: "none", marginBottom: 8 }}><FileText size={15} /> 5. Documentos Adjuntos</div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {[
                   { key: 'hojaConductor', label: 'Hoja de Vida Conductor' },
                   { key: 'licenciaFrontal', label: 'Licencia (Frontal)' },
@@ -861,10 +841,10 @@ function EditTechModal({
               </div>
             </div>
 
-            {/* 6. Estado */}
-            <div>
+            {/* Estado */}
+            <div className="pt-2">
               <label style={labelStyle}>Estado</label>
-              <select style={{ ...inputStyle, cursor: "pointer" }} value={form.status} onChange={set("status")}>
+              <select style={{ ...inputStyle, cursor: "pointer", maxWidth: 260 }} value={form.status} onChange={set("status")}>
                 <option value="disponible">Disponible</option>
                 <option value="en ruta">En ruta</option>
                 <option value="trabajando">Libre</option>
@@ -878,7 +858,7 @@ function EditTechModal({
               </div>
             )}
 
-            <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="flex items-center justify-between pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
               <button onClick={confirmClose} className="btn-secondary text-sm">Cancelar</button>
               <button
                 onClick={handleSave}
@@ -915,41 +895,33 @@ function TechModal({
   const downloadInfo = () => {
     const text = `FICHA DE CHOFER / FLOTA - OPSDASAI\n` +
       `===============================================\n\n` +
-      `[1. DATOS DEL CONDUCTOR]\n` +
-      `Nombre: ${tech.name}\n` +
+      `PPU: ${tech.patente || "—"}\n` +
+      `CONDUCTOR: ${tech.name}\n` +
       `RUT: ${tech.rut}\n` +
-      `Celular: ${tech.phone}\n` +
-      `WhatsApp: ${tech.phone2 || tech.whatsapp || "—"}\n` +
-      `Email: ${tech.email || "—"}\n` +
-      `Comuna: ${tech.comuna || "—"}\n` +
-      `Dirección: ${tech.direccion || "—"}\n` +
-      `Licencia: ${tech.licencia || "—"}\n\n` +
-      `[2. VEHÍCULO Y FLOTA]\n` +
-      `PPU (Patente): ${tech.patente || "—"}\n` +
-      `Tipo Vehículo: ${tech.tipoVehiculo || "—"}\n` +
-      `Dueño Furgón: ${tech.duenoFurgon || "—"}\n` +
-      `GPS: ${tech.gps || "—"}\n` +
+      `CELULAR: ${tech.phone}\n` +
+      `WHATSAPP: ${tech.phone2 || tech.whatsapp || "—"}\n` +
+      `MAIL CONDUCTOR: ${tech.email || "—"}\n` +
       `GPS CCCS: ${tech.gpsCccs || "—"}\n` +
-      `Beetrack: ${tech.beetrack || "—"}\n` +
-      `Seguro: ${tech.seguro || "—"}\n\n` +
-      `[3. CONTRATO Y OPERACIÓN]\n` +
-      `Inducción: ${tech.induccion || "—"}\n` +
-      `Carpeta: ${tech.carpeta || "—"}\n` +
-      `Contrato: ${tech.contrato || "—"}\n` +
-      `Anexo: ${tech.anexo || "—"}\n` +
-      `Tipo Servicio: ${tech.tipoServicio || "—"}\n` +
-      `N° Local: ${tech.nLocal || "—"}\n\n` +
-      `[4. FACTURACIÓN Y BANCO]\n` +
-      `Facturación: ${tech.facturacion || "—"}\n` +
-      `Nombre Empresa: ${tech.nombreEmpresa || "—"}\n` +
-      `RUT Empresa: ${tech.rutEmpresa || "—"}\n` +
-      `Banco: ${tech.banco || "—"}\n` +
-      `Tipo Cuenta: ${tech.tipoCuenta || "—"}\n` +
-      `Número Cuenta: ${tech.numeroCuenta || "—"}\n\n` +
-      `[5. MÉTRICAS Y ESTADO]\n` +
-      `Estado: ${tech.status.toUpperCase()}\n` +
-      `Coordinaciones realizadas: ${tech.completedOrders}\n` +
-      `Productividad: ${tech.productivity}%\n`;
+      `BEETRACK: ${tech.beetrack || "—"}\n` +
+      `INDUCCION: ${tech.induccion || "—"}\n` +
+      `CARPETA: ${tech.carpeta || "—"}\n` +
+      `CONTRATO: ${tech.contrato || "—"}\n` +
+      `ANEXO: ${tech.anexo || "—"}\n` +
+      `DUEÑO FURGON: ${tech.duenoFurgon || "—"}\n` +
+      `TIPO VEHIC: ${tech.tipoVehiculo || "—"}\n` +
+      `FACTURACION: ${tech.facturacion || "—"}\n` +
+      `NOMBRE EMPRESA: ${tech.nombreEmpresa || "—"}\n` +
+      `RUT EMPRESA: ${tech.rutEmpresa || "—"}\n` +
+      `BANCO: ${tech.banco || "—"}\n` +
+      `TIPO CUENTA: ${tech.tipoCuenta || "—"}\n` +
+      `NUMERO CUENTA: ${tech.numeroCuenta || "—"}\n` +
+      `COMUNA: ${tech.comuna || "—"}\n` +
+      `DIRECCIÓN: ${tech.direccion || "—"}\n` +
+      `LICENCIA: ${tech.licencia || "—"}\n` +
+      `GPS: ${tech.gps || "—"}\n` +
+      `SEGURO: ${tech.seguro || "—"}\n\n` +
+      `ESTADO: ${tech.status.toUpperCase()}\n` +
+      `COORDINACIONES: ${tech.completedOrders}\n`;
       
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -973,7 +945,7 @@ function TechModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}>
-      <div className="w-full max-w-3xl rounded-2xl overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)", maxHeight: "92vh", overflowY: "auto" }}>
+      <div className="w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)", maxHeight: "92vh", overflowY: "auto" }}>
         
         {/* Header */}
         <div className="flex items-center justify-between p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
@@ -1012,7 +984,7 @@ function TechModal({
               </div>
             </div>
           </div>
-          <button onClick={onClose} style={{ color: "#475569", background: "none", border: "none", cursor: "pointer" }}>
+          <button onClick={onClose} style={{ color: "#475569", background: "none", border: "none", cursor: "pointer" }} className="hover:text-slate-200">
             <X size={20} />
           </button>
         </div>
@@ -1081,61 +1053,67 @@ function TechModal({
             {/* Left Column */}
             <div className="space-y-4">
               
-              {/* Contacto & Ubicación */}
               <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
                 <div className="text-xs font-bold uppercase tracking-wider mb-3 text-[#93c947] flex items-center gap-1.5">
-                  <User size={13} /> Contacto y Ubicación
+                  <User size={13} /> Datos del Conductor
                 </div>
                 <div className="space-y-2 text-xs">
                   <div className="flex items-center justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Celular:</span>
+                    <span className="text-slate-400">PPU (Patente):</span>
+                    <span className="text-brand-400 font-mono font-bold">{tech.patente || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">CONDUCTOR:</span>
+                    <span className="text-slate-100 font-semibold">{tech.name || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">RUT:</span>
+                    <span className="text-slate-200 font-mono">{tech.rut || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">CELULAR:</span>
                     <a href={`tel:${tech.phone}`} className="text-brand-400 font-semibold hover:underline">{tech.phone || "—"}</a>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">WhatsApp:</span>
+                    <span className="text-slate-400">WHATSAPP:</span>
                     <a href={`https://wa.me/${(tech.phone2 || tech.whatsapp || "").replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="text-brand-400 font-semibold hover:underline">
                       {tech.phone2 || tech.whatsapp || "—"}
                     </a>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Email:</span>
+                    <span className="text-slate-400">MAIL CONDUCTOR:</span>
                     <span className="text-slate-200">{tech.email || "—"}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Comuna:</span>
+                    <span className="text-slate-400">COMUNA:</span>
                     <span className="text-slate-200 font-medium">{tech.comuna || "—"}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Dirección:</span>
+                    <span className="text-slate-400">DIRECCIÓN:</span>
                     <span className="text-slate-200 text-right">{tech.direccion || "—"}</span>
                   </div>
                   <div className="flex items-center justify-between py-1">
-                    <span className="text-slate-400">Licencia de Conducir:</span>
+                    <span className="text-slate-400">LICENCIA:</span>
                     <span className="px-2 py-0.5 rounded bg-brand-500/10 text-brand-400 font-bold">{tech.licencia || "—"}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Vehículo y Flota */}
               <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
                 <div className="text-xs font-bold uppercase tracking-wider mb-3 text-[#93c947] flex items-center gap-1.5">
                   <Truck size={13} /> Flota y Vehículo
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-2 rounded bg-white/5">
-                    <div className="text-slate-400 text-[11px]">Patente (PPU)</div>
-                    <div className="font-bold text-slate-100 text-sm mt-0.5">{tech.patente || "—"}</div>
-                  </div>
-                  <div className="p-2 rounded bg-white/5">
-                    <div className="text-slate-400 text-[11px]">Tipo Vehículo</div>
+                    <div className="text-slate-400 text-[11px]">TIPO VEHIC</div>
                     <div className="font-bold text-slate-100 text-sm mt-0.5">{tech.tipoVehiculo || "—"}</div>
                   </div>
                   <div className="p-2 rounded bg-white/5">
-                    <div className="text-slate-400 text-[11px]">Dueño Furgón</div>
-                    <div className="text-slate-200 truncate mt-0.5">{tech.duenoFurgon || "PROPIO / DASAI"}</div>
+                    <div className="text-slate-400 text-[11px]">DUEÑO FURGON</div>
+                    <div className="text-slate-200 truncate mt-0.5">{tech.duenoFurgon || "DASAI"}</div>
                   </div>
                   <div className="p-2 rounded bg-white/5">
-                    <div className="text-slate-400 text-[11px]">Beetrack</div>
+                    <div className="text-slate-400 text-[11px]">BEETRACK</div>
                     <div className="text-slate-200 truncate font-mono mt-0.5">{tech.beetrack || "—"}</div>
                   </div>
                   <div className="p-2 rounded bg-white/5 flex items-center justify-between">
@@ -1147,12 +1125,8 @@ function TechModal({
                     <span className={`font-bold ${tech.gpsCccs === 'SI' ? 'text-[#93c947]' : 'text-slate-400'}`}>{tech.gpsCccs || "NO"}</span>
                   </div>
                   <div className="p-2 rounded bg-white/5 flex items-center justify-between">
-                    <span className="text-slate-400">Seguro:</span>
+                    <span className="text-slate-400">SEGURO:</span>
                     <span className={`font-bold ${tech.seguro === 'SI' ? 'text-[#93c947]' : 'text-slate-400'}`}>{tech.seguro || "NO"}</span>
-                  </div>
-                  <div className="p-2 rounded bg-white/5 flex items-center justify-between">
-                    <span className="text-slate-400">Servicio:</span>
-                    <span className="font-semibold text-slate-200">{tech.tipoServicio || "Paquetería"}</span>
                   </div>
                 </div>
               </div>
@@ -1162,58 +1136,60 @@ function TechModal({
             {/* Right Column */}
             <div className="space-y-4">
               
-              {/* Contratación & Facturación */}
               <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
                 <div className="text-xs font-bold uppercase tracking-wider mb-3 text-[#93c947] flex items-center gap-1.5">
                   <CreditCard size={13} /> Contrato y Facturación
                 </div>
                 <div className="space-y-2 text-xs">
                   <div className="flex items-center justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Contrato:</span>
+                    <span className="text-slate-400">CONTRATO:</span>
                     <span className={`px-2 py-0.5 rounded font-bold text-[11px] ${tech.contrato === 'FIRMADO' ? 'bg-[#72b01d]/20 text-[#93c947]' : 'bg-amber-500/20 text-amber-400'}`}>
                       {tech.contrato || "PENDIENTE"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Inducción:</span>
+                    <span className="text-slate-400">ANEXO:</span>
+                    <span className="text-slate-200">{tech.anexo || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">INDUCCION:</span>
                     <span className="font-semibold text-slate-200">{tech.induccion || "—"}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Carpeta:</span>
+                    <span className="text-slate-400">CARPETA:</span>
                     <span className="font-semibold text-slate-200">{tech.carpeta || "—"}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Régimen Facturación:</span>
+                    <span className="text-slate-400">FACTURACION:</span>
                     <span className="font-semibold text-slate-200">{tech.facturacion || "COMODATO"}</span>
                   </div>
                   {tech.nombreEmpresa && (
                     <div className="flex items-center justify-between py-1 border-b border-white/5">
-                      <span className="text-slate-400">Empresa:</span>
+                      <span className="text-slate-400">NOMBRE EMPRESA:</span>
                       <span className="text-slate-200 font-medium text-right">{tech.nombreEmpresa}</span>
                     </div>
                   )}
                   {tech.rutEmpresa && (
                     <div className="flex items-center justify-between py-1 border-b border-white/5">
-                      <span className="text-slate-400">RUT Empresa:</span>
+                      <span className="text-slate-400">RUT EMPRESA:</span>
                       <span className="text-slate-200 font-mono">{tech.rutEmpresa}</span>
                     </div>
                   )}
                   <div className="flex items-center justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Banco:</span>
+                    <span className="text-slate-400">BANCO:</span>
                     <span className="text-slate-200 font-semibold">{tech.banco || "—"}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Tipo Cuenta:</span>
+                    <span className="text-slate-400">TIPO CUENTA:</span>
                     <span className="text-slate-200">{tech.tipoCuenta || "—"}</span>
                   </div>
                   <div className="flex items-center justify-between py-1">
-                    <span className="text-slate-400">N° de Cuenta:</span>
+                    <span className="text-slate-400">NUMERO CUENTA:</span>
                     <span className="text-slate-100 font-mono font-bold">{tech.numeroCuenta || "—"}</span>
                   </div>
                 </div>
               </div>
 
-              {/* KPIs & Rendimiento */}
               <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
                 <div className="text-xs font-bold uppercase tracking-wider mb-2 text-[#93c947] flex items-center gap-1.5">
                   <TrendingUp size={13} /> Coordinaciones y Rendimiento
@@ -1247,16 +1223,16 @@ function TechModal({
           {(tech.documentos?.hojaConductor || tech.documentos?.licenciaFrontal || tech.documentos?.licenciaTrasera || tech.documentos?.carnetFrontal || tech.documentos?.carnetTrasera || tech.documentos?.certificadoAntecedentes) && (
             <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
               <div className="text-xs font-bold uppercase tracking-wider mb-3 text-[#93c947] flex items-center gap-1.5">
-                <FileText size={13} /> Documentos Adjuntos Disponibles
+                <FileText size={13} /> Documentos Adjuntos
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {[
-                  { key: 'hojaConductor', label: 'Hoja de Vida Conductor', url: tech.documentos?.hojaConductor },
+                  { key: 'hojaConductor', label: 'Hoja de Conductor', url: tech.documentos?.hojaConductor },
                   { key: 'licenciaFrontal', label: 'Licencia (Frontal)', url: tech.documentos?.licenciaFrontal },
                   { key: 'licenciaTrasera', label: 'Licencia (Trasera)', url: tech.documentos?.licenciaTrasera },
                   { key: 'carnetFrontal', label: 'Carnet (Frontal)', url: tech.documentos?.carnetFrontal },
                   { key: 'carnetTrasera', label: 'Carnet (Trasera)', url: tech.documentos?.carnetTrasera },
-                  { key: 'certificadoAntecedentes', label: 'Antecedentes', url: tech.documentos?.certificadoAntecedentes }
+                  { key: 'certificadoAntecedentes', label: 'Cert. de Antecedentes', url: tech.documentos?.certificadoAntecedentes }
                 ].filter(d => d.url).map((d) => (
                   <a 
                     key={d.key} 
@@ -1397,7 +1373,6 @@ export default function TechniciansPage() {
 
   useEffect(() => {
     async function fetchAll() {
-      // Cargar choferes desde Supabase
       const { data: techData } = await supabase
         .from('tecnicos')
         .select('*')
@@ -1458,7 +1433,6 @@ export default function TechniciansPage() {
       }
       setLoadingTechs(false);
 
-      // Cargar conteo de coordinaciones
       const { data: coordData } = await supabase.from('servicios').select('asignado_a, data');
       if (coordData) {
         const counts: Record<string, number> = {};
@@ -1514,7 +1488,6 @@ export default function TechniciansPage() {
   const exportToExcel = () => {
     if (technicians.length === 0) return;
 
-    // Exportar con los 25 encabezados exactos del Excel
     const data = filtered.map(t => ({
       "PPU": t.patente || "",
       "CONDUCTOR": t.name || "",
@@ -1599,7 +1572,7 @@ export default function TechniciansPage() {
             onClick={() => setShowAddModal(true)}
             style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
           >
-            <Plus size={16} /> Nuevo Chofer
+            <Plus size={16} /> Agregar Chofer
           </button>
         </div>
       </div>
