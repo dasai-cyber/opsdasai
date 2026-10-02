@@ -629,11 +629,13 @@ export default function PaqueteriaPage() {
                     onChange={(e) => {
                       const newVehiculo = e.target.value;
                       const info = getTarifaByVehiculoYComuna(newVehiculo, form.comuna);
-                      setForm({
-                        ...form,
+                      const isV2Ok = form.v2 === "OK" || form.v2 === "SI" || form.v2 === "SÍ";
+                      setForm(prev => ({
+                        ...prev,
                         vehiculo: newVehiculo,
-                        valorDia: newVehiculo ? (info.tarifa || form.valorDia || "") : form.valorDia,
-                      });
+                        valorDia: newVehiculo ? (info.tarifa || prev.valorDia || "") : prev.valorDia,
+                        adicional: (isV2Ok || prev.adicional) && newVehiculo ? info.segundaVuelta : (newVehiculo && isV2Ok ? info.segundaVuelta : prev.adicional),
+                      }));
                     }}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-brand-500 cursor-pointer"
                   >
@@ -738,13 +740,15 @@ export default function PaqueteriaPage() {
                       if (val) {
                         setComunaRegiones("");
                         const info = getTarifaByVehiculoYComuna(form.vehiculo, val);
-                        setForm({
-                          ...form,
+                        const isV2Ok = form.v2 === "OK" || form.v2 === "SI" || form.v2 === "SÍ";
+                        setForm(prev => ({
+                          ...prev,
                           comuna: val,
-                          valorDia: form.vehiculo ? (info.tarifa || form.valorDia || "") : form.valorDia,
-                        });
+                          valorDia: prev.vehiculo ? (info.tarifa || prev.valorDia || "") : prev.valorDia,
+                          adicional: isV2Ok && prev.vehiculo ? info.segundaVuelta : prev.adicional,
+                        }));
                       } else {
-                        setForm({ ...form, comuna: "" });
+                        setForm(prev => ({ ...prev, comuna: "" }));
                       }
                     }}
                     placeholder="Escriba o busque comuna RM..."
@@ -777,13 +781,15 @@ export default function PaqueteriaPage() {
                       if (val) {
                         setComunaRM("");
                         const info = getTarifaByVehiculoYComuna(form.vehiculo, val);
-                        setForm({
-                          ...form,
+                        const isV2Ok = form.v2 === "OK" || form.v2 === "SI" || form.v2 === "SÍ";
+                        setForm(prev => ({
+                          ...prev,
                           comuna: val,
-                          valorDia: form.vehiculo ? (info.tarifa || form.valorDia || "") : form.valorDia,
-                        });
+                          valorDia: prev.vehiculo ? (info.tarifa || prev.valorDia || "") : prev.valorDia,
+                          adicional: isV2Ok && prev.vehiculo ? info.segundaVuelta : prev.adicional,
+                        }));
                       } else {
-                        setForm({ ...form, comuna: "" });
+                        setForm(prev => ({ ...prev, comuna: "" }));
                       }
                     }}
                     placeholder="Escriba o busque comuna regiones..."
@@ -830,9 +836,9 @@ export default function PaqueteriaPage() {
                               const nextForm = { ...form, [vKey]: willBeOk ? "OK" : "NO" };
                               if (num === 2) {
                                 const info = getTarifaByVehiculoYComuna(form.vehiculo, form.comuna);
-                                if (willBeOk && (!form.adicional || form.adicional === "$0")) {
+                                if (willBeOk) {
                                   nextForm.adicional = info.segundaVuelta;
-                                } else if (!willBeOk && form.adicional === info.segundaVuelta) {
+                                } else {
                                   nextForm.adicional = "";
                                 }
                               }
@@ -902,10 +908,10 @@ export default function PaqueteriaPage() {
                           type="button"
                           onClick={() => {
                             const info = getTarifaByVehiculoYComuna(form.vehiculo, form.comuna);
-                            setForm({ ...form, adicional: info.segundaVuelta });
+                            setForm({ ...form, adicional: info.segundaVuelta, v2: "OK" });
                           }}
                           className="text-[10px] font-bold text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-1.5 py-0.5 rounded border border-green-500/20 cursor-pointer transition-colors"
-                          title="Clic para fijar tarifa según tabla"
+                          title="Clic para fijar tarifa de segunda vuelta según tabla"
                         >
                           ${getTarifaByVehiculoYComuna(form.vehiculo, form.comuna).segundaVuelta}
                         </button>
