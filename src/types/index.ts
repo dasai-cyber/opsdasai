@@ -79,6 +79,7 @@ export interface Technician {
   comuna?: string;
   phone: string;
   phone2?: string;
+  whatsapp?: string;
   estadoCivil?: string;
   estudios?: string;
   patente?: string;
@@ -90,6 +91,23 @@ export interface Technician {
   region?: string;
   vehicle?: string;
   certifications?: string[];
+  gpsCccs?: string;
+  beetrack?: string;
+  induccion?: string;
+  carpeta?: string;
+  contrato?: string;
+  anexo?: string;
+  duenoFurgon?: string;
+  tipoVehiculo?: string;
+  facturacion?: string;
+  nombreEmpresa?: string;
+  rutEmpresa?: string;
+  banco?: string;
+  tipoCuenta?: string;
+  numeroCuenta?: string;
+  licencia?: string;
+  gps?: string;
+  seguro?: string;
   documentos?: {
     hojaConductor?: string;
     licenciaFrontal?: string;

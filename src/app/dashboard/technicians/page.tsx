@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import {
   Search, Phone, Mail, MapPin, Award, X, TrendingUp,
   CheckCircle2, Plus, Save, User, Pencil, Truck, Trash2, Download, FileText,
+  Building2, CreditCard, ShieldCheck, FileCheck, HelpCircle, Briefcase, ChevronRight
 } from "lucide-react";
 import { getStatusBg } from "@/lib/utils";
 import type { Technician, TechnicianStatus } from "@/types";
@@ -20,7 +21,6 @@ const STATUS_COLOR: Record<TechnicianStatus, string> = {
   disponible: "#93c947", "en ruta": "#72b01d", trabajando: "#f59e0b", offline: "#64748b",
 };
 
-
 const uploadDocument = async (file: File | null, id: string, name: string) => {
   if (!file) return undefined;
   const fileExt = file.name.split('.').pop();
@@ -31,6 +31,43 @@ const uploadDocument = async (file: File | null, id: string, name: string) => {
   return data.publicUrl;
 };
 
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  background: "rgba(27,30,36,0.95)",
+  border: "1px solid rgba(255,255,255,0.09)",
+  borderRadius: 8,
+  padding: "9px 12px",
+  fontSize: 13,
+  color: "#e2e8f0",
+  outline: "none",
+  fontFamily: "inherit",
+};
+
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: 12,
+  fontWeight: 600,
+  color: "#94a3b8",
+  marginBottom: 5,
+};
+
+const sectionTitleStyle: React.CSSProperties = {
+  fontSize: 13,
+  fontWeight: 700,
+  color: "#93c947",
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  marginBottom: 12,
+  marginTop: 6,
+  paddingBottom: 4,
+  borderBottom: "1px solid rgba(147,201,71,0.2)",
+};
+
+const errStyle: React.CSSProperties = { color: "#f87171", fontSize: 11, marginTop: 3 };
+
 // ─── Add Technician Modal ───────────────────────────────────────────────────────
 function AddTechModal({
   onClose,
@@ -39,26 +76,45 @@ function AddTechModal({
   onClose: () => void;
   onAdd: (tech: Technician) => void;
 }) {
-  // supabase is imported at top level
   const [form, setForm] = useState({
-    techNumber: "",
     name: "",
     rut: "",
-    direccion: "",
-    comuna: "",
     phone: "",
     phone2: "",
+    email: "",
+    comuna: "",
+    direccion: "",
+    licencia: "B",
+    
+    patente: "",
+    tipoVehiculo: "FURGON SIMPLE",
+    duenoFurgon: "",
+    gps: "NO",
+    gpsCccs: "SI",
+    beetrack: "",
+    seguro: "NO",
+    
+    induccion: "SI",
+    carpeta: "SI",
+    contrato: "FIRMADO",
+    anexo: "",
+    tipoServicio: "Paquetería",
+    nLocal: "",
+    
+    facturacion: "COMODATO",
+    nombreEmpresa: "",
+    rutEmpresa: "",
+    banco: "ESTADO",
+    tipoCuenta: "CORRIENTE",
+    numeroCuenta: "",
+    
+    status: "disponible" as TechnicianStatus,
     estadoCivil: "",
     estudios: "",
-    nLocal: "",
-    patente: "",
     modeloAuto: "",
     anioAuto: "",
-    tipoServicio: "",
-    email: "",
-    status: "disponible" as TechnicianStatus,
-    certInput: "",
   });
+
   const confirmClose = () => {
     if (window.confirm("¿Deseas guardar los cambios antes de salir?\n\n[Aceptar] = Guardar y cerrar\n[Cancelar] = Cerrar sin guardar")) {
       handleSave();
@@ -66,6 +122,7 @@ function AddTechModal({
       onClose();
     }
   };
+
   const [docs, setDocs] = useState({
     hojaConductor: null as File | null,
     licenciaFrontal: null as File | null,
@@ -84,9 +141,9 @@ function AddTechModal({
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!form.name.trim()) e.name = "El nombre es obligatorio";
+    if (!form.name.trim()) e.name = "El nombre del conductor es obligatorio";
     if (!form.rut.trim()) e.rut = "El RUT es obligatorio";
-    if (!form.phone.trim()) e.phone = "El teléfono es obligatorio";
+    if (!form.phone.trim()) e.phone = "El teléfono celular es obligatorio";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -98,30 +155,53 @@ function AddTechModal({
     const newId = `tech-${Date.now()}`;
     
     try {
-      const docsUrls: any = {};
-      if (docs.hojaConductor) docsUrls.hojaConductor = await uploadDocument(docs.hojaConductor, newId, 'hojaConductor');
-      if (docs.licenciaFrontal) docsUrls.licenciaFrontal = await uploadDocument(docs.licenciaFrontal, newId, 'licenciaFrontal');
-      if (docs.licenciaTrasera) docsUrls.licenciaTrasera = await uploadDocument(docs.licenciaTrasera, newId, 'licenciaTrasera');
-      if (docs.carnetFrontal) docsUrls.carnetFrontal = await uploadDocument(docs.carnetFrontal, newId, 'carnetFrontal');
-      if (docs.carnetTrasera) docsUrls.carnetTrasera = await uploadDocument(docs.carnetTrasera, newId, 'carnetTrasera');
-      if (docs.certificadoAntecedentes) docsUrls.certificadoAntecedentes = await uploadDocument(docs.certificadoAntecedentes, newId, 'certificadoAntecedentes');
+      const docsUrls: Record<string, string> = {};
+      if (docs.hojaConductor) docsUrls.hojaConductor = await uploadDocument(docs.hojaConductor, newId, 'hojaConductor') || "";
+      if (docs.licenciaFrontal) docsUrls.licenciaFrontal = await uploadDocument(docs.licenciaFrontal, newId, 'licenciaFrontal') || "";
+      if (docs.licenciaTrasera) docsUrls.licenciaTrasera = await uploadDocument(docs.licenciaTrasera, newId, 'licenciaTrasera') || "";
+      if (docs.carnetFrontal) docsUrls.carnetFrontal = await uploadDocument(docs.carnetFrontal, newId, 'carnetFrontal') || "";
+      if (docs.carnetTrasera) docsUrls.carnetTrasera = await uploadDocument(docs.carnetTrasera, newId, 'carnetTrasera') || "";
+      if (docs.certificadoAntecedentes) docsUrls.certificadoAntecedentes = await uploadDocument(docs.certificadoAntecedentes, newId, 'certificadoAntecedentes') || "";
 
       const newTech: Technician = {
         id: newId,
-        name: form.name.trim(),
+        name: form.name.trim().toUpperCase(),
         rut: form.rut.trim(),
-        direccion: form.direccion.trim(),
-        comuna: form.comuna.trim(),
         phone: form.phone.trim(),
         phone2: form.phone2.trim(),
+        whatsapp: form.phone2.trim(),
+        email: form.email.trim().toLowerCase(),
+        comuna: form.comuna.trim(),
+        direccion: form.direccion.trim(),
+        licencia: form.licencia.trim().toUpperCase(),
+        
+        patente: form.patente.trim().toUpperCase(),
+        tipoVehiculo: form.tipoVehiculo.trim().toUpperCase(),
+        duenoFurgon: form.duenoFurgon.trim().toUpperCase(),
+        gps: form.gps.trim().toUpperCase(),
+        gpsCccs: form.gpsCccs.trim().toUpperCase(),
+        beetrack: form.beetrack.trim(),
+        seguro: form.seguro.trim().toUpperCase(),
+        
+        induccion: form.induccion.trim().toUpperCase(),
+        carpeta: form.carpeta.trim().toUpperCase(),
+        contrato: form.contrato.trim().toUpperCase(),
+        anexo: form.anexo.trim(),
+        tipoServicio: form.tipoServicio,
+        nLocal: form.nLocal.trim(),
+        
+        facturacion: form.facturacion.trim().toUpperCase(),
+        nombreEmpresa: form.nombreEmpresa.trim().toUpperCase(),
+        rutEmpresa: form.rutEmpresa.trim(),
+        banco: form.banco.trim().toUpperCase(),
+        tipoCuenta: form.tipoCuenta.trim().toUpperCase(),
+        numeroCuenta: form.numeroCuenta.trim(),
+        
         estadoCivil: form.estadoCivil.trim(),
         estudios: form.estudios.trim(),
-        patente: form.patente.trim().toUpperCase(),
         modeloAuto: form.modeloAuto.trim(),
         anioAuto: form.anioAuto.trim(),
-        tipoServicio: form.tipoServicio,
-        nLocal: form.nLocal,
-        email: form.email.trim(),
+        
         status: form.status,
         completedOrders: 0,
         avgTime: 0,
@@ -136,7 +216,7 @@ function AddTechModal({
         return;
       }
       setSaved(true);
-      setTimeout(() => { onAdd(newTech); onClose(); }, 900);
+      setTimeout(() => { onAdd(newTech); onClose(); }, 700);
     } catch (e: any) {
       setSaveError("Error al subir archivos: " + e.message);
     } finally {
@@ -144,24 +224,10 @@ function AddTechModal({
     }
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%",
-    background: "rgba(27,30,36,0.95)",
-    border: "1px solid rgba(255,255,255,0.09)",
-    borderRadius: 8,
-    padding: "10px 14px",
-    fontSize: 13.5,
-    color: "#e2e8f0",
-    outline: "none",
-    fontFamily: "inherit",
-  };
-
-  const errStyle: React.CSSProperties = { color: "#f87171", fontSize: 11, marginTop: 3 };
-
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}>
       <div className="min-h-screen py-8 px-4 flex items-start justify-center">
-        <div className="w-full max-w-xl rounded-2xl overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="w-full max-w-2xl rounded-2xl overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)" }}>
 
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid rgba(114,176,29,0.12)" }}>
@@ -170,8 +236,8 @@ function AddTechModal({
                 <User size={18} style={{ color: "#72b01d" }} />
               </div>
               <div>
-                <div className="font-bold text-lg" style={{ color: "#f1f5f9" }}>Agregar Chofer</div>
-                <div className="text-xs" style={{ color: "#475569" }}>Completa los datos del nuevo chofer</div>
+                <div className="font-bold text-lg" style={{ color: "#f1f5f9" }}>Nuevo Chofer / Flota</div>
+                <div className="text-xs" style={{ color: "#475569" }}>Formulario de alta con campos de la flota Dasai</div>
               </div>
             </div>
             <button onClick={confirmClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}>
@@ -180,133 +246,215 @@ function AddTechModal({
           </div>
 
           {/* Form */}
-          <div className="p-6 space-y-4">
+          <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
 
-            {/* Nombre y RUT */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Nombre completo <span style={{ color: "#72b01d" }}>*</span>
-                </label>
-                <input style={inputStyle} placeholder="Ej: Juan Pérez González" value={form.name} onChange={set("name")} />
-                {errors.name && <div style={errStyle}>{errors.name}</div>}
+            {/* SECCION 1: DATOS PERSONALES / CONDUCTOR */}
+            <div>
+              <div style={sectionTitleStyle}>
+                <User size={15} /> 1. Datos del Conductor
               </div>
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  RUT <span style={{ color: "#72b01d" }}>*</span>
-                </label>
-                <input style={inputStyle} placeholder="Ej: 12.345.678-9" value={form.rut} onChange={set("rut")} />
-                {errors.rut && <div style={errStyle}>{errors.rut}</div>}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label style={labelStyle}>CONDUCTOR (Nombre completo) <span style={{ color: "#72b01d" }}>*</span></label>
+                  <input style={inputStyle} placeholder="Ej: RODRIGO ALFREDO MARQUEZ" value={form.name} onChange={set("name")} />
+                  {errors.name && <div style={errStyle}>{errors.name}</div>}
+                </div>
+                <div>
+                  <label style={labelStyle}>RUT <span style={{ color: "#72b01d" }}>*</span></label>
+                  <input style={inputStyle} placeholder="Ej: 15793535-6" value={form.rut} onChange={set("rut")} />
+                  {errors.rut && <div style={errStyle}>{errors.rut}</div>}
+                </div>
+                <div>
+                  <label style={labelStyle}>CELULAR <span style={{ color: "#72b01d" }}>*</span></label>
+                  <input style={inputStyle} placeholder="Ej: +569 79472968" value={form.phone} onChange={set("phone")} />
+                  {errors.phone && <div style={errStyle}>{errors.phone}</div>}
+                </div>
+                <div>
+                  <label style={labelStyle}>WHATSAPP</label>
+                  <input style={inputStyle} placeholder="Ej: +569 986878220" value={form.phone2} onChange={set("phone2")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>MAIL CONDUCTOR</label>
+                  <input style={inputStyle} type="email" placeholder="correo@ejemplo.com" value={form.email} onChange={set("email")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>LICENCIA</label>
+                  <input style={inputStyle} placeholder="Ej: B, B C, B A4 A2" value={form.licencia} onChange={set("licencia")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>COMUNA</label>
+                  <input style={inputStyle} placeholder="Ej: Maipú, La Florida, Puente Alto" value={form.comuna} onChange={set("comuna")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>DIRECCIÓN</label>
+                  <input style={inputStyle} placeholder="Ej: PASAJE TAMARA 834" value={form.direccion} onChange={set("direccion")} />
+                </div>
               </div>
             </div>
 
-            {/* Dirección / Comuna */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Dirección
-                </label>
-                <input style={inputStyle} placeholder="Ej: Av. Providencia 1234" value={form.direccion} onChange={set("direccion")} />
+            {/* SECCION 2: VEHÍCULO Y FLOTA */}
+            <div>
+              <div style={sectionTitleStyle}>
+                <Truck size={15} /> 2. Vehículo y Flota
               </div>
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Comuna
-                </label>
-                <input style={inputStyle} placeholder="Ej: Providencia" value={form.comuna} onChange={set("comuna")} />
-              </div>
-            </div>
-
-            {/* Teléfono / Teléfono 2 */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Teléfono <span style={{ color: "#72b01d" }}>*</span>
-                </label>
-                <input style={inputStyle} placeholder="Ej: 56944771425" value={form.phone} onChange={set("phone")} />
-                {errors.phone && <div style={errStyle}>{errors.phone}</div>}
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  WhatsApp / Secundario
-                </label>
-                <input style={inputStyle} placeholder="Ej: 56911223344" value={form.phone2} onChange={set("phone2")} />
-              </div>
-            </div>
-
-            {/* Correo / vacio */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Correo electrónico
-                </label>
-                <input style={inputStyle} type="email" placeholder="nombre@correo.cl" value={form.email} onChange={set("email")} />
-              </div>
-            </div>
-
-            {/* Estado Civil / Estudios / Tipo Servicio */}
-            <div className="grid grid-cols-4 gap-3">
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  N° Local
-                </label>
-                <input style={inputStyle} placeholder="Ej: 123" value={form.nLocal || ''} onChange={set("nLocal")} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Estado civil
-                </label>
-                <input style={inputStyle} placeholder="Ej: Soltero" value={form.estadoCivil} onChange={set("estadoCivil")} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Estudios
-                </label>
-                <input style={inputStyle} placeholder="Ej: Media" value={form.estudios} onChange={set("estudios")} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Servicio
-                </label>
-                <select style={inputStyle} value={form.tipoServicio} onChange={set("tipoServicio")}>
-                  <option value="">Seleccione...</option>
-                  <option value="Paquetería">Paquetería</option>
-                  <option value="Supermercado">Supermercado</option>
-                  <option value="Ambas">Ambas</option>
-                </select>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label style={labelStyle}>PPU (Patente)</label>
+                  <input style={{ ...inputStyle, textTransform: "uppercase" }} placeholder="Ej: LHRK71" value={form.patente} onChange={set("patente")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>TIPO VEHIC</label>
+                  <select style={inputStyle} value={form.tipoVehiculo} onChange={set("tipoVehiculo")}>
+                    <option value="FURGON SIMPLE">FURGON SIMPLE</option>
+                    <option value="FURGON MEDIO">FURGON MEDIO</option>
+                    <option value="FURGON GRANDE">FURGON GRANDE</option>
+                    <option value="CAMION">CAMION</option>
+                    <option value="AUTO">AUTO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>DUEÑO FURGON</label>
+                  <input style={inputStyle} placeholder="Nombre dueño (si aplica)" value={form.duenoFurgon} onChange={set("duenoFurgon")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>GPS</label>
+                  <select style={inputStyle} value={form.gps} onChange={set("gps")}>
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>GPS CCCS</label>
+                  <select style={inputStyle} value={form.gpsCccs} onChange={set("gpsCccs")}>
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>SEGURO</label>
+                  <select style={inputStyle} value={form.seguro} onChange={set("seguro")}>
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div className="md:col-span-3">
+                  <label style={labelStyle}>BEETRACK</label>
+                  <input style={inputStyle} placeholder="Ej: cc157935356" value={form.beetrack} onChange={set("beetrack")} />
+                </div>
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16, marginBottom: 16 }}>
-            </div>
-            
-            {/* Vehículo info */}
-            <div className="grid grid-cols-3 gap-3">
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Patente
-                </label>
-                <input style={{ ...inputStyle, textTransform: "uppercase" }} placeholder="EJ: AB-CD-12" value={form.patente} onChange={set("patente")} />
+            {/* SECCION 3: CONTRATACIÓN Y OPERACIONES */}
+            <div>
+              <div style={sectionTitleStyle}>
+                <FileCheck size={15} /> 3. Contrato y Documentación
               </div>
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Modelo
-                </label>
-                <input style={inputStyle} placeholder="Ej: Kia Rio" value={form.modeloAuto} onChange={set("modeloAuto")} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Año
-                </label>
-                <input style={inputStyle} placeholder="Ej: 2018" value={form.anioAuto} onChange={set("anioAuto")} />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label style={labelStyle}>INDUCCION</label>
+                  <select style={inputStyle} value={form.induccion} onChange={set("induccion")}>
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>CARPETA</label>
+                  <select style={inputStyle} value={form.carpeta} onChange={set("carpeta")}>
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>CONTRATO</label>
+                  <select style={inputStyle} value={form.contrato} onChange={set("contrato")}>
+                    <option value="FIRMADO">FIRMADO</option>
+                    <option value="FALTA FIRMAR">FALTA FIRMAR</option>
+                    <option value="PENDIENTE">PENDIENTE</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>ANEXO</label>
+                  <input style={inputStyle} placeholder="Anexo de contrato" value={form.anexo} onChange={set("anexo")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>TIPO SERVICIO</label>
+                  <select style={inputStyle} value={form.tipoServicio} onChange={set("tipoServicio")}>
+                    <option value="Paquetería">Paquetería</option>
+                    <option value="Supermercado">Supermercado</option>
+                    <option value="Ambas">Ambas</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>N° LOCAL</label>
+                  <input style={inputStyle} placeholder="Ej: 123" value={form.nLocal} onChange={set("nLocal")} />
+                </div>
               </div>
             </div>
 
-            {/* Documentos */}
-            <div style={{ background: "rgba(255,255,255,0.02)", padding: 16, borderRadius: 12, border: "1px dashed rgba(255,255,255,0.1)", marginBottom: 12 }}>
-              <div className="text-sm font-bold mb-3" style={{ color: "#e2e8f0" }}>Documentos Adjuntos (PDF o Imagen)</div>
-              <div className="grid grid-cols-2 gap-4">
+            {/* SECCION 4: FACTURACIÓN Y BANCO */}
+            <div>
+              <div style={sectionTitleStyle}>
+                <CreditCard size={15} /> 4. Facturación y Datos Bancarios
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label style={labelStyle}>FACTURACION</label>
+                  <select style={inputStyle} value={form.facturacion} onChange={set("facturacion")}>
+                    <option value="COMODATO">COMODATO</option>
+                    <option value="EMPRESA">EMPRESA</option>
+                    <option value="HONORARIOS">HONORARIOS</option>
+                    <option value="OTRO">OTRO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>NOMBRE EMPRESA</label>
+                  <input style={inputStyle} placeholder="Ej: DASAI SPA" value={form.nombreEmpresa} onChange={set("nombreEmpresa")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>RUT EMPRESA</label>
+                  <input style={inputStyle} placeholder="Ej: 77361303-6" value={form.rutEmpresa} onChange={set("rutEmpresa")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>BANCO</label>
+                  <select style={inputStyle} value={form.banco} onChange={set("banco")}>
+                    <option value="SANTANDER">SANTANDER</option>
+                    <option value="ESTADO">BANCO ESTADO</option>
+                    <option value="BCI">BCI</option>
+                    <option value="CHILE">BANCO DE CHILE</option>
+                    <option value="SCOTIABANK">SCOTIABANK</option>
+                    <option value="ITAU">ITAU</option>
+                    <option value="FALABELLA">BANCO FALABELLA</option>
+                    <option value="MERCADO PAGO">MERCADO PAGO</option>
+                    <option value="SECURITY">BANCO SECURITY</option>
+                    <option value="BICE">BICE</option>
+                    <option value="OTRO">OTRO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>TIPO CUENTA</label>
+                  <select style={inputStyle} value={form.tipoCuenta} onChange={set("tipoCuenta")}>
+                    <option value="CORRIENTE">CORRIENTE</option>
+                    <option value="VISTA">VISTA / CUENTA RUT</option>
+                    <option value="CHEQUERA ELECTRONICA">CHEQUERA ELECTRÓNICA</option>
+                    <option value="AHORRO">AHORRO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>NUMERO CUENTA</label>
+                  <input style={inputStyle} placeholder="Ej: 77738150" value={form.numeroCuenta} onChange={set("numeroCuenta")} />
+                </div>
+              </div>
+            </div>
+
+            {/* SECCION 5: DOCUMENTOS ADJUNTOS */}
+            <div style={{ background: "rgba(255,255,255,0.02)", padding: 14, borderRadius: 12, border: "1px dashed rgba(255,255,255,0.1)" }}>
+              <div style={{ ...sectionTitleStyle, borderBottom: "none", marginBottom: 8 }}>
+                <FileText size={15} /> 5. Documentos Adjuntos (PDF o Imagen)
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
-                  { key: 'hojaConductor', label: 'Hoja de Conductor' },
+                  { key: 'hojaConductor', label: 'Hoja de Vida Conductor' },
                   { key: 'licenciaFrontal', label: 'Licencia (Frontal)' },
                   { key: 'licenciaTrasera', label: 'Licencia (Trasera)' },
                   { key: 'carnetFrontal', label: 'Carnet (Frontal)' },
@@ -314,11 +462,11 @@ function AddTechModal({
                   { key: 'certificadoAntecedentes', label: 'Cert. de Antecedentes' }
                 ].map(({ key, label }) => (
                   <div key={key}>
-                    <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>{label}</label>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 500, color: "#94a3b8", marginBottom: 4 }}>{label}</label>
                     <input 
                       type="file" 
                       accept="image/*,.pdf" 
-                      style={{ fontSize: 12, color: "#e2e8f0", width: "100%" }} 
+                      style={{ fontSize: 11, color: "#e2e8f0", width: "100%" }} 
                       onChange={(e) => {
                         const file = e.target.files?.[0] || null;
                         setDocs(d => ({ ...d, [key]: file }));
@@ -329,11 +477,9 @@ function AddTechModal({
               </div>
             </div>
 
-            {/* Estado */}
+            {/* SECCION 6: ESTADO INICIAL */}
             <div>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                Estado inicial
-              </label>
+              <label style={labelStyle}>Estado inicial del chofer</label>
               <select
                 style={{ ...inputStyle, cursor: "pointer" }}
                 value={form.status}
@@ -345,11 +491,18 @@ function AddTechModal({
               </select>
             </div>
 
+            {saveError && (
+              <div className="p-3 rounded-lg text-sm" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171" }}>
+                {saveError}
+              </div>
+            )}
+
             {/* Actions */}
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
               <button onClick={confirmClose} className="btn-secondary text-sm">Cancelar</button>
               <button
                 onClick={handleSave}
+                disabled={uploading}
                 style={{
                   display: "inline-flex", alignItems: "center", gap: 8,
                   padding: "10px 24px",
@@ -360,7 +513,7 @@ function AddTechModal({
                 }}
               >
                 {saved ? <CheckCircle2 size={16} /> : <Save size={16} />}
-                {uploading ? "Subiendo..." : saved ? "¡Guardado!" : "Guardar Chofer"}
+                {uploading ? "Guardando..." : saved ? "¡Guardado!" : "Guardar Chofer"}
               </button>
             </div>
           </div>
@@ -379,25 +532,48 @@ function EditTechModal({
   onSave: (updated: Technician) => void;
 }) {
   const [form, setForm] = useState({
-    name: tech.name,
-    rut: tech.rut,
-    direccion: tech.direccion || "",
+    name: tech.name || "",
+    rut: tech.rut || "",
+    phone: tech.phone || "",
+    phone2: tech.phone2 || tech.whatsapp || "",
+    email: tech.email || "",
     comuna: tech.comuna || "",
-    phone: tech.phone,
-    phone2: tech.phone2 || "",
+    direccion: tech.direccion || "",
+    licencia: tech.licencia || "B",
+    
+    patente: tech.patente || "",
+    tipoVehiculo: tech.tipoVehiculo || "FURGON SIMPLE",
+    duenoFurgon: tech.duenoFurgon || "",
+    gps: tech.gps || "NO",
+    gpsCccs: tech.gpsCccs || "SI",
+    beetrack: tech.beetrack || "",
+    seguro: tech.seguro || "NO",
+    
+    induccion: tech.induccion || "SI",
+    carpeta: tech.carpeta || "SI",
+    contrato: tech.contrato || "FIRMADO",
+    anexo: tech.anexo || "",
+    tipoServicio: tech.tipoServicio || "Paquetería",
+    nLocal: tech.nLocal || "",
+    
+    facturacion: tech.facturacion || "COMODATO",
+    nombreEmpresa: tech.nombreEmpresa || "",
+    rutEmpresa: tech.rutEmpresa || "",
+    banco: tech.banco || "ESTADO",
+    tipoCuenta: tech.tipoCuenta || "CORRIENTE",
+    numeroCuenta: tech.numeroCuenta || "",
+    
+    status: tech.status,
     estadoCivil: tech.estadoCivil || "",
     estudios: tech.estudios || "",
-      nLocal: tech.nLocal || "",
-    patente: tech.patente || "",
     modeloAuto: tech.modeloAuto || "",
     anioAuto: tech.anioAuto || "",
-    tipoServicio: tech.tipoServicio || "",
-    email: tech.email,
-    status: tech.status,
   });
+
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState("");
+
   const confirmClose = () => {
     if (window.confirm("¿Deseas guardar los cambios antes de salir?\n\n[Aceptar] = Guardar y cerrar\n[Cancelar] = Cerrar sin guardar")) {
       handleSave();
@@ -405,6 +581,7 @@ function EditTechModal({
       onClose();
     }
   };
+
   const [docs, setDocs] = useState({
     hojaConductor: null as File | null,
     licenciaFrontal: null as File | null,
@@ -417,29 +594,31 @@ function EditTechModal({
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [field]: e.target.value }));
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%", background: "rgba(27,30,36,0.95)",
-    border: "1px solid rgba(255,255,255,0.09)", borderRadius: 8,
-    padding: "10px 14px", fontSize: 13.5, color: "#e2e8f0",
-    outline: "none", fontFamily: "inherit",
-  };
-
   const handleSave = async () => {
     setSaving(true); setSaveError("");
     try {
       const docsUrls = { ...(tech.documentos || {}) };
-      if (docs.hojaConductor) docsUrls.hojaConductor = await uploadDocument(docs.hojaConductor, tech.id, 'hojaConductor');
-      if (docs.licenciaFrontal) docsUrls.licenciaFrontal = await uploadDocument(docs.licenciaFrontal, tech.id, 'licenciaFrontal');
-      if (docs.licenciaTrasera) docsUrls.licenciaTrasera = await uploadDocument(docs.licenciaTrasera, tech.id, 'licenciaTrasera');
-      if (docs.carnetFrontal) docsUrls.carnetFrontal = await uploadDocument(docs.carnetFrontal, tech.id, 'carnetFrontal');
-      if (docs.carnetTrasera) docsUrls.carnetTrasera = await uploadDocument(docs.carnetTrasera, tech.id, 'carnetTrasera');
-      if (docs.certificadoAntecedentes) docsUrls.certificadoAntecedentes = await uploadDocument(docs.certificadoAntecedentes, tech.id, 'certificadoAntecedentes');
+      if (docs.hojaConductor) docsUrls.hojaConductor = await uploadDocument(docs.hojaConductor, tech.id, 'hojaConductor') || "";
+      if (docs.licenciaFrontal) docsUrls.licenciaFrontal = await uploadDocument(docs.licenciaFrontal, tech.id, 'licenciaFrontal') || "";
+      if (docs.licenciaTrasera) docsUrls.licenciaTrasera = await uploadDocument(docs.licenciaTrasera, tech.id, 'licenciaTrasera') || "";
+      if (docs.carnetFrontal) docsUrls.carnetFrontal = await uploadDocument(docs.carnetFrontal, tech.id, 'carnetFrontal') || "";
+      if (docs.carnetTrasera) docsUrls.carnetTrasera = await uploadDocument(docs.carnetTrasera, tech.id, 'carnetTrasera') || "";
+      if (docs.certificadoAntecedentes) docsUrls.certificadoAntecedentes = await uploadDocument(docs.certificadoAntecedentes, tech.id, 'certificadoAntecedentes') || "";
 
-      const updated = { ...tech, ...form, patente: form.patente.trim().toUpperCase(), documentos: docsUrls };
+      const updated: Technician = {
+        ...tech,
+        ...form,
+        name: form.name.trim().toUpperCase(),
+        patente: form.patente.trim().toUpperCase(),
+        phone2: form.phone2.trim(),
+        whatsapp: form.phone2.trim(),
+        documentos: docsUrls,
+      };
+
       const { error } = await supabase.from('tecnicos').update({ data: updated }).eq('id', tech.id);
       if (error) throw error;
       setSaved(true);
-      setTimeout(() => { onSave(updated); onClose(); }, 800);
+      setTimeout(() => { onSave(updated); onClose(); }, 700);
     } catch (e: any) {
       setSaveError('Error: ' + e.message);
     } finally {
@@ -447,12 +626,11 @@ function EditTechModal({
     }
   };
 
-  const REGIONS = ["Metropolitana","Valparaíso","Biobío","Tarapacá","Antofagasta","Atacama","Coquimbo","O'Higgins","Maule","Ñuble","La Araucanía","Los Ríos","Los Lagos","Aysén","Magallanes","Arica y Parinacota"];
-
   return (
     <div className="fixed inset-0 z-[60] overflow-y-auto" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)" }}>
       <div className="min-h-screen py-8 px-4 flex items-start justify-center">
-        <div className="w-full max-w-xl rounded-2xl overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="w-full max-w-2xl rounded-2xl overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)" }}>
+          {/* Header */}
           <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid rgba(114,176,29,0.12)" }}>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(114,176,29,0.12)" }}>
@@ -460,97 +638,207 @@ function EditTechModal({
               </div>
               <div>
                 <div className="font-bold text-lg" style={{ color: "#f1f5f9" }}>Editar Chofer</div>
-                <div className="text-xs" style={{ color: "#475569" }}>{tech.name}</div>
+                <div className="text-xs" style={{ color: "#475569" }}>{tech.name} — {tech.rut}</div>
               </div>
             </div>
             <button onClick={confirmClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}><X size={20} /></button>
           </div>
 
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Nombre completo *</label>
-                <input style={inputStyle} value={form.name} onChange={set("name")} />
-              </div>
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>RUT</label>
-                <input style={inputStyle} value={form.rut} onChange={set("rut")} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Dirección</label>
-                <input style={inputStyle} value={form.direccion} onChange={set("direccion")} />
-              </div>
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Comuna</label>
-                <input style={inputStyle} value={form.comuna} onChange={set("comuna")} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Teléfono principal</label>
-                <input style={inputStyle} value={form.phone} onChange={set("phone")} />
-              </div>
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>WhatsApp / Secundario</label>
-                <input style={inputStyle} value={form.phone2} onChange={set("phone2")} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Correo electrónico</label>
-                <input style={inputStyle} type="email" value={form.email} onChange={set("email")} />
-              </div>
-            </div>
-            <div className="grid grid-cols-4 gap-3">
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  N° Local
-                </label>
-                <input style={inputStyle} placeholder="Ej: 123" value={form.nLocal || ''} onChange={set("nLocal")} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>
-                  Estado Civil
-                </label>
-                <input style={inputStyle} value={form.estadoCivil} onChange={set("estadoCivil")} />
-              </div>
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Estudios</label>
-                <input style={inputStyle} value={form.estudios} onChange={set("estudios")} />
-              </div>
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Servicio</label>
-                <select style={inputStyle} value={form.tipoServicio} onChange={set("tipoServicio")}>
-                  <option value="">Seleccione...</option>
-                  <option value="Paquetería">Paquetería</option>
-                  <option value="Supermercado">Supermercado</option>
-                  <option value="Ambas">Ambas</option>
-                </select>
+          <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+            {/* 1. Conductor */}
+            <div>
+              <div style={sectionTitleStyle}><User size={15} /> 1. Datos del Conductor</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label style={labelStyle}>CONDUCTOR (Nombre completo) *</label>
+                  <input style={inputStyle} value={form.name} onChange={set("name")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>RUT</label>
+                  <input style={inputStyle} value={form.rut} onChange={set("rut")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>CELULAR</label>
+                  <input style={inputStyle} value={form.phone} onChange={set("phone")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>WHATSAPP</label>
+                  <input style={inputStyle} value={form.phone2} onChange={set("phone2")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>MAIL CONDUCTOR</label>
+                  <input style={inputStyle} type="email" value={form.email} onChange={set("email")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>LICENCIA</label>
+                  <input style={inputStyle} value={form.licencia} onChange={set("licencia")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>COMUNA</label>
+                  <input style={inputStyle} value={form.comuna} onChange={set("comuna")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>DIRECCIÓN</label>
+                  <input style={inputStyle} value={form.direccion} onChange={set("direccion")} />
+                </div>
               </div>
             </div>
-            
-            <div className="grid grid-cols-3 gap-3">
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Patente Vehículo</label>
-                <input style={{ ...inputStyle, textTransform: "uppercase" }} value={form.patente} onChange={set("patente")} />
-              </div>
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Modelo Auto</label>
-                <input style={inputStyle} value={form.modeloAuto} onChange={set("modeloAuto")} />
-              </div>
-              <div>
-                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Año Auto</label>
-                <input style={inputStyle} value={form.anioAuto} onChange={set("anioAuto")} />
+
+            {/* 2. Vehiculo */}
+            <div>
+              <div style={sectionTitleStyle}><Truck size={15} /> 2. Vehículo y Flota</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label style={labelStyle}>PPU (Patente)</label>
+                  <input style={{ ...inputStyle, textTransform: "uppercase" }} value={form.patente} onChange={set("patente")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>TIPO VEHIC</label>
+                  <select style={inputStyle} value={form.tipoVehiculo} onChange={set("tipoVehiculo")}>
+                    <option value="FURGON SIMPLE">FURGON SIMPLE</option>
+                    <option value="FURGON MEDIO">FURGON MEDIO</option>
+                    <option value="FURGON GRANDE">FURGON GRANDE</option>
+                    <option value="CAMION">CAMION</option>
+                    <option value="AUTO">AUTO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>DUEÑO FURGON</label>
+                  <input style={inputStyle} value={form.duenoFurgon} onChange={set("duenoFurgon")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>GPS</label>
+                  <select style={inputStyle} value={form.gps} onChange={set("gps")}>
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>GPS CCCS</label>
+                  <select style={inputStyle} value={form.gpsCccs} onChange={set("gpsCccs")}>
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>SEGURO</label>
+                  <select style={inputStyle} value={form.seguro} onChange={set("seguro")}>
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div className="md:col-span-3">
+                  <label style={labelStyle}>BEETRACK</label>
+                  <input style={inputStyle} value={form.beetrack} onChange={set("beetrack")} />
+                </div>
               </div>
             </div>
-            {/* Documentos */}
-            <div style={{ background: "rgba(255,255,255,0.02)", padding: 16, borderRadius: 12, border: "1px dashed rgba(255,255,255,0.1)", marginBottom: 12 }}>
-              <div className="text-sm font-bold mb-3" style={{ color: "#e2e8f0" }}>Documentos Adjuntos (PDF o Imagen)</div>
-              <div className="grid grid-cols-2 gap-4">
+
+            {/* 3. Contrato */}
+            <div>
+              <div style={sectionTitleStyle}><FileCheck size={15} /> 3. Contrato y Operaciones</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label style={labelStyle}>INDUCCION</label>
+                  <select style={inputStyle} value={form.induccion} onChange={set("induccion")}>
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>CARPETA</label>
+                  <select style={inputStyle} value={form.carpeta} onChange={set("carpeta")}>
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>CONTRATO</label>
+                  <select style={inputStyle} value={form.contrato} onChange={set("contrato")}>
+                    <option value="FIRMADO">FIRMADO</option>
+                    <option value="FALTA FIRMAR">FALTA FIRMAR</option>
+                    <option value="PENDIENTE">PENDIENTE</option>
+                    <option value="NO">NO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>ANEXO</label>
+                  <input style={inputStyle} value={form.anexo} onChange={set("anexo")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>TIPO SERVICIO</label>
+                  <select style={inputStyle} value={form.tipoServicio} onChange={set("tipoServicio")}>
+                    <option value="Paquetería">Paquetería</option>
+                    <option value="Supermercado">Supermercado</option>
+                    <option value="Ambas">Ambas</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>N° LOCAL</label>
+                  <input style={inputStyle} value={form.nLocal} onChange={set("nLocal")} />
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Facturación */}
+            <div>
+              <div style={sectionTitleStyle}><CreditCard size={15} /> 4. Facturación y Datos Bancarios</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label style={labelStyle}>FACTURACION</label>
+                  <select style={inputStyle} value={form.facturacion} onChange={set("facturacion")}>
+                    <option value="COMODATO">COMODATO</option>
+                    <option value="EMPRESA">EMPRESA</option>
+                    <option value="HONORARIOS">HONORARIOS</option>
+                    <option value="OTRO">OTRO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>NOMBRE EMPRESA</label>
+                  <input style={inputStyle} value={form.nombreEmpresa} onChange={set("nombreEmpresa")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>RUT EMPRESA</label>
+                  <input style={inputStyle} value={form.rutEmpresa} onChange={set("rutEmpresa")} />
+                </div>
+                <div>
+                  <label style={labelStyle}>BANCO</label>
+                  <select style={inputStyle} value={form.banco} onChange={set("banco")}>
+                    <option value="SANTANDER">SANTANDER</option>
+                    <option value="ESTADO">BANCO ESTADO</option>
+                    <option value="BCI">BCI</option>
+                    <option value="CHILE">BANCO DE CHILE</option>
+                    <option value="SCOTIABANK">SCOTIABANK</option>
+                    <option value="ITAU">ITAU</option>
+                    <option value="FALABELLA">BANCO FALABELLA</option>
+                    <option value="MERCADO PAGO">MERCADO PAGO</option>
+                    <option value="SECURITY">BANCO SECURITY</option>
+                    <option value="BICE">BICE</option>
+                    <option value="OTRO">OTRO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>TIPO CUENTA</label>
+                  <select style={inputStyle} value={form.tipoCuenta} onChange={set("tipoCuenta")}>
+                    <option value="CORRIENTE">CORRIENTE</option>
+                    <option value="VISTA">VISTA / CUENTA RUT</option>
+                    <option value="CHEQUERA ELECTRONICA">CHEQUERA ELECTRÓNICA</option>
+                    <option value="AHORRO">AHORRO</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>NUMERO CUENTA</label>
+                  <input style={inputStyle} value={form.numeroCuenta} onChange={set("numeroCuenta")} />
+                </div>
+              </div>
+            </div>
+
+            {/* 5. Documentos */}
+            <div style={{ background: "rgba(255,255,255,0.02)", padding: 14, borderRadius: 12, border: "1px dashed rgba(255,255,255,0.1)" }}>
+              <div style={{ ...sectionTitleStyle, borderBottom: "none", marginBottom: 8 }}><FileText size={15} /> 5. Documentos Adjuntos</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
-                  { key: 'hojaConductor', label: 'Hoja de Conductor' },
+                  { key: 'hojaConductor', label: 'Hoja de Vida Conductor' },
                   { key: 'licenciaFrontal', label: 'Licencia (Frontal)' },
                   { key: 'licenciaTrasera', label: 'Licencia (Trasera)' },
                   { key: 'carnetFrontal', label: 'Carnet (Frontal)' },
@@ -558,11 +846,11 @@ function EditTechModal({
                   { key: 'certificadoAntecedentes', label: 'Cert. de Antecedentes' }
                 ].map(({ key, label }) => (
                   <div key={key}>
-                    <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "#94a3b8", marginBottom: 6 }}>{label}</label>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 500, color: "#94a3b8", marginBottom: 4 }}>{label}</label>
                     <input 
                       type="file" 
                       accept="image/*,.pdf" 
-                      style={{ fontSize: 12, color: "#e2e8f0", width: "100%" }} 
+                      style={{ fontSize: 11, color: "#e2e8f0", width: "100%" }} 
                       onChange={(e) => {
                         const file = e.target.files?.[0] || null;
                         setDocs(d => ({ ...d, [key]: file }));
@@ -573,9 +861,10 @@ function EditTechModal({
               </div>
             </div>
 
+            {/* 6. Estado */}
             <div>
-              <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Estado</label>
-              <select style={{ ...inputStyle, cursor:"pointer" }} value={form.status} onChange={set("status")}>
+              <label style={labelStyle}>Estado</label>
+              <select style={{ ...inputStyle, cursor: "pointer" }} value={form.status} onChange={set("status")}>
                 <option value="disponible">Disponible</option>
                 <option value="en ruta">En ruta</option>
                 <option value="trabajando">Libre</option>
@@ -584,20 +873,22 @@ function EditTechModal({
             </div>
 
             {saveError && (
-              <div className="p-3 rounded-lg text-sm" style={{ background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.2)", color:"#f87171" }}>{saveError}</div>
+              <div className="p-3 rounded-lg text-sm" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171" }}>
+                {saveError}
+              </div>
             )}
 
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
               <button onClick={confirmClose} className="btn-secondary text-sm">Cancelar</button>
               <button
                 onClick={handleSave}
                 disabled={saving}
                 style={{
-                  display:"inline-flex", alignItems:"center", gap:8, padding:"10px 24px",
+                  display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 24px",
                   background: saved ? "#578814" : "linear-gradient(135deg,#72b01d,#578814)",
-                  color:"white", borderRadius:9, fontSize:14, fontWeight:700,
-                  border:"none", cursor:"pointer", opacity: saving ? 0.7 : 1,
-                  boxShadow:"0 4px 16px rgba(114,176,29,0.35)", fontFamily:"inherit",
+                  color: "white", borderRadius: 9, fontSize: 14, fontWeight: 700,
+                  border: "none", cursor: "pointer", opacity: saving ? 0.7 : 1,
+                  boxShadow: "0 4px 16px rgba(114,176,29,0.35)", fontFamily: "inherit",
                 }}
               >
                 {saved ? <CheckCircle2 size={16} /> : <Save size={16} />}
@@ -621,22 +912,44 @@ function TechModal({
   onEdit: () => void;
   onDelete: () => void;
 }) {
-
   const downloadInfo = () => {
-    const text = `FICHA DE CHOFER - OPSDASAI\n\n` +
+    const text = `FICHA DE CHOFER / FLOTA - OPSDASAI\n` +
+      `===============================================\n\n` +
+      `[1. DATOS DEL CONDUCTOR]\n` +
       `Nombre: ${tech.name}\n` +
       `RUT: ${tech.rut}\n` +
-      `Teléfono: ${tech.phone}\n` +
+      `Celular: ${tech.phone}\n` +
+      `WhatsApp: ${tech.phone2 || tech.whatsapp || "—"}\n` +
       `Email: ${tech.email || "—"}\n` +
-      `Estado: ${tech.status.toUpperCase()}\n` +
       `Comuna: ${tech.comuna || "—"}\n` +
       `Dirección: ${tech.direccion || "—"}\n` +
-      `Estado Civil: ${tech.estadoCivil || "—"}\n` +
-      `Nivel de Estudios: ${tech.estudios || "—"}\n` +
-      `Patente Vehículo: ${tech.patente || "—"}\n\n` +
-      `Métricas:\n` +
-      `- Coordinaciones: ${tech.completedOrders}\n` +
-      `- Productividad: ${tech.productivity}%\n`;
+      `Licencia: ${tech.licencia || "—"}\n\n` +
+      `[2. VEHÍCULO Y FLOTA]\n` +
+      `PPU (Patente): ${tech.patente || "—"}\n` +
+      `Tipo Vehículo: ${tech.tipoVehiculo || "—"}\n` +
+      `Dueño Furgón: ${tech.duenoFurgon || "—"}\n` +
+      `GPS: ${tech.gps || "—"}\n` +
+      `GPS CCCS: ${tech.gpsCccs || "—"}\n` +
+      `Beetrack: ${tech.beetrack || "—"}\n` +
+      `Seguro: ${tech.seguro || "—"}\n\n` +
+      `[3. CONTRATO Y OPERACIÓN]\n` +
+      `Inducción: ${tech.induccion || "—"}\n` +
+      `Carpeta: ${tech.carpeta || "—"}\n` +
+      `Contrato: ${tech.contrato || "—"}\n` +
+      `Anexo: ${tech.anexo || "—"}\n` +
+      `Tipo Servicio: ${tech.tipoServicio || "—"}\n` +
+      `N° Local: ${tech.nLocal || "—"}\n\n` +
+      `[4. FACTURACIÓN Y BANCO]\n` +
+      `Facturación: ${tech.facturacion || "—"}\n` +
+      `Nombre Empresa: ${tech.nombreEmpresa || "—"}\n` +
+      `RUT Empresa: ${tech.rutEmpresa || "—"}\n` +
+      `Banco: ${tech.banco || "—"}\n` +
+      `Tipo Cuenta: ${tech.tipoCuenta || "—"}\n` +
+      `Número Cuenta: ${tech.numeroCuenta || "—"}\n\n` +
+      `[5. MÉTRICAS Y ESTADO]\n` +
+      `Estado: ${tech.status.toUpperCase()}\n` +
+      `Coordinaciones realizadas: ${tech.completedOrders}\n` +
+      `Productividad: ${tech.productivity}%\n`;
       
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -651,44 +964,51 @@ function TechModal({
 
   const [confirmDelete, setConfirmDelete] = useState(false);
   const radarData = [
-    { subject: "Productividad", value: tech.productivity },
-    { subject: "Velocidad", value: tech.avgTime > 0 ? Math.min(100, Math.round(100 / tech.avgTime * 2)) : 0 },
-    { subject: "Experiencia", value: Math.min(100, Math.round(tech.completedOrders / 3)) },
+    { subject: "Productividad", value: tech.productivity || 80 },
+    { subject: "Velocidad", value: tech.avgTime > 0 ? Math.min(100, Math.round(100 / tech.avgTime * 2)) : 75 },
+    { subject: "Experiencia", value: Math.min(100, Math.max(30, Math.round(tech.completedOrders * 4))) },
     { subject: "Disponib.", value: tech.status === "disponible" ? 100 : tech.status === "offline" ? 20 : 60 },
-    { subject: "Calidad", value: Math.round(tech.productivity * 0.95) },
+    { subject: "Calidad", value: 85 },
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
-      <div className="w-full max-w-2xl rounded-2xl overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)", maxHeight: "90vh", overflowY: "auto" }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}>
+      <div className="w-full max-w-3xl rounded-2xl overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)", maxHeight: "92vh", overflowY: "auto" }}>
+        
         {/* Header */}
         <div className="flex items-center justify-between p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold" style={{ background: "linear-gradient(135deg, #72b01d, #2d343f)", color: "white" }}>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold flex-shrink-0" style={{ background: "linear-gradient(135deg, #72b01d, #2d343f)", color: "white" }}>
               {tech.name.charAt(0)}
             </div>
             <div>
-              <h3 className="text-xl font-bold" style={{ color: "#f1f5f9" }}>
-                {tech.name}
-              </h3>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-xl font-bold" style={{ color: "#f1f5f9" }}>{tech.name}</h3>
+                {tech.patente && (
+                  <span className="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-[#72b01d]/20 text-[#93c947] border border-[#72b01d]/30">
+                    {tech.patente}
+                  </span>
+                )}
+                {tech.tipoVehiculo && (
+                  <span className="px-2 py-0.5 rounded text-xs font-semibold bg-white/5 text-slate-300 border border-white/10">
+                    {tech.tipoVehiculo}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                 <select
                   value={tech.status}
                   onChange={(e) => onUpdateStatus(tech.id, e.target.value as TechnicianStatus)}
                   className={`status-badge ${getStatusBg(tech.status)} outline-none cursor-pointer`}
-                  style={{ 
-                    border: "none", 
-                    appearance: "none", 
-                    paddingRight: "12px", // make room for dropdown arrow conceptually, though appearance:none removes it
-                    textTransform: "capitalize"
-                  }}
+                  style={{ border: "none", appearance: "none", paddingRight: "12px", textTransform: "capitalize" }}
                 >
                   <option value="disponible" className="bg-[#1b1e24] text-[#93c947]">Disponible</option>
                   <option value="en ruta" className="bg-[#1b1e24] text-[#72b01d]">En ruta</option>
                   <option value="trabajando" className="bg-[#1b1e24] text-[#f59e0b]">Trabajando</option>
                   <option value="offline" className="bg-[#1b1e24] text-[#64748b]">Offline</option>
                 </select>
-                <span className="text-xs" style={{ color: "#475569" }}>RUT: {tech.rut}</span>
+                <span className="text-xs" style={{ color: "#64748b" }}>RUT: <strong className="text-slate-300">{tech.rut}</strong></span>
+                {tech.beetrack && <span className="text-xs" style={{ color: "#64748b" }}>Beetrack: <strong className="text-slate-300">{tech.beetrack}</strong></span>}
               </div>
             </div>
           </div>
@@ -698,7 +1018,7 @@ function TechModal({
         </div>
 
         {/* Botones de acción */}
-        <div className="px-6 pt-4" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="px-6 pt-4 flex items-center gap-2.5 flex-wrap">
           <button
             onClick={downloadInfo}
             style={{
@@ -723,7 +1043,6 @@ function TechModal({
             <Pencil size={14} /> Editar datos
           </button>
 
-          {/* Eliminar con confirmación inline */}
           {!confirmDelete ? (
             <button
               onClick={() => setConfirmDelete(true)}
@@ -755,96 +1074,205 @@ function TechModal({
           )}
         </div>
 
-        <div className="p-6">
+        {/* Content */}
+        <div className="p-6 space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left col */}
+            
+            {/* Left Column */}
             <div className="space-y-4">
-              {/* Contact */}
-              <div className="space-y-2">
-                <div className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#475569" }}>Contacto</div>
-                {[
-                  { icon: Phone, value: tech.phone },
-                  { icon: Mail, value: tech.email || "—" },
-                  { icon: MapPin, value: tech.comuna || "—" },
-                  { icon: MapPin, value: tech.direccion || "—" },
-                ].map(({ icon: Icon, value }, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-2.5 rounded-lg" style={{ background: "rgba(255,255,255,0.03)" }}>
-                    <Icon size={14} style={{ color: "#72b01d", flexShrink: 0 }} />
-                    <span className="text-sm" style={{ color: "#e2e8f0" }}>{value}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* KPIs */}
-              <div className="space-y-2">
-                <div className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#475569" }}>KPIs</div>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { label: "Coordinaciones", value: tech.completedOrders, color: "#72b01d", icon: CheckCircle2 },
-                    { label: "Productividad", value: `${tech.productivity}%`, color: "#93c947", icon: TrendingUp },
-                  ].map((k) => (
-                    <div key={k.label} className="p-3 rounded-xl text-center" style={{ background: `${k.color}10`, border: `1px solid ${k.color}20` }}>
-                      <k.icon size={16} style={{ color: k.color, margin: "0 auto 4px" }} />
-                      <div className="text-lg font-bold" style={{ color: k.color }}>{k.value}</div>
-                      <div className="text-xs" style={{ color: "#475569" }}>{k.label}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Productivity bar */}
-                <div className="p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.03)" }}>
-                  <div className="flex justify-between text-xs mb-2" style={{ color: "#64748b" }}>
-                    <span>Productividad</span><span>{tech.productivity}%</span>
-                  </div>
-                  <div className="h-2 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
-                    <div className="h-2 rounded-full" style={{ width: `${tech.productivity}%`, background: "linear-gradient(90deg, #72b01d, #93c947)", transition: "width 0.5s ease" }} />
-                  </div>
-                </div>
-              </div>
-
               
-              {/* Documentos */}
-              {(tech.documentos?.hojaConductor || tech.documentos?.licenciaFrontal || tech.documentos?.licenciaTrasera || tech.documentos?.carnetFrontal || tech.documentos?.carnetTrasera || tech.documentos?.certificadoAntecedentes) && (
-                <div style={{ marginBottom: 16 }}>
-                  <div className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#475569" }}>Documentos Adjuntos</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { key: 'hojaConductor', label: 'Hoja de Conductor', url: tech.documentos?.hojaConductor },
-                      { key: 'licenciaFrontal', label: 'Licencia (Frontal)', url: tech.documentos?.licenciaFrontal },
-                      { key: 'licenciaTrasera', label: 'Licencia (Trasera)', url: tech.documentos?.licenciaTrasera },
-                      { key: 'carnetFrontal', label: 'Carnet (Frontal)', url: tech.documentos?.carnetFrontal },
-                      { key: 'carnetTrasera', label: 'Carnet (Trasera)', url: tech.documentos?.carnetTrasera },
-                      { key: 'certificadoAntecedentes', label: 'Antecedentes', url: tech.documentos?.certificadoAntecedentes }
-                    ].filter(d => d.url).map((d) => (
-                      <a 
-                        key={d.key} 
-                        href={d.url} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="flex items-center gap-2 p-2 rounded-lg" 
-                        style={{ background: "rgba(114,176,29,0.1)", color: "#93c947", fontSize: 12, textDecoration: "none" }}
-                      >
-                        <Search size={14} /> Ver {d.label}
-                      </a>
-                    ))}
+              {/* Contacto & Ubicación */}
+              <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div className="text-xs font-bold uppercase tracking-wider mb-3 text-[#93c947] flex items-center gap-1.5">
+                  <User size={13} /> Contacto y Ubicación
+                </div>
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">Celular:</span>
+                    <a href={`tel:${tech.phone}`} className="text-brand-400 font-semibold hover:underline">{tech.phone || "—"}</a>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">WhatsApp:</span>
+                    <a href={`https://wa.me/${(tech.phone2 || tech.whatsapp || "").replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="text-brand-400 font-semibold hover:underline">
+                      {tech.phone2 || tech.whatsapp || "—"}
+                    </a>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">Email:</span>
+                    <span className="text-slate-200">{tech.email || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">Comuna:</span>
+                    <span className="text-slate-200 font-medium">{tech.comuna || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">Dirección:</span>
+                    <span className="text-slate-200 text-right">{tech.direccion || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1">
+                    <span className="text-slate-400">Licencia de Conducir:</span>
+                    <span className="px-2 py-0.5 rounded bg-brand-500/10 text-brand-400 font-bold">{tech.licencia || "—"}</span>
                   </div>
                 </div>
-              )}
+              </div>
+
+              {/* Vehículo y Flota */}
+              <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div className="text-xs font-bold uppercase tracking-wider mb-3 text-[#93c947] flex items-center gap-1.5">
+                  <Truck size={13} /> Flota y Vehículo
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2 rounded bg-white/5">
+                    <div className="text-slate-400 text-[11px]">Patente (PPU)</div>
+                    <div className="font-bold text-slate-100 text-sm mt-0.5">{tech.patente || "—"}</div>
+                  </div>
+                  <div className="p-2 rounded bg-white/5">
+                    <div className="text-slate-400 text-[11px]">Tipo Vehículo</div>
+                    <div className="font-bold text-slate-100 text-sm mt-0.5">{tech.tipoVehiculo || "—"}</div>
+                  </div>
+                  <div className="p-2 rounded bg-white/5">
+                    <div className="text-slate-400 text-[11px]">Dueño Furgón</div>
+                    <div className="text-slate-200 truncate mt-0.5">{tech.duenoFurgon || "PROPIO / DASAI"}</div>
+                  </div>
+                  <div className="p-2 rounded bg-white/5">
+                    <div className="text-slate-400 text-[11px]">Beetrack</div>
+                    <div className="text-slate-200 truncate font-mono mt-0.5">{tech.beetrack || "—"}</div>
+                  </div>
+                  <div className="p-2 rounded bg-white/5 flex items-center justify-between">
+                    <span className="text-slate-400">GPS:</span>
+                    <span className={`font-bold ${tech.gps === 'SI' ? 'text-[#93c947]' : 'text-slate-400'}`}>{tech.gps || "NO"}</span>
+                  </div>
+                  <div className="p-2 rounded bg-white/5 flex items-center justify-between">
+                    <span className="text-slate-400">GPS CCCS:</span>
+                    <span className={`font-bold ${tech.gpsCccs === 'SI' ? 'text-[#93c947]' : 'text-slate-400'}`}>{tech.gpsCccs || "NO"}</span>
+                  </div>
+                  <div className="p-2 rounded bg-white/5 flex items-center justify-between">
+                    <span className="text-slate-400">Seguro:</span>
+                    <span className={`font-bold ${tech.seguro === 'SI' ? 'text-[#93c947]' : 'text-slate-400'}`}>{tech.seguro || "NO"}</span>
+                  </div>
+                  <div className="p-2 rounded bg-white/5 flex items-center justify-between">
+                    <span className="text-slate-400">Servicio:</span>
+                    <span className="font-semibold text-slate-200">{tech.tipoServicio || "Paquetería"}</span>
+                  </div>
+                </div>
+              </div>
 
             </div>
 
-            {/* Right col — Radar */}
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#475569" }}>Perfil de Rendimiento</div>
-              <ResponsiveContainer width="100%" height={250}>
-                <RadarChart data={radarData}>
-                  <PolarGrid stroke="rgba(255,255,255,0.06)" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill: "#64748b", fontSize: 11 }} />
-                  <Radar name={tech.name} dataKey="value" stroke="#72b01d" fill="#72b01d" fillOpacity={0.15} strokeWidth={2} />
-                </RadarChart>
-              </ResponsiveContainer>
+            {/* Right Column */}
+            <div className="space-y-4">
+              
+              {/* Contratación & Facturación */}
+              <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div className="text-xs font-bold uppercase tracking-wider mb-3 text-[#93c947] flex items-center gap-1.5">
+                  <CreditCard size={13} /> Contrato y Facturación
+                </div>
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">Contrato:</span>
+                    <span className={`px-2 py-0.5 rounded font-bold text-[11px] ${tech.contrato === 'FIRMADO' ? 'bg-[#72b01d]/20 text-[#93c947]' : 'bg-amber-500/20 text-amber-400'}`}>
+                      {tech.contrato || "PENDIENTE"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">Inducción:</span>
+                    <span className="font-semibold text-slate-200">{tech.induccion || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">Carpeta:</span>
+                    <span className="font-semibold text-slate-200">{tech.carpeta || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">Régimen Facturación:</span>
+                    <span className="font-semibold text-slate-200">{tech.facturacion || "COMODATO"}</span>
+                  </div>
+                  {tech.nombreEmpresa && (
+                    <div className="flex items-center justify-between py-1 border-b border-white/5">
+                      <span className="text-slate-400">Empresa:</span>
+                      <span className="text-slate-200 font-medium text-right">{tech.nombreEmpresa}</span>
+                    </div>
+                  )}
+                  {tech.rutEmpresa && (
+                    <div className="flex items-center justify-between py-1 border-b border-white/5">
+                      <span className="text-slate-400">RUT Empresa:</span>
+                      <span className="text-slate-200 font-mono">{tech.rutEmpresa}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">Banco:</span>
+                    <span className="text-slate-200 font-semibold">{tech.banco || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-white/5">
+                    <span className="text-slate-400">Tipo Cuenta:</span>
+                    <span className="text-slate-200">{tech.tipoCuenta || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1">
+                    <span className="text-slate-400">N° de Cuenta:</span>
+                    <span className="text-slate-100 font-mono font-bold">{tech.numeroCuenta || "—"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* KPIs & Rendimiento */}
+              <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div className="text-xs font-bold uppercase tracking-wider mb-2 text-[#93c947] flex items-center gap-1.5">
+                  <TrendingUp size={13} /> Coordinaciones y Rendimiento
+                </div>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="p-2.5 rounded-xl text-center bg-[#72b01d]/10 border border-[#72b01d]/20">
+                    <div className="text-xl font-bold text-[#72b01d]">{tech.completedOrders}</div>
+                    <div className="text-[11px] text-[#94a3b8]">Coordinaciones</div>
+                  </div>
+                  <div className="p-2.5 rounded-xl text-center bg-[#93c947]/10 border border-[#93c947]/20">
+                    <div className="text-xl font-bold text-[#93c947]">{tech.productivity || 100}%</div>
+                    <div className="text-[11px] text-[#94a3b8]">Productividad</div>
+                  </div>
+                </div>
+
+                <div className="h-44 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart data={radarData}>
+                      <PolarGrid stroke="rgba(255,255,255,0.06)" />
+                      <PolarAngleAxis dataKey="subject" tick={{ fill: "#64748b", fontSize: 10 }} />
+                      <Radar name={tech.name} dataKey="value" stroke="#72b01d" fill="#72b01d" fillOpacity={0.2} strokeWidth={2} />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
             </div>
           </div>
+
+          {/* Documentos Adjuntos */}
+          {(tech.documentos?.hojaConductor || tech.documentos?.licenciaFrontal || tech.documentos?.licenciaTrasera || tech.documentos?.carnetFrontal || tech.documentos?.carnetTrasera || tech.documentos?.certificadoAntecedentes) && (
+            <div className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+              <div className="text-xs font-bold uppercase tracking-wider mb-3 text-[#93c947] flex items-center gap-1.5">
+                <FileText size={13} /> Documentos Adjuntos Disponibles
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {[
+                  { key: 'hojaConductor', label: 'Hoja de Vida Conductor', url: tech.documentos?.hojaConductor },
+                  { key: 'licenciaFrontal', label: 'Licencia (Frontal)', url: tech.documentos?.licenciaFrontal },
+                  { key: 'licenciaTrasera', label: 'Licencia (Trasera)', url: tech.documentos?.licenciaTrasera },
+                  { key: 'carnetFrontal', label: 'Carnet (Frontal)', url: tech.documentos?.carnetFrontal },
+                  { key: 'carnetTrasera', label: 'Carnet (Trasera)', url: tech.documentos?.carnetTrasera },
+                  { key: 'certificadoAntecedentes', label: 'Antecedentes', url: tech.documentos?.certificadoAntecedentes }
+                ].filter(d => d.url).map((d) => (
+                  <a 
+                    key={d.key} 
+                    href={d.url} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="flex items-center gap-2 p-2.5 rounded-lg transition-colors hover:bg-[#72b01d]/20" 
+                    style={{ background: "rgba(114,176,29,0.1)", color: "#93c947", fontSize: 12, textDecoration: "none" }}
+                  >
+                    <Search size={14} /> <span className="truncate">{d.label}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     </div>
@@ -854,8 +1282,8 @@ function TechModal({
 // ─── Tech Card ─────────────────────────────────────────────────────────────────
 function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () => void; onDelete: (e: React.MouseEvent) => void }) {
   return (
-    <div className="glass-card-hover p-5 cursor-pointer" style={{ position: 'relative' }} onClick={onClick}>
-      {/* Botón eliminar — aparece en hover */}
+    <div className="glass-card-hover p-4 cursor-pointer relative group flex flex-col justify-between" onClick={onClick}>
+      {/* Botón eliminar */}
       <button
         onClick={onDelete}
         title="Eliminar chofer"
@@ -874,71 +1302,83 @@ function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () =
       >
         <Trash2 size={13} />
       </button>
-      <div className="flex items-center gap-4 mb-4">
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: "linear-gradient(135deg, #72b01d, #2d343f)", color: "white" }}>
-          {tech.name.charAt(0)}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm" style={{ color: "#f1f5f9", wordBreak: "break-word" }}>
-            {tech.name}
-          </div>
-          <div className="text-xs" style={{ color: "#475569", wordBreak: "break-word" }}>
-            {tech.patente ? `Patente: ${tech.patente}` : "Sin Patente"}
-          </div>
-        </div>
-        <span className={`status-badge text-xs ${getStatusBg(tech.status)}`}>{tech.status}</span>
-      </div>
 
-      {/* Contact info */}
-      <div className="space-y-1 mb-3">
-        <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
-          <Phone size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
-          <a href={`tel:${tech.phone}`} onClick={e => e.stopPropagation()} className="truncate hover:text-brand-500 transition-colors">{tech.phone}</a>
+      {/* Header card */}
+      <div>
+        <div className="flex items-start gap-3 mb-3">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center text-base font-bold flex-shrink-0" style={{ background: "linear-gradient(135deg, #72b01d, #2d343f)", color: "white" }}>
+            {tech.name.charAt(0)}
+          </div>
+          <div className="flex-1 min-w-0 pr-6">
+            <div className="font-bold text-sm text-slate-100 truncate leading-snug" title={tech.name}>
+              {tech.name}
+            </div>
+            <div className="text-xs text-slate-400 font-mono mt-0.5">
+              RUT: {tech.rut}
+            </div>
+          </div>
         </div>
-        {tech.phone2 && (
-          <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
+
+        {/* Patente & Vehiculo badges */}
+        <div className="flex items-center gap-1.5 flex-wrap mb-3">
+          {tech.patente ? (
+            <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-[#72b01d]/15 text-[#93c947] border border-[#72b01d]/30">
+              {tech.patente}
+            </span>
+          ) : (
+            <span className="px-2 py-0.5 rounded text-[11px] text-slate-500 bg-white/5">Sin PPU</span>
+          )}
+          {tech.tipoVehiculo && (
+            <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-white/5 text-slate-300 border border-white/10">
+              {tech.tipoVehiculo}
+            </span>
+          )}
+          <span className={`status-badge text-[10px] ml-auto ${getStatusBg(tech.status)}`}>
+            {tech.status}
+          </span>
+        </div>
+
+        {/* Contact info */}
+        <div className="space-y-1.5 mb-3 text-xs text-slate-400">
+          <div className="flex items-center gap-2">
             <Phone size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
-            <a href={`https://wa.me/${tech.phone2.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="truncate hover:text-brand-500 transition-colors">{tech.phone2}</a>
+            <a href={`tel:${tech.phone}`} onClick={e => e.stopPropagation()} className="truncate hover:text-brand-400 transition-colors">
+              {tech.phone || "—"}
+            </a>
           </div>
-        )}
-        {tech.phone2 && (
-          <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
-            <Phone size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
-            <a href={`https://wa.me/${tech.phone2.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="truncate hover:text-brand-500 transition-colors">{tech.phone2}</a>
+          {(tech.phone2 || tech.whatsapp) && (
+            <div className="flex items-center gap-2">
+              <Phone size={11} style={{ color: "#93c947", flexShrink: 0 }} />
+              <a href={`https://wa.me/${(tech.phone2 || tech.whatsapp || "").replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="truncate hover:text-brand-400 transition-colors">
+                {tech.phone2 || tech.whatsapp} (WA)
+              </a>
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <MapPin size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
+            <span className="truncate">{tech.comuna || tech.direccion || "—"}</span>
           </div>
-        )}
-        {tech.email && (
-          <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
-            <Mail size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
-            <a href={`mailto:${tech.email}`} onClick={e => e.stopPropagation()} className="truncate hover:text-brand-500 transition-colors">{tech.email}</a>
-          </div>
-        )}
-        <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
-          <MapPin size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
-          <span className="truncate">{tech.comuna || "—"}</span>
         </div>
       </div>
 
-
-      {/* KPI row */}
-      <div className="grid grid-cols-2 gap-2 mb-3">
-        {[
-          { label: "Coord.", value: tech.completedOrders, color: "#72b01d" },
-          { label: "Produc.", value: `${tech.productivity}%`, color: "#93c947" },
-        ].map((k) => (
-          <div key={k.label} className="text-center p-2 rounded-lg" style={{ background: "rgba(255,255,255,0.03)" }}>
-            <div className="text-sm font-bold" style={{ color: k.color }}>{k.value}</div>
-            <div className="text-xs" style={{ color: "#475569" }}>{k.label}</div>
+      {/* Footer / KPIs */}
+      <div>
+        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/5 mb-2">
+          <div className="text-center p-1.5 rounded-lg bg-white/[0.02]">
+            <div className="text-xs font-bold text-[#72b01d]">{tech.completedOrders}</div>
+            <div className="text-[10px] text-slate-500">Coord.</div>
           </div>
-        ))}
-      </div>
+          <div className="text-center p-1.5 rounded-lg bg-white/[0.02]">
+            <div className="text-xs font-bold text-[#93c947]">{tech.banco ? tech.banco.slice(0, 10) : "—"}</div>
+            <div className="text-[10px] text-slate-500">Banco</div>
+          </div>
+        </div>
 
-      {/* Productivity bar */}
-      <div className="h-1.5 rounded-full mb-3" style={{ background: "rgba(255,255,255,0.06)" }}>
-        <div className="h-1.5 rounded-full" style={{ width: `${tech.productivity}%`, background: STATUS_COLOR[tech.status] }} />
+        {/* Productivity bar */}
+        <div className="h-1 rounded-full bg-white/5">
+          <div className="h-1 rounded-full bg-gradient-to-r from-[#72b01d] to-[#93c947]" style={{ width: `${Math.min(100, Math.max(15, tech.productivity || 80))}%` }} />
+        </div>
       </div>
-
-      {/* Certs eliminadas */}
     </div>
   );
 }
@@ -948,6 +1388,7 @@ export default function TechniciansPage() {
   const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [vehiculoFilter, setVehiculoFilter] = useState<string>("all");
   const [selectedTech, setSelectedTech] = useState<Technician | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [coordinacionesCount, setCoordinacionesCount] = useState<Record<string, number>>({});
@@ -956,30 +1397,55 @@ export default function TechniciansPage() {
 
   useEffect(() => {
     async function fetchAll() {
-      // Cargar técnicos desde Supabase
+      // Cargar choferes desde Supabase
       const { data: techData } = await supabase
         .from('tecnicos')
         .select('*')
         .order('tech_number', { ascending: true });
+
       if (techData) {
         setTechnicians(techData.map(t => {
           const dt = t.data || {};
           return {
             id: t.id,
+            techNumber: t.tech_number,
             name: dt.name || t.name || '',
             rut: dt.rut || t.rut || '',
             direccion: dt.direccion || '',
             comuna: dt.comuna || '',
             phone: dt.phone || t.phone || '',
-            phone2: dt.phone2 || '',
+            phone2: dt.phone2 || dt.whatsapp || '',
+            whatsapp: dt.whatsapp || dt.phone2 || '',
+            email: dt.email || t.email || '',
+            licencia: dt.licencia || '',
+            
+            patente: dt.patente || '',
+            tipoVehiculo: dt.tipoVehiculo || '',
+            duenoFurgon: dt.duenoFurgon || '',
+            gps: dt.gps || '',
+            gpsCccs: dt.gpsCccs || '',
+            beetrack: dt.beetrack || '',
+            seguro: dt.seguro || '',
+            
+            induccion: dt.induccion || '',
+            carpeta: dt.carpeta || '',
+            contrato: dt.contrato || '',
+            anexo: dt.anexo || '',
+            tipoServicio: dt.tipoServicio || 'Paquetería',
+            nLocal: dt.nLocal || '',
+            
+            facturacion: dt.facturacion || '',
+            nombreEmpresa: dt.nombreEmpresa || '',
+            rutEmpresa: dt.rutEmpresa || '',
+            banco: dt.banco || '',
+            tipoCuenta: dt.tipoCuenta || '',
+            numeroCuenta: dt.numeroCuenta || '',
+            
             estadoCivil: dt.estadoCivil || '',
             estudios: dt.estudios || '',
-            patente: dt.patente || '',
             modeloAuto: dt.modeloAuto || '',
             anioAuto: dt.anioAuto || '',
-            tipoServicio: dt.tipoServicio || '',
-            nLocal: dt.nLocal || '',
-            email: dt.email || t.email || '',
+            
             status: (dt.status || t.status || 'disponible') as TechnicianStatus,
             completedOrders: dt.completedOrders || t.completed_orders || 0,
             avgTime: dt.avgTime || t.avg_time || 0,
@@ -992,12 +1458,11 @@ export default function TechniciansPage() {
       }
       setLoadingTechs(false);
 
-      // Cargar conteo de coordinaciones (forzando evitar caché)
+      // Cargar conteo de coordinaciones
       const { data: coordData } = await supabase.from('servicios').select('asignado_a, data');
       if (coordData) {
         const counts: Record<string, number> = {};
         coordData.forEach(row => {
-          // Extraemos todos los posibles nombres que referencien al chofer en este servicio
           let possibleNames: string[] = [];
           if (row.asignado_a) possibleNames.push(String(row.asignado_a));
           if (row.data) {
@@ -1006,9 +1471,7 @@ export default function TechniciansPage() {
           }
           
           const namesStr = possibleNames.filter(Boolean).join(",");
-          
           if (namesStr) {
-            // Separamos por comas, guiones o saltos de línea
             const names = namesStr.split(/[,\-|\n]+/).map(normalizeString).filter(Boolean);
             const uniqueNames = Array.from(new Set(names));
             uniqueNames.forEach(name => { counts[name] = (counts[name] || 0) + 1; });
@@ -1024,16 +1487,19 @@ export default function TechniciansPage() {
     const normName = normalizeString(t.name);
     return {
       ...t,
-      completedOrders: coordinacionesCount[normName] || 0
+      completedOrders: coordinacionesCount[normName] || t.completedOrders || 0
     };
   });
 
   const filtered = enrichedTechnicians.filter((t) => {
-    const matchSearch = search === "" || [t.name, t.email, t.comuna, t.phone, t.rut].some(
-      (f) => (f || "").toLowerCase().includes(search.toLowerCase())
-    );
+    const matchSearch = search === "" || [
+      t.name, t.email, t.comuna, t.phone, t.phone2, t.rut, t.patente, t.tipoVehiculo, t.beetrack, t.banco, t.nombreEmpresa
+    ].some((f) => (f || "").toLowerCase().includes(search.toLowerCase()));
+
     const matchStatus = statusFilter === "all" || t.status === statusFilter;
-    return matchSearch && matchStatus;
+    const matchVehiculo = vehiculoFilter === "all" || (t.tipoVehiculo || "").toUpperCase().includes(vehiculoFilter.toUpperCase());
+    
+    return matchSearch && matchStatus && matchVehiculo;
   });
 
   const getStatsForTipo = (tipo: string) => {
@@ -1045,34 +1511,44 @@ export default function TechniciansPage() {
   const statsSupermercado = getStatsForTipo('Supermercado');
   const statsPaqueteria = getStatsForTipo('Paquetería');
 
-
   const exportToExcel = () => {
     if (technicians.length === 0) return;
 
-    const data = technicians.map(t => ({
-      ID: t.id,
-      Nombre: t.name,
-      RUT: t.rut,
-      "Dirección": t.direccion,
-      Comuna: t.comuna,
-      "Teléfono 1": t.phone,
-      "Teléfono 2": t.phone2,
-      "Estado Civil": t.estadoCivil,
-      Estudios: t.estudios,
-      Patente: t.patente,
-      "Modelo Auto": t.modeloAuto,
-      "Año Auto": t.anioAuto,
-      "Tipo Servicio": t.tipoServicio,
-      "N° Local": t.nLocal,
-      Email: t.email,
-      Estado: t.status
+    // Exportar con los 25 encabezados exactos del Excel
+    const data = filtered.map(t => ({
+      "PPU": t.patente || "",
+      "CONDUCTOR": t.name || "",
+      "RUT": t.rut || "",
+      "CELULAR": t.phone || "",
+      "WHATSAPP": t.phone2 || t.whatsapp || "",
+      "MAIL CONDUCTOR": t.email || "",
+      "GPS CCCS": t.gpsCccs || "",
+      "BEETRACK": t.beetrack || "",
+      "INDUCCION": t.induccion || "",
+      "CARPETA": t.carpeta || "",
+      "CONTRATO": t.contrato || "",
+      "ANEXO": t.anexo || "",
+      "DUEÑO FURGON": t.duenoFurgon || "",
+      "TIPO VEHIC": t.tipoVehiculo || "",
+      "FACTURACION": t.facturacion || "",
+      "NOMBRE EMPRESA": t.nombreEmpresa || "",
+      "RUT EMPRESA": t.rutEmpresa || "",
+      "BANCO": t.banco || "",
+      "TIPO CUENTA": t.tipoCuenta || "",
+      "NUMERO CUENTA": t.numeroCuenta || "",
+      "COMUNA": t.comuna || "",
+      "DIRECCIÓN": t.direccion || "",
+      "LICENCIA": t.licencia || "",
+      "GPS": t.gps || "",
+      "SEGURO": t.seguro || "",
+      "ESTADO": t.status || "",
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Choferes");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Flota Choferes");
 
-    XLSX.writeFile(workbook, `Choferes_${new Date().toISOString().split("T")[0]}.xlsx`);
+    XLSX.writeFile(workbook, `Flota_Choferes_Dasai_${new Date().toISOString().split("T")[0]}.xlsx`);
   };
 
   const handleAdd = (newTech: Technician) => {
@@ -1095,23 +1571,20 @@ export default function TechniciansPage() {
   };
 
   const handleUpdateStatus = async (id: string, newStatus: TechnicianStatus) => {
-    // Actualizar estado en pantalla inmediatamente
     setTechnicians((prev) => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
     if (selectedTech && selectedTech.id === id) {
       setSelectedTech({ ...selectedTech, status: newStatus });
     }
-    // Guardar en Supabase para que persista
     await supabase.from('tecnicos').update({ status: newStatus }).eq('id', id);
   };
-
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="section-title">Choferes</h2>
-          <p className="section-subtitle">{technicians.length} choferes registrados en el sistema</p>
+          <h2 className="section-title">Choferes y Flota</h2>
+          <p className="section-subtitle">{technicians.length} choferes registrados en la flota Dasai</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -1119,14 +1592,14 @@ export default function TechniciansPage() {
             onClick={exportToExcel}
             style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.05)", padding: "8px 16px", borderRadius: 8, color: "#cbd5e1" }}
           >
-            <Download size={16} /> Exportar
+            <Download size={16} /> Exportar Flota
           </button>
           <button
             className="btn-primary"
             onClick={() => setShowAddModal(true)}
             style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
           >
-            <Plus size={16} /> Agregar chofer
+            <Plus size={16} /> Nuevo Chofer
           </button>
         </div>
       </div>
@@ -1134,10 +1607,10 @@ export default function TechniciansPage() {
       {/* Status summary */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-sm font-semibold mb-2" style={{ color: "#94a3b8" }}>Supermercado</h3>
+          <h3 className="text-sm font-semibold mb-2" style={{ color: "#94a3b8" }}>Paquetería</h3>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {statsSupermercado.map(({ status, count }) => (
-              <button key={`sup-${status}`} onClick={() => setStatusFilter(statusFilter === status ? "all" : status)}
+            {statsPaqueteria.map(({ status, count }) => (
+              <button key={`paq-${status}`} onClick={() => setStatusFilter(statusFilter === status ? "all" : status)}
                 className="stat-card text-left"
                 style={{ border: statusFilter === status ? `1px solid ${STATUS_COLOR[status as TechnicianStatus]}40` : undefined }}>
                 <div className="flex items-center gap-2 mb-2">
@@ -1151,10 +1624,10 @@ export default function TechniciansPage() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold mb-2" style={{ color: "#94a3b8" }}>Paquetería</h3>
+          <h3 className="text-sm font-semibold mb-2" style={{ color: "#94a3b8" }}>Supermercado</h3>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {statsPaqueteria.map(({ status, count }) => (
-              <button key={`paq-${status}`} onClick={() => setStatusFilter(statusFilter === status ? "all" : status)}
+            {statsSupermercado.map(({ status, count }) => (
+              <button key={`sup-${status}`} onClick={() => setStatusFilter(statusFilter === status ? "all" : status)}
                 className="stat-card text-left"
                 style={{ border: statusFilter === status ? `1px solid ${STATUS_COLOR[status as TechnicianStatus]}40` : undefined }}>
                 <div className="flex items-center gap-2 mb-2">
@@ -1172,26 +1645,49 @@ export default function TechniciansPage() {
       <div className="glass-card p-4 flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-48">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#475569" }} />
-          <input className="ops-input pl-9" placeholder="Buscar por nombre, RUT, teléfono, correo…" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input 
+            className="ops-input pl-9" 
+            placeholder="Buscar por conductor, RUT, PPU patente, comuna, banco, beetrack…" 
+            value={search} 
+            onChange={(e) => setSearch(e.target.value)} 
+          />
         </div>
+        
         <select className="ops-select text-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
           <option value="all">Todos los estados</option>
           {STATUS_OPTS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
         </select>
-        <div className="text-xs" style={{ color: "#475569" }}>{filtered.length} choferes</div>
+
+        <select className="ops-select text-sm" value={vehiculoFilter} onChange={(e) => setVehiculoFilter(e.target.value)}>
+          <option value="all">Todos los vehículos</option>
+          <option value="FURGON SIMPLE">Furgón Simple</option>
+          <option value="FURGON MEDIO">Furgón Medio</option>
+          <option value="FURGON GRANDE">Furgón Grande</option>
+          <option value="CAMION">Camión</option>
+        </select>
+
+        <div className="text-xs font-semibold" style={{ color: "#93c947" }}>{filtered.length} choferes</div>
       </div>
 
       {/* Cards grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filtered.map((tech) => (
-          <TechCard
-            key={tech.id}
-            tech={tech}
-            onClick={() => setSelectedTech(tech)}
-            onDelete={(e) => { e.stopPropagation(); if (confirm(`¿Eliminar a ${tech.name}? Esta acción no se puede deshacer.`)) handleDelete(tech.id); }}
-          />
-        ))}
-      </div>
+      {loadingTechs ? (
+        <div className="text-center py-12 text-slate-400">Cargando flota de choferes...</div>
+      ) : filtered.length === 0 ? (
+        <div className="glass-card text-center py-12 text-slate-400">
+          No se encontraron choferes que coincidan con los filtros.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filtered.map((tech) => (
+            <TechCard
+              key={tech.id}
+              tech={tech}
+              onClick={() => setSelectedTech(tech)}
+              onDelete={(e) => { e.stopPropagation(); if (confirm(`¿Eliminar a ${tech.name}? Esta acción no se puede deshacer.`)) handleDelete(tech.id); }}
+            />
+          ))}
+        </div>
+      )}
 
       {selectedTech && !editingTech && (
         <TechModal
