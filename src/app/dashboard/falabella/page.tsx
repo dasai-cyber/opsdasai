@@ -4,6 +4,15 @@ import { useState, useEffect } from "react";
 import { Search, Plus, Save, X, Edit, Trash2, ShoppingBag } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import * as XLSX from "xlsx";
+import { CHILE_REGIONS } from "@/data/chileData";
+
+const COMUNAS_RM = (CHILE_REGIONS.find(r => r.region === "Metropolitana")?.comunas || []).slice().sort((a, b) => a.localeCompare(b, "es"));
+
+const COMUNAS_OTRAS_REGIONES = CHILE_REGIONS
+  .filter(r => r.region !== "Metropolitana")
+  .flatMap(r => r.comunas)
+  .filter((c, index, arr) => arr.indexOf(c) === index)
+  .sort((a, b) => a.localeCompare(b, "es"));
 
 const LOCALES_LIST = [
   "L41 HUECHURABA",
@@ -89,6 +98,9 @@ export default function FalabellaPage() {
     sg1: "", sg2: "", sg3: "", sg4: "", sg5: "", sg6: "", sg7: "", sg: ""
   });
 
+  const [comunaRM, setComunaRM] = useState("");
+  const [comunaRegiones, setComunaRegiones] = useState("");
+
   const fetchData = async () => {
     setLoading(true);
     const { data: rows, error } = await supabase.from('servicios').select('*');
@@ -155,12 +167,24 @@ export default function FalabellaPage() {
       v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
       sg1: "", sg2: "", sg3: "", sg4: "", sg5: "", sg6: "", sg7: "", sg: ""
     });
+    setComunaRM("");
+    setComunaRegiones("");
     setEditingRow(null);
     setIsModalOpen(true);
   };
 
   const openEdit = (row: FalabellaRow) => {
     setForm({ ...row });
+    if (COMUNAS_RM.includes(row.comuna || "")) {
+      setComunaRM(row.comuna || "");
+      setComunaRegiones("");
+    } else if (COMUNAS_OTRAS_REGIONES.includes(row.comuna || "")) {
+      setComunaRegiones(row.comuna || "");
+      setComunaRM("");
+    } else {
+      setComunaRM(row.comuna || "");
+      setComunaRegiones("");
+    }
     setEditingRow(row);
     setIsModalOpen(true);
   };
@@ -572,14 +596,72 @@ export default function FalabellaPage() {
                   />
                 </div>
 
+                {/* Casilla RM */}
                 <div className="col-span-1">
-                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Comuna</label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-semibold text-sky-400">RM (Región Metropolitana)</label>
+                    {COMUNAS_RM.includes(form.comuna || "") && (
+                      <span className="text-[10px] font-bold text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20">
+                        Seleccionada
+                      </span>
+                    )}
+                  </div>
                   <input
+                    list="rm-comunas-list-fala"
                     type="text"
-                    value={form.comuna}
-                    onChange={(e) => setForm({...form, comuna: e.target.value})}
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
+                    value={comunaRM}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setComunaRM(val);
+                      if (val) {
+                        setComunaRegiones("");
+                        setForm({ ...form, comuna: val });
+                      } else {
+                        setForm({ ...form, comuna: "" });
+                      }
+                    }}
+                    placeholder="Escriba o busque comuna RM..."
+                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-sky-500"
                   />
+                  <datalist id="rm-comunas-list-fala">
+                    {COMUNAS_RM.map((c) => (
+                      <option key={c} value={c} />
+                    ))}
+                  </datalist>
+                </div>
+
+                {/* Casilla Otras Regiones */}
+                <div className="col-span-1">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-semibold text-purple-400">Otras Regiones</label>
+                    {COMUNAS_OTRAS_REGIONES.includes(form.comuna || "") && (
+                      <span className="text-[10px] font-bold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20">
+                        Seleccionada
+                      </span>
+                    )}
+                  </div>
+                  <input
+                    list="otras-regiones-list-fala"
+                    type="text"
+                    value={comunaRegiones}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setComunaRegiones(val);
+                      if (val) {
+                        setComunaRM("");
+                        setForm({ ...form, comuna: val });
+                      } else {
+                        setForm({ ...form, comuna: "" });
+                      }
+                    }}
+                    placeholder="Escriba o busque comuna regiones..."
+                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-purple-500"
+                  />
+                  <datalist id="otras-regiones-list-fala">
+                    {COMUNAS_OTRAS_REGIONES.map((c) => (
+                      <option key={c} value={c} />
+                    ))}
+                  </datalist>
                 </div>
                 
               </div>
