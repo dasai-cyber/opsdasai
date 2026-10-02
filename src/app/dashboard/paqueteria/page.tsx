@@ -347,8 +347,13 @@ export default function PaqueteriaPage() {
     fetchData();
   };
 
+  const filtered = data.filter(d => 
+    JSON.stringify(d).toLowerCase().includes(search.toLowerCase())
+  );
+
   const exportExcel = () => {
-    const formattedData = data.map(d => ({
+    const dataToExport = filtered;
+    const formattedData = dataToExport.map(d => ({
       "PPU": d.patente,
       "Vehículo": d.vehiculo || "",
       "Fecha": d.fecha,
@@ -409,10 +414,6 @@ export default function PaqueteriaPage() {
     }
     setForm(updated);
   };
-
-  const filtered = data.filter(d => 
-    JSON.stringify(d).toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col" style={{ background: "#0a0a0b" }}>

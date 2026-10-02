@@ -220,8 +220,12 @@ export default function DhlPage() {
     fetchData();
   };
 
+  const filtered = data.filter(d => 
+    JSON.stringify(d).toLowerCase().includes(search.toLowerCase())
+  );
+
   const exportExcel = () => {
-    const formattedData = data.map(d => ({
+    const formattedData = filtered.map(d => ({
       "PPU": d.patente,
       "Fecha": d.fecha,
       "Hora Inicio": d.horaInicio,
@@ -281,10 +285,6 @@ export default function DhlPage() {
     }
     setForm(updated);
   };
-
-  const filtered = data.filter(d => 
-    JSON.stringify(d).toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col" style={{ background: "#0a0a0b" }}>
