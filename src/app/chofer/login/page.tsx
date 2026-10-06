@@ -45,9 +45,9 @@ export default function ChoferLoginPage() {
       .single();
 
     if (choferData && !choferData.aviso_gps_aceptado_en) {
-      router.push("/aviso-gps"); // Crearemos esta página pronto
+      router.push("/chofer/aviso-gps"); // Crearemos esta página pronto
     } else {
-      router.push("/inicio");
+      router.push("/chofer/inicio");
     }
   };
 
