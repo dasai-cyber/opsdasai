@@ -72,6 +72,14 @@ interface CoordinacionRow {
   sg: string;
 }
 
+const normalizeVehiculoType = (v?: string): string => {
+  if (!v) return "";
+  const s = v.toLowerCase().trim();
+  if (s.includes("camion") || s.includes("camión")) return "Camión";
+  if (s.includes("furgon") || s.includes("furgón")) return "Furgón";
+  return v;
+};
+
 export default function CoordinacionPage() {
   const [data, setData] = useState<CoordinacionRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,7 +114,7 @@ export default function CoordinacionPage() {
     if (techRows) {
       techRows.forEach(t => {
         const p = (t.data?.patente || "").toUpperCase().trim();
-        const v = t.data?.tipoVehiculo || "";
+        const v = normalizeVehiculoType(t.data?.tipoVehiculo || "");
         if (p && v) techPpuMap[p] = v;
       });
     }
@@ -168,7 +176,7 @@ export default function CoordinacionPage() {
       setChoferes(rows.map(r => ({
         name: r.data?.name || "",
         patente: (r.data?.patente || "").toUpperCase().trim(),
-        vehiculo: r.data?.tipoVehiculo || ""
+        vehiculo: normalizeVehiculoType(r.data?.tipoVehiculo || "")
       })).filter(c => c.name));
     }
   };

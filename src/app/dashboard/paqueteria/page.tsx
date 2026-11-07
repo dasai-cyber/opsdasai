@@ -194,6 +194,14 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
   return totalExtra.toLocaleString("es-CL");
 };
 
+const normalizeVehiculoType = (v?: string): string => {
+  if (!v) return "";
+  const s = v.toLowerCase().trim();
+  if (s.includes("camion") || s.includes("camión")) return "Camión";
+  if (s.includes("furgon") || s.includes("furgón")) return "Furgón";
+  return v;
+};
+
 export default function PaqueteriaPage() {
   const [data, setData] = useState<PaqueteriaRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -202,7 +210,7 @@ export default function PaqueteriaPage() {
   const [fechaHasta, setFechaHasta] = useState("");
   
   // Choferes list
-  const [choferes, setChoferes] = useState<Array<{name: string, patente: string}>>([]);
+  const [choferes, setChoferes] = useState<Array<{name: string, patente: string, vehiculo?: string}>>([]);
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -280,7 +288,11 @@ export default function PaqueteriaPage() {
   const fetchChoferes = async () => {
     const { data: rows } = await supabase.from('tecnicos').select('*');
     if (rows) {
-      setChoferes(rows.map(r => ({ name: r.data?.name || "", patente: r.data?.patente || "" })).filter(c => c.name));
+      setChoferes(rows.map(r => ({
+        name: r.data?.name || "",
+        patente: (r.data?.patente || "").toUpperCase().trim(),
+        vehiculo: normalizeVehiculoType(r.data?.tipoVehiculo || "")
+      })).filter(c => c.name));
     }
   };
 
@@ -673,11 +685,19 @@ export default function PaqueteriaPage() {
                     onChange={(e) => {
                       const selectedName = e.target.value;
                       const matched = choferes.find(c => c.name === selectedName);
-                      setForm({
-                        ...form, 
+                      const newPatente = matched?.patente ? matched.patente : form.patente;
+                      const newVehiculo = matched?.vehiculo ? normalizeVehiculoType(matched.vehiculo) : form.vehiculo;
+                      const info = getTarifaByVehiculoYComuna(newVehiculo, form.comuna);
+                      const isV2Ok = form.v2 === "OK" || form.v2 === "SI" || form.v2 === "SÍ";
+
+                      setForm(prev => ({
+                        ...prev, 
                         asignadoA: selectedName,
-                        patente: matched && matched.patente && !form.patente ? matched.patente : (matched && matched.patente && form.patente !== matched.patente ? matched.patente : form.patente)
-                      });
+                        patente: newPatente,
+                        vehiculo: newVehiculo || prev.vehiculo,
+                        valorDia: newVehiculo && info.tarifa ? info.tarifa : prev.valorDia,
+                        adicional: (isV2Ok || prev.adicional) && newVehiculo && info.segundaVuelta ? info.segundaVuelta : prev.adicional,
+                      }));
                     }}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
                     placeholder="Escriba o seleccione..."
@@ -695,12 +715,19 @@ export default function PaqueteriaPage() {
                     value={form.patente}
                     onChange={(e) => {
                       const val = e.target.value;
-                      const matched = choferes.find(c => c.patente && c.patente.toLowerCase() === val.toLowerCase());
-                      setForm({
-                        ...form,
+                      const matched = choferes.find(c => c.patente && c.patente.toUpperCase() === val.toUpperCase());
+                      const newVehiculo = matched?.vehiculo ? normalizeVehiculoType(matched.vehiculo) : form.vehiculo;
+                      const info = getTarifaByVehiculoYComuna(newVehiculo, form.comuna);
+                      const isV2Ok = form.v2 === "OK" || form.v2 === "SI" || form.v2 === "SÍ";
+
+                      setForm(prev => ({
+                        ...prev,
                         patente: val,
-                        asignadoA: matched && matched.name ? matched.name : form.asignadoA
-                      });
+                        asignadoA: matched && matched.name ? matched.name : prev.asignadoA,
+                        vehiculo: newVehiculo || prev.vehiculo,
+                        valorDia: newVehiculo && info.tarifa ? info.tarifa : prev.valorDia,
+                        adicional: (isV2Ok || prev.adicional) && newVehiculo && info.segundaVuelta ? info.segundaVuelta : prev.adicional,
+                      }));
                     }}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
                     placeholder="Ej: AB-CD-12"
@@ -730,6 +757,9 @@ export default function PaqueteriaPage() {
                     <option value="" className="bg-[#1e293b] text-slate-400">Seleccionar vehículo...</option>
                     <option value="Furgón" className="bg-[#1e293b] text-white">Furgón</option>
                     <option value="Camión" className="bg-[#1e293b] text-white">Camión</option>
+                    {form.vehiculo && form.vehiculo !== "Furgón" && form.vehiculo !== "Camión" && (
+                      <option value={form.vehiculo} className="bg-[#1e293b] text-white">{form.vehiculo}</option>
+                    )}
                   </select>
                 </div>
 
