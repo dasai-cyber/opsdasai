@@ -1003,7 +1003,7 @@ function TechModal({
         {/* Header */}
         <div className="flex items-center justify-between p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold flex-shrink-0" style={{ background: "linear-gradient(135deg, #72b01d, #2d343f)", color: "white" }}>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold flex-shrink-0" style={{ background: "linear-gradient(135deg, #ff5aac, #5600d4)", color: "white" }}>
               {tech.name.charAt(0)}
             </div>
             <div>
@@ -1393,7 +1393,7 @@ function TechCard({
       {/* Header card */}
       <div>
         <div className="flex items-start gap-3 mb-3">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center text-base font-bold flex-shrink-0" style={{ background: "linear-gradient(135deg, #72b01d, #2d343f)", color: "white" }}>
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center text-base font-bold flex-shrink-0" style={{ background: "linear-gradient(135deg, #ff5aac, #5600d4)", color: "white" }}>
             {tech.name.charAt(0)}
           </div>
           <div className="flex-1 min-w-0 pr-6">
