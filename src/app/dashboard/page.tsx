@@ -246,7 +246,7 @@ export default function DashboardPage() {
             Monitoreo en tiempo real de Coordinación, Paquetería, DHL y Falabella
           </p>
         </div>
-        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold" style={{ background: "rgba(114,176,29,0.1)", border: "1px solid rgba(114,176,29,0.3)", color: "#72b01d" }}>
+        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold" style={{ background: "rgba(255,90,172,0.1)", border: "1px solid rgba(255,90,172,0.3)", color: "#ff5aac" }}>
           <Activity size={14} className="animate-pulse" />
           Operaciones Sincronizadas
         </div>
@@ -396,8 +396,8 @@ export default function DashboardPage() {
                 <AreaChart data={timelineCounts.length > 0 ? timelineCounts : [{ name: "Actual", value: counts.total }]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorTime" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#72b01d" stopOpacity={0.35}/>
-                      <stop offset="95%" stopColor="#72b01d" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#ff5aac" stopOpacity={0.35}/>
+                      <stop offset="95%" stopColor="#5600d4" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
@@ -406,7 +406,7 @@ export default function DashboardPage() {
                   <Tooltip 
                     contentStyle={{ background: "#1e293b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#f8fafc", fontSize: 12 }}
                   />
-                  <Area type="monotone" dataKey="value" name="Servicios" stroke="#72b01d" strokeWidth={2.5} fillOpacity={1} fill="url(#colorTime)" />
+                  <Area type="monotone" dataKey="value" name="Servicios" stroke="#ff5aac" strokeWidth={2.5} fillOpacity={1} fill="url(#colorTime)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

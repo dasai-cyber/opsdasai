@@ -339,7 +339,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
             <button 
               onClick={openAdd}
               className="px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg"
-              style={{ background: "#72b01d", color: "white", border: "none" }}
+              style={{ background: "linear-gradient(135deg, #ff5aac 0%, #700ece 100%)", color: "white", border: "none", boxShadow: "0 4px 15px rgba(255,90,172,0.3)" }}
             >
               <Plus size={16} /> Nueva Coordinación
             </button>
@@ -812,7 +812,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                 onClick={handleSave}
                 disabled={saving}
                 className="px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors disabled:opacity-50"
-                style={{ background: "#72b01d", color: "white" }}
+                style={{ background: "linear-gradient(135deg, #ff5aac 0%, #700ece 100%)", color: "white" }}
               >
                 <Save size={16} /> {saving ? "Guardando..." : "Guardar Registro"}
               </button>

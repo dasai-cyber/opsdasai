@@ -133,7 +133,7 @@ export default function ControlVueltasAdminPage() {
         </div>
         <button 
           onClick={handleExportExcel}
-          className="flex items-center gap-2 px-4 py-2 bg-brand-500 hover:bg-brand-400 text-white font-medium rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#ff5aac] to-[#700ece] hover:from-[#ff7ab8] hover:to-[#8318c9] text-white font-medium rounded-lg transition-all shadow-md shadow-pink-500/20"
         >
           <Download size={18} />
           Exportar Excel
@@ -149,14 +149,14 @@ export default function ControlVueltasAdminPage() {
           <p className="text-slate-400 text-sm">Choferes Registrados</p>
         </div>
         <div className="bg-[#1b1e24] p-6 rounded-2xl border border-slate-800">
-          <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center mb-4 text-green-400">
+          <div className="w-10 h-10 rounded-full bg-pink-500/10 flex items-center justify-center mb-4 text-[#ff5aac]">
             <Package size={20} />
           </div>
           <h2 className="text-3xl font-bold text-white mb-1">{stats.vueltas}</h2>
           <p className="text-slate-400 text-sm">Vueltas Totales</p>
         </div>
         <div className="bg-[#1b1e24] p-6 rounded-2xl border border-slate-800">
-          <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center mb-4 text-orange-400">
+          <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center mb-4 text-[#a855f7]">
             <Car size={20} />
           </div>
           <h2 className="text-3xl font-bold text-white mb-1">{stats.vehiculos}</h2>

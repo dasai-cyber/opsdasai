@@ -59,7 +59,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { id: 1, unread: true, color: "#ef4444", title: "SLA Vencido — OT-2025-1840", time: "hace 2h", sub: "Banco de Chile — Antofagasta" },
     { id: 2, unread: true, color: "#f59e0b", title: "Stock bajo: Router Mikrotik", time: "hace 3h", sub: "Solo 2 unidades disponibles" },
     { id: 3, unread: true, color: "#ef4444", title: "ATM fuera de servicio", time: "hace 4h", sub: "BE-IQUI-001 — Iquique" },
-    { id: 4, unread: true, color: "#72b01d", title: "OT-2025-1844 Finalizada", time: "ayer", sub: "Carlos Muñoz — Banco Itaú" },
+    { id: 4, unread: true, color: "#ff5aac", title: "OT-2025-1844 Finalizada", time: "ayer", sub: "Carlos Muñoz — Banco Itaú" },
   ]);
 
   useEffect(() => {
@@ -221,7 +221,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <button
                 onClick={() => { setShowInactivityWarning(false); }}
                 className="flex-1 py-2 rounded-lg text-sm font-semibold"
-                style={{ background: "#72b01d", color: "#fff" }}
+                style={{ background: "linear-gradient(135deg, #ff5aac 0%, #700ece 100%)", color: "#fff" }}
               >
                 Seguir conectado
               </button>
@@ -265,7 +265,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Live status */}
-        <div className="mx-4 mt-4 p-3 rounded-lg flex items-center gap-2" style={{ background: "rgba(62,207,142,0.08)", border: "1px solid rgba(62,207,142,0.15)" }}>
+        <div className="mx-4 mt-4 p-3 rounded-lg flex items-center gap-2" style={{ background: "rgba(255,90,172,0.08)", border: "1px solid rgba(255,90,172,0.2)" }}>
           <div className="w-2 h-2 rounded-full bg-brand-500 pulse-live" style={{ color: "var(--color-brand-500)" }} />
           <span style={{ color: "var(--color-brand-400)", fontSize: "11px", fontWeight: 600 }}>SISTEMA EN LÍNEA</span>
           <Zap size={11} style={{ color: "var(--color-brand-500)", marginLeft: "auto" }} />
@@ -401,7 +401,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <div className="p-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                     <div className="text-sm font-semibold" style={{ color: "#f1f5f9" }}>{profile?.nombre}</div>
                     <div className="text-xs mt-0.5" style={{ color: "#475569" }}>{profile?.correo}</div>
-                    <div className="mt-2 inline-flex px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: "rgba(62,207,142,0.15)", color: "var(--color-brand-400)" }}>
+                    <div className="mt-2 inline-flex px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: "rgba(255,90,172,0.15)", color: "var(--color-brand-400)" }}>
                       {rolLabel}
                     </div>
                   </div>

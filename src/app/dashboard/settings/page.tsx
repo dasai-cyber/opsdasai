@@ -263,7 +263,7 @@ export default function SettingsPage() {
                     </div>
                   )}
                   {pwSuccess && (
-                    <div className="p-3 rounded-lg text-sm flex items-center gap-2" style={{ background: "rgba(62,207,142,0.1)", border: "1px solid rgba(62,207,142,0.2)", color: "var(--color-brand-400)" }}>
+                    <div className="p-3 rounded-lg text-sm flex items-center gap-2" style={{ background: "rgba(255,90,172,0.1)", border: "1px solid rgba(255,90,172,0.2)", color: "var(--color-brand-400)" }}>
                       <CheckCircle size={16} /> {pwSuccess}
                     </div>
                   )}

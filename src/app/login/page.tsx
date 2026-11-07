@@ -34,7 +34,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex" style={{ background: "linear-gradient(135deg, #121418 0%, #1b1e24 50%, #23272f 100%)" }}>
       {/* Left Panel */}
-      <div className="hidden lg:flex flex-col justify-between w-[520px] p-12" style={{ background: "linear-gradient(180deg, rgba(62,207,142,0.08) 0%, rgba(45,52,63,0.05) 100%)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+      <div className="hidden lg:flex flex-col justify-between w-[520px] p-12" style={{ background: "linear-gradient(180deg, rgba(255,90,172,0.08) 0%, rgba(86,0,212,0.04) 100%)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
         <div>
           <div className="flex items-center gap-3 mb-16">
             {CONFIG.USE_IMAGE_LOGO ? (
@@ -69,7 +69,7 @@ export default function LoginPage() {
             { icon: <Cpu size={15} />, label: "Informes automáticos PDF", sub: "Generación en un clic" },
           ].map((f, i) => (
             <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(62,207,142,0.15)", color: "var(--color-brand-400)" }}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,90,172,0.15)", color: "var(--color-brand-400)" }}>
                 {f.icon}
               </div>
               <div>
@@ -177,8 +177,8 @@ export default function LoginPage() {
       </div>
 
       {/* Background decorations */}
-      <div style={{ position: "fixed", top: "-200px", right: "-200px", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(62,207,142,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
-      <div style={{ position: "fixed", bottom: "-200px", left: "-100px", width: "400px", height: "400px", background: "radial-gradient(circle, rgba(62,207,142,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "fixed", top: "-200px", right: "-200px", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(255,90,172,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "fixed", bottom: "-200px", left: "-100px", width: "400px", height: "400px", background: "radial-gradient(circle, rgba(86,0,212,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
     </div>
   );
 }
