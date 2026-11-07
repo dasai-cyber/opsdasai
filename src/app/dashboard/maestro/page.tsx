@@ -63,6 +63,7 @@ export interface MaestroRow {
   valorDia: string;
   adicional: string;
   vueltas: string; // Bono
+  comisionDasai?: string;
   v1: string;
   v2: string;
   v3: string;
@@ -122,7 +123,7 @@ export default function MaestroPage() {
     categoria: "coordinacion",
     patente: "", vehiculo: "", fecha: new Date().toISOString().split('T')[0], 
     horaInicio: "", horaTermino: "", local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
-    valorDia: "", adicional: "", vueltas: "",
+    valorDia: "", adicional: "", vueltas: "", comisionDasai: "",
     v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
     sg1: "", sg2: "", sg3: "", sg4: "", sg5: "", sg6: "", sg7: "", sg: ""
   });
@@ -171,6 +172,7 @@ export default function MaestroPage() {
           valorDia: dt.valorDia || dt.descuento || "",
           adicional: dt.adicional || dt.bono || "",
           vueltas: dt.vueltas || "",
+          comisionDasai: dt.comisionDasai || dt.comision || "",
           v1: dt.v1 || "",
           v2: dt.v2 || "",
           v3: dt.v3 || "",
@@ -267,6 +269,7 @@ export default function MaestroPage() {
         valorDia: form.valorDia || "",
         adicional: form.adicional || "",
         vueltas: form.vueltas || "",
+        comisionDasai: form.comisionDasai || "",
         v1: form.v1 || "",
         v2: form.v2 || "",
         v3: form.v3 || "",
@@ -388,6 +391,7 @@ export default function MaestroPage() {
       "Valor Día": d.valorDia,
       "Adicional": d.adicional,
       "Bono / Vueltas": d.vueltas,
+      "Comisión Dasai": d.comisionDasai || "",
       "Total": (parseMoneyValue(d.valorDia) + parseMoneyValue(d.adicional) + parseMoneyValue(d.vueltas)) > 0
         ? (parseMoneyValue(d.valorDia) + parseMoneyValue(d.adicional) + parseMoneyValue(d.vueltas)).toLocaleString("es-CL")
         : "",
@@ -609,6 +613,7 @@ export default function MaestroPage() {
                 <th className="px-4 py-3 font-semibold text-right">Valor Día</th>
                 <th className="px-4 py-3 font-semibold text-right">Adicional</th>
                 <th className="px-4 py-3 font-semibold text-right">Bono</th>
+                <th className="px-4 py-3 font-semibold text-right text-pink-400">Comisión</th>
                 <th className="px-4 py-3 font-semibold text-right">Total</th>
                 <th className="px-4 py-3 font-semibold text-center">Acciones</th>
               </tr>
@@ -665,6 +670,9 @@ export default function MaestroPage() {
                       </td>
                       <td className="px-4 py-3 text-xs text-right text-emerald-400">
                         {row.vueltas ? `$${row.vueltas}` : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-right font-semibold text-pink-400">
+                        {row.comisionDasai ? `$${row.comisionDasai}` : "—"}
                       </td>
                       <td className="px-4 py-3 text-xs text-right font-bold text-pink-400">
                         {rowTotal > 0 ? `$${rowTotal.toLocaleString("es-CL")}` : "—"}
@@ -936,7 +944,7 @@ export default function MaestroPage() {
               </div>
 
               {/* Valores Económicos */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.02]">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.02]">
                 <div>
                   <label className="text-xs font-semibold text-slate-300 mb-1 block">Valor Día ($)</label>
                   <input
@@ -967,6 +975,17 @@ export default function MaestroPage() {
                     onChange={(e) => setForm(f => ({ ...f, vueltas: e.target.value }))}
                     placeholder="Ej: 15.000"
                     className="ops-input w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-pink-400 mb-1 block">Comisión Dasai ($)</label>
+                  <input
+                    type="text"
+                    value={form.comisionDasai || ""}
+                    onChange={(e) => setForm(f => ({ ...f, comisionDasai: e.target.value }))}
+                    placeholder="Ej: 5.000"
+                    className="ops-input w-full border-pink-500/30 focus:border-pink-500"
                   />
                 </div>
               </div>

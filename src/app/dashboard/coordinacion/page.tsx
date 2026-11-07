@@ -55,6 +55,7 @@ interface CoordinacionRow {
   valorDia: string;
   adicional: string;
   vueltas: string;
+  comisionDasai?: string;
   v1: string;
   v2: string;
   v3: string;
@@ -98,7 +99,7 @@ export default function CoordinacionPage() {
   const [form, setForm] = useState<Partial<CoordinacionRow>>({
     patente: "", vehiculo: "", fecha: "", horaInicio: "", horaTermino: "",
     local: "", folio: "", puntos: "", comuna: "", asignadoA: "",
-    valorDia: "", adicional: "", vueltas: "",
+    valorDia: "", adicional: "", vueltas: "", comisionDasai: "",
     v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
     sg1: "", sg2: "", sg3: "", sg4: "", sg5: "", sg6: "", sg7: "", sg: ""
   });
@@ -146,6 +147,7 @@ export default function CoordinacionPage() {
           valorDia: dt.valorDia || dt.descuento || "",
           adicional: dt.adicional || dt.bono || "",
           vueltas: dt.vueltas || "",
+          comisionDasai: dt.comisionDasai || dt.comision || "",
           v1: dt.v1 || "",
           v2: dt.v2 || "",
           v3: dt.v3 || "",
@@ -237,6 +239,7 @@ export default function CoordinacionPage() {
         valorDia: form.valorDia,
         adicional: form.adicional,
         vueltas: form.vueltas,
+        comisionDasai: form.comisionDasai || "",
         v1: form.v1,
         v2: form.v2,
         v3: form.v3,
@@ -327,6 +330,7 @@ export default function CoordinacionPage() {
       "Valor Día": d.valorDia,
       "Adicional": d.adicional,
       "Bono": d.vueltas,
+      "Comisión Dasai": d.comisionDasai || "",
       "Total": (parseMoneyValue(d.valorDia) + parseMoneyValue(d.adicional) + parseMoneyValue(d.vueltas)) > 0
         ? (parseMoneyValue(d.valorDia) + parseMoneyValue(d.adicional) + parseMoneyValue(d.vueltas)).toLocaleString("es-CL")
         : "",
@@ -523,6 +527,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                           {(row.valorDia !== "" && row.valorDia !== undefined) && <span className="bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded text-[11px]">Valor día: {row.valorDia}</span>}
                           {(row.adicional !== "" && row.adicional !== undefined) && <span className="bg-green-500/10 text-green-400 px-2 py-0.5 rounded text-[11px]">Adicional: {row.adicional}</span>}
                           {(row.vueltas !== "" && row.vueltas !== undefined) && <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[11px]">Bono: {row.vueltas}</span>}
+                          {(row.comisionDasai !== "" && row.comisionDasai !== undefined) && <span className="bg-pink-500/10 text-pink-400 px-2 py-0.5 rounded text-[11px]">Comisión: {row.comisionDasai}</span>}
                           {((parseMoneyValue(row.valorDia) + parseMoneyValue(row.adicional) + parseMoneyValue(row.vueltas)) > 0) && (
                             <span className="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-500/30">
                               Total: ${(parseMoneyValue(row.valorDia) + parseMoneyValue(row.adicional) + parseMoneyValue(row.vueltas)).toLocaleString("es-CL")}
@@ -863,7 +868,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
               {/* Extras Row */}
               <div className="mt-6 p-4 rounded-xl border border-white/5" style={{ background: "rgba(255,255,255,0.02)" }}>
                 <div className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>Opciones Adicionales</div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                   <div>
                     <label className="block text-xs font-semibold mb-1.5 text-purple-400">Valor día</label>
                     <input
@@ -898,6 +903,16 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                       value={form.vueltas}
                       onChange={(e) => setForm({...form, vueltas: e.target.value})}
                       className="w-full px-3 py-2 rounded-lg border border-blue-500/20 bg-blue-500/5 text-sm text-slate-200 outline-none focus:border-blue-500"
+                      placeholder="$0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1.5 text-pink-400">Comisión Dasai</label>
+                    <input
+                      type="text"
+                      value={form.comisionDasai || ""}
+                      onChange={(e) => setForm({...form, comisionDasai: e.target.value})}
+                      className="w-full px-3 py-2 rounded-lg border border-pink-500/20 bg-pink-500/5 text-sm text-slate-200 outline-none focus:border-pink-500"
                       placeholder="$0"
                     />
                   </div>
