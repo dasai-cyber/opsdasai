@@ -33,6 +33,7 @@ const LOCALES_VALOR_MAP: Record<string, string> = {
 interface DhlRow {
   id: string;
   patente: string;
+  vehiculo?: string;
   fecha: string;
   horaInicio: string;
   horaTermino: string;
@@ -86,7 +87,7 @@ export default function DhlPage() {
   const [fechaHasta, setFechaHasta] = useState("");
   
   // Choferes list
-  const [choferes, setChoferes] = useState<Array<{name: string, patente: string}>>([]);
+  const [choferes, setChoferes] = useState<Array<{name: string, patente: string, vehiculo?: string}>>([]);
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -94,7 +95,7 @@ export default function DhlPage() {
   const [saving, setSaving] = useState(false);
   
   const [form, setForm] = useState<Partial<DhlRow>>({
-    patente: "", fecha: "", horaInicio: "", horaTermino: "",
+    patente: "", vehiculo: "", fecha: "", horaInicio: "", horaTermino: "",
     local: "DHL", folio: "", puntos: "", comuna: "", asignadoA: "",
     valorDia: "", adicional: "", vueltas: "",
     v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
@@ -107,6 +108,16 @@ export default function DhlPage() {
   const fetchData = async () => {
     setLoading(true);
     const { data: rows, error } = await supabase.from('servicios').select('*');
+    const { data: techRows } = await supabase.from('tecnicos').select('*');
+    const techPpuMap: Record<string, string> = {};
+    if (techRows) {
+      techRows.forEach(t => {
+        const p = (t.data?.patente || "").toUpperCase().trim();
+        const v = t.data?.tipoVehiculo || "";
+        if (p && v) techPpuMap[p] = v;
+      });
+    }
+
     if (!error && rows) {
       // Filtrar estrictamente solo registros pertenecientes a DHL
       const dhlRows = rows.filter(r => r.id?.startsWith('dhl-') || r.data?.type === 'dhl' || r.data?.categoria === 'dhl');
@@ -115,6 +126,7 @@ export default function DhlPage() {
         return {
           id: r.id,
           patente: dt.patente || "",
+          vehiculo: dt.vehiculo || techPpuMap[(dt.patente || "").toUpperCase().trim()] || "",
           fecha: dt.fecha || "",
           horaInicio: dt.horaInicio || "",
           horaTermino: dt.horaTermino || "",
@@ -153,7 +165,11 @@ export default function DhlPage() {
   const fetchChoferes = async () => {
     const { data: rows } = await supabase.from('tecnicos').select('*');
     if (rows) {
-      setChoferes(rows.map(r => ({ name: r.data?.name || "", patente: r.data?.patente || "" })).filter(c => c.name));
+      setChoferes(rows.map(r => ({
+        name: r.data?.name || "",
+        patente: (r.data?.patente || "").toUpperCase().trim(),
+        vehiculo: r.data?.tipoVehiculo || ""
+      })).filter(c => c.name));
     }
   };
 
@@ -164,7 +180,7 @@ export default function DhlPage() {
 
   const openAdd = () => {
     setForm({
-      patente: "", fecha: new Date().toISOString().split('T')[0], 
+      patente: "", vehiculo: "", fecha: new Date().toISOString().split('T')[0], 
       horaInicio: "", horaTermino: "", local: "DHL", folio: "", puntos: "", comuna: "", asignadoA: "",
       valorDia: "", adicional: "", vueltas: "",
       v1: "", v2: "", v3: "", v4: "", v5: "", v6: "", v7: "",
@@ -177,7 +193,7 @@ export default function DhlPage() {
   };
 
   const openEdit = (row: DhlRow) => {
-    setForm({ ...row });
+    setForm({ ...row, vehiculo: row.vehiculo || "" });
     if (COMUNAS_RM.includes(row.comuna || "")) {
       setComunaRM(row.comuna || "");
       setComunaRegiones("");
@@ -201,6 +217,7 @@ export default function DhlPage() {
         type: 'dhl',
         categoria: 'dhl',
         patente: form.patente,
+        vehiculo: form.vehiculo || "",
         fecha: form.fecha,
         horaInicio: form.horaInicio,
         horaTermino: form.horaTermino,
@@ -276,6 +293,7 @@ export default function DhlPage() {
   const exportExcel = () => {
     const formattedData = filtered.map(d => ({
       "PPU": d.patente,
+      "Vehículo": d.vehiculo || "",
       "Fecha": formatDate(d.fecha),
       "Hora Inicio": d.horaInicio,
       "Hora Término": d.horaTermino,
@@ -425,7 +443,7 @@ export default function DhlPage() {
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead style={{ background: "rgba(255,255,255,0.03)", color: "#94a3b8", fontSize: "11px", textTransform: "uppercase", letterSpacing: "1px" }}>
               <tr>
-                <th className="px-4 py-3 font-semibold">PPU</th>
+                <th className="px-4 py-3 font-semibold">PPU / Vehículo</th>
                 <th className="px-4 py-3 font-semibold">Fecha / Hora</th>
                 <th className="px-4 py-3 font-semibold">Local / Folio</th>
                 <th className="px-4 py-3 font-semibold">Comuna</th>
@@ -447,7 +465,20 @@ export default function DhlPage() {
               ) : (
                 filtered.map((row) => (
                   <tr key={row.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-4 py-3 font-mono text-xs">{row.patente || "—"}</td>
+                    <td className="px-4 py-3">
+                      <div className="font-mono text-xs font-semibold">{row.patente || "—"}</div>
+                      {row.vehiculo && (
+                        <div className="mt-1">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+                            row.vehiculo.toLowerCase().includes('camión') || row.vehiculo.toLowerCase().includes('camion')
+                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                              : 'bg-sky-500/10 text-sky-400 border-sky-500/20'
+                          }`}>
+                            {row.vehiculo}
+                          </span>
+                        </div>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <div>{formatDate(row.fecha) || "—"}</div>
                       <div className="text-xs" style={{ color: "#64748b" }}>{row.horaInicio} - {row.horaTermino}</div>
@@ -533,7 +564,8 @@ export default function DhlPage() {
                       setForm({
                         ...form, 
                         asignadoA: selectedName,
-                        patente: matched && matched.patente && !form.patente ? matched.patente : (matched && matched.patente && form.patente !== matched.patente ? matched.patente : form.patente)
+                        patente: matched && matched.patente ? matched.patente : form.patente,
+                        vehiculo: matched && matched.vehiculo ? matched.vehiculo : form.vehiculo
                       });
                     }}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
@@ -556,7 +588,8 @@ export default function DhlPage() {
                       setForm({
                         ...form,
                         patente: val,
-                        asignadoA: matched && matched.name ? matched.name : form.asignadoA
+                        asignadoA: matched && matched.name ? matched.name : form.asignadoA,
+                        vehiculo: matched && matched.vehiculo ? matched.vehiculo : form.vehiculo
                       });
                     }}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
@@ -565,6 +598,17 @@ export default function DhlPage() {
                   <datalist id="patentes-list-dhl">
                     {choferes.filter(c => c.patente).map((c, i) => <option key={i} value={c.patente} />)}
                   </datalist>
+                </div>
+
+                <div className="col-span-1">
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Tipo Vehículo</label>
+                  <input
+                    type="text"
+                    value={form.vehiculo || ""}
+                    onChange={(e) => setForm({ ...form, vehiculo: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-black/20 text-sm text-slate-200 outline-none focus:border-brand-500"
+                    placeholder="Ej: Furgón, Camión..."
+                  />
                 </div>
 
                 <div className="col-span-1">

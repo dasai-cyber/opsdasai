@@ -100,7 +100,7 @@ export default function MaestroPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRow, setEditingRow] = useState<MaestroRow | null>(null);
   const [saving, setSaving] = useState(false);
-  const [choferes, setChoferes] = useState<{ name: string; patente: string }[]>([]);
+  const [choferes, setChoferes] = useState<Array<{ name: string; patente: string; vehiculo: string }>>([]);
 
   const [form, setForm] = useState<Partial<MaestroRow>>({
     categoria: "coordinacion",
@@ -117,6 +117,16 @@ export default function MaestroPage() {
   const fetchData = async () => {
     setLoading(true);
     const { data: rows, error } = await supabase.from('servicios').select('*');
+    const { data: techRows } = await supabase.from('tecnicos').select('*');
+    const techPpuMap: Record<string, string> = {};
+    if (techRows) {
+      techRows.forEach(t => {
+        const p = (t.data?.patente || "").toUpperCase().trim();
+        const v = t.data?.tipoVehiculo || "";
+        if (p && v) techPpuMap[p] = v;
+      });
+    }
+
     if (!error && rows) {
       const parsed: MaestroRow[] = rows.map(r => {
         const dt = r.data || {};
@@ -133,7 +143,7 @@ export default function MaestroPage() {
           id: r.id,
           categoria: cat,
           patente: dt.patente || "",
-          vehiculo: dt.vehiculo || "",
+          vehiculo: dt.vehiculo || techPpuMap[(dt.patente || "").toUpperCase().trim()] || "",
           fecha: dt.fecha || "",
           horaInicio: dt.horaInicio || "",
           horaTermino: dt.horaTermino || "",
@@ -173,7 +183,11 @@ export default function MaestroPage() {
   const fetchChoferes = async () => {
     const { data: rows } = await supabase.from('tecnicos').select('*');
     if (rows) {
-      setChoferes(rows.map(r => ({ name: r.data?.name || "", patente: r.data?.patente || "" })).filter(c => c.name));
+      setChoferes(rows.map(r => ({
+        name: r.data?.name || "",
+        patente: (r.data?.patente || "").toUpperCase().trim(),
+        vehiculo: r.data?.tipoVehiculo || ""
+      })).filter(c => c.name));
     }
   };
 
@@ -570,7 +584,7 @@ export default function MaestroPage() {
             <thead style={{ background: "rgba(255,255,255,0.03)", color: "#94a3b8", fontSize: "11px", textTransform: "uppercase", letterSpacing: "1px" }}>
               <tr>
                 <th className="px-4 py-3 font-semibold">Origen</th>
-                <th className="px-4 py-3 font-semibold">PPU</th>
+                <th className="px-4 py-3 font-semibold">PPU / Vehículo</th>
                 <th className="px-4 py-3 font-semibold">Fecha / Horario</th>
                 <th className="px-4 py-3 font-semibold">Local / Folio</th>
                 <th className="px-4 py-3 font-semibold">Comuna</th>
@@ -602,10 +616,18 @@ export default function MaestroPage() {
                       <td className="px-4 py-3">
                         {getCategoryBadge(row.categoria)}
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs font-bold text-slate-200">
-                        {row.patente || "—"}
+                      <td className="px-4 py-3">
+                        <div className="font-mono text-xs font-bold text-slate-200">{row.patente || "—"}</div>
                         {row.vehiculo && (
-                          <span className="block text-[10px] text-slate-500 font-sans">{row.vehiculo}</span>
+                          <div className="mt-1">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+                              row.vehiculo.toLowerCase().includes('camión') || row.vehiculo.toLowerCase().includes('camion')
+                                ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                                : 'bg-sky-500/10 text-sky-400 border-sky-500/20'
+                            }`}>
+                              {row.vehiculo}
+                            </span>
+                          </div>
                         )}
                       </td>
                       <td className="px-4 py-3">
@@ -751,7 +773,8 @@ export default function MaestroPage() {
                       setForm(f => ({
                         ...f,
                         asignadoA: e.target.value,
-                        patente: (!f.patente && sel?.patente) ? sel.patente : f.patente
+                        patente: (!f.patente && sel?.patente) ? sel.patente : f.patente,
+                        vehiculo: (!f.vehiculo && sel?.vehiculo) ? sel.vehiculo : f.vehiculo
                       }));
                     }}
                     className="ops-select w-full"

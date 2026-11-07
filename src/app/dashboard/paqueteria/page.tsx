@@ -208,6 +208,16 @@ export default function PaqueteriaPage() {
   const fetchData = async () => {
     setLoading(true);
     const { data: rows, error } = await supabase.from('servicios').select('*');
+    const { data: techRows } = await supabase.from('tecnicos').select('*');
+    const techPpuMap: Record<string, string> = {};
+    if (techRows) {
+      techRows.forEach(t => {
+        const p = (t.data?.patente || "").toUpperCase().trim();
+        const v = t.data?.tipoVehiculo || "";
+        if (p && v) techPpuMap[p] = v;
+      });
+    }
+
     if (!error && rows) {
       // Filtrar solo registros pertenecientes a paquetería
       const paqRows = rows.filter(r => r.id?.startsWith('paq-') || r.data?.type === 'paqueteria' || r.data?.categoria === 'paqueteria');
@@ -216,7 +226,7 @@ export default function PaqueteriaPage() {
         return {
           id: r.id,
           patente: dt.patente || "",
-          vehiculo: dt.vehiculo || "",
+          vehiculo: dt.vehiculo || techPpuMap[(dt.patente || "").toUpperCase().trim()] || "",
           fecha: dt.fecha || "",
           horaInicio: dt.horaInicio || "",
           horaTermino: dt.horaTermino || "",
