@@ -391,10 +391,10 @@ export default function MaestroPage() {
       "Valor Día": d.valorDia,
       "Adicional": d.adicional,
       "Bono / Vueltas": d.vueltas,
-      "Comisión Dasai": d.comisionDasai || "",
       "Total": (parseMoneyValue(d.valorDia) + parseMoneyValue(d.adicional) + parseMoneyValue(d.vueltas)) > 0
         ? (parseMoneyValue(d.valorDia) + parseMoneyValue(d.adicional) + parseMoneyValue(d.vueltas)).toLocaleString("es-CL")
         : "",
+      "Comisión Dasai": d.comisionDasai || "",
     }));
     const ws = XLSX.utils.json_to_sheet(formattedData);
     const wb = XLSX.utils.book_new();
@@ -613,8 +613,8 @@ export default function MaestroPage() {
                 <th className="px-4 py-3 font-semibold text-right">Valor Día</th>
                 <th className="px-4 py-3 font-semibold text-right">Adicional</th>
                 <th className="px-4 py-3 font-semibold text-right">Bono</th>
-                <th className="px-4 py-3 font-semibold text-right text-pink-400">Comisión</th>
                 <th className="px-4 py-3 font-semibold text-right">Total</th>
+                <th className="px-4 py-3 font-semibold text-right text-pink-400">Comisión Dasai</th>
                 <th className="px-4 py-3 font-semibold text-center">Acciones</th>
               </tr>
             </thead>
@@ -671,11 +671,11 @@ export default function MaestroPage() {
                       <td className="px-4 py-3 text-xs text-right text-emerald-400">
                         {row.vueltas ? `$${row.vueltas}` : "—"}
                       </td>
-                      <td className="px-4 py-3 text-xs text-right font-semibold text-pink-400">
-                        {row.comisionDasai ? `$${row.comisionDasai}` : "—"}
-                      </td>
                       <td className="px-4 py-3 text-xs text-right font-bold text-pink-400">
                         {rowTotal > 0 ? `$${rowTotal.toLocaleString("es-CL")}` : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-right font-semibold text-pink-400">
+                        {row.comisionDasai ? `$${row.comisionDasai}` : "—"}
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex items-center justify-center gap-1.5">

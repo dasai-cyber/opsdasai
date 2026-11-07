@@ -907,16 +907,6 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold mb-1.5 text-pink-400">Comisión Dasai</label>
-                    <input
-                      type="text"
-                      value={form.comisionDasai || ""}
-                      onChange={(e) => setForm({...form, comisionDasai: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg border border-pink-500/20 bg-pink-500/5 text-sm text-slate-200 outline-none focus:border-pink-500"
-                      placeholder="$0"
-                    />
-                  </div>
-                  <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="block text-xs font-semibold text-emerald-400">Total</label>
                       <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
@@ -932,6 +922,16 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
                           : "$0"
                       }
                       className="w-full px-3 py-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none select-none cursor-default"
+                      placeholder="$0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1.5 text-pink-400">Comisión Dasai</label>
+                    <input
+                      type="text"
+                      value={form.comisionDasai || ""}
+                      onChange={(e) => setForm({...form, comisionDasai: e.target.value})}
+                      className="w-full px-3 py-2 rounded-lg border border-pink-500/20 bg-pink-500/5 text-sm text-slate-200 outline-none focus:border-pink-500"
                       placeholder="$0"
                     />
                   </div>
