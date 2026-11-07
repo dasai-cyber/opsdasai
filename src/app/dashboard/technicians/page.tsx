@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import {
   Search, Phone, Mail, MapPin, Award, X, TrendingUp,
   CheckCircle2, Plus, Save, User, Pencil, Truck, Trash2, Download, FileText,
-  CreditCard, FileCheck
+  CreditCard, FileCheck, UserCheck, UserX, Power
 } from "lucide-react";
 import { getStatusBg } from "@/lib/utils";
 import type { Technician, TechnicianStatus } from "@/types";
@@ -90,6 +90,7 @@ function AddTechModal({
     gps: "",
     seguro: "",
     status: "" as TechnicianStatus,
+    activo: true,
   });
 
   const confirmClose = () => {
@@ -175,6 +176,7 @@ function AddTechModal({
         avgTime: 0,
         productivity: 0,
         documentos: docsUrls,
+        activo: form.activo !== false,
       };
       
       const { error: insertError } = await supabase.from('tecnicos').insert({ id: newId, data: newTech });
@@ -429,6 +431,19 @@ function AddTechModal({
                 </select>
               </div>
 
+              {/* 26. HABILITACIÓN */}
+              <div>
+                <label style={labelStyle}>HABILITACIÓN</label>
+                <select 
+                  style={inputStyle} 
+                  value={form.activo !== false ? "SI" : "NO"} 
+                  onChange={(e) => setForm(f => ({ ...f, activo: e.target.value === "SI" }))}
+                >
+                  <option value="SI">Habilitado (Activo)</option>
+                  <option value="NO">Deshabilitado (Inactivo)</option>
+                </select>
+              </div>
+
             </div>
 
             {/* Documentos Adjuntos Opcionales */}
@@ -543,6 +558,7 @@ function EditTechModal({
     gps: tech.gps || "",
     seguro: tech.seguro || "",
     status: tech.status || ("" as TechnicianStatus),
+    activo: tech.activo !== false,
   });
 
   const [saving, setSaving] = useState(false);
@@ -588,6 +604,7 @@ function EditTechModal({
         phone2: form.phone2.trim(),
         whatsapp: form.phone2.trim(),
         documentos: docsUrls,
+        activo: form.activo !== false,
       };
 
       const { error } = await supabase.from('tecnicos').update({ data: updated }).eq('id', tech.id);
@@ -830,6 +847,19 @@ function EditTechModal({
                 </select>
               </div>
 
+              {/* 26. HABILITACIÓN */}
+              <div>
+                <label style={labelStyle}>HABILITACIÓN</label>
+                <select 
+                  style={inputStyle} 
+                  value={form.activo !== false ? "SI" : "NO"} 
+                  onChange={(e) => setForm(f => ({ ...f, activo: e.target.value === "SI" }))}
+                >
+                  <option value="SI">Habilitado (Activo)</option>
+                  <option value="NO">Deshabilitado (Inactivo)</option>
+                </select>
+              </div>
+
             </div>
 
             {/* Documentos */}
@@ -906,13 +936,14 @@ function EditTechModal({
 
 // ─── Tech Detail Modal ─────────────────────────────────────────────────────────
 function TechModal({
-  tech, onClose, onUpdateStatus, onEdit, onDelete,
+  tech, onClose, onUpdateStatus, onEdit, onDelete, onToggleActivo,
 }: {
   tech: Technician;
   onClose: () => void;
   onUpdateStatus: (id: string, s: TechnicianStatus) => void;
   onEdit: () => void;
   onDelete: () => void;
+  onToggleActivo: (tech: Technician) => void;
 }) {
   const downloadInfo = () => {
     const text = `FICHA DE CHOFER / FLOTA - OPSDASAI\n` +
@@ -978,6 +1009,15 @@ function TechModal({
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-xl font-bold" style={{ color: "#f1f5f9" }}>{tech.name}</h3>
+                {tech.activo === false ? (
+                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                    DESHABILITADO
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    HABILITADO
+                  </span>
+                )}
                 {tech.patente && (
                   <span className="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-[#72b01d]/20 text-[#93c947] border border-[#72b01d]/30">
                     {tech.patente}
@@ -1013,6 +1053,23 @@ function TechModal({
 
         {/* Botones de acción */}
         <div className="px-6 pt-4 flex items-center gap-2.5 flex-wrap">
+          <button
+            onClick={() => onToggleActivo(tech)}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 16px",
+              background: tech.activo !== false ? "rgba(239, 68, 68, 0.15)" : "rgba(16, 185, 129, 0.15)",
+              border: tech.activo !== false ? "1px solid rgba(239, 68, 68, 0.3)" : "1px solid rgba(16, 185, 129, 0.3)",
+              color: tech.activo !== false ? "#f87171" : "#34d399",
+              borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer",
+            }}
+          >
+            {tech.activo !== false ? (
+              <><UserX size={14} /> Deshabilitar Chofer</>
+            ) : (
+              <><UserCheck size={14} /> Habilitar Chofer</>
+            )}
+          </button>
           <button
             onClick={downloadInfo}
             style={{
@@ -1278,9 +1335,41 @@ function TechModal({
 }
 
 // ─── Tech Card ─────────────────────────────────────────────────────────────────
-function TechCard({ tech, onClick, onDelete }: { tech: Technician; onClick: () => void; onDelete: (e: React.MouseEvent) => void }) {
+function TechCard({ 
+  tech, 
+  onClick, 
+  onDelete,
+  onToggleActivo
+}: { 
+  tech: Technician; 
+  onClick: () => void; 
+  onDelete: (e: React.MouseEvent) => void;
+  onToggleActivo: (e: React.MouseEvent) => void;
+}) {
+  const isActivo = tech.activo !== false;
+
   return (
-    <div className="glass-card-hover p-4 cursor-pointer relative group flex flex-col justify-between" onClick={onClick}>
+    <div 
+      className={`glass-card-hover p-4 cursor-pointer relative group flex flex-col justify-between transition-all ${
+        !isActivo ? 'opacity-70 border-red-500/20 bg-slate-900/60' : ''
+      }`} 
+      onClick={onClick}
+    >
+      {/* Botón de Habilitación rápida */}
+      <div className="absolute top-2.5 right-11 z-10">
+        <button
+          onClick={onToggleActivo}
+          title={isActivo ? "Clic para deshabilitar chofer" : "Clic para habilitar chofer"}
+          className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold border transition-all ${
+            isActivo 
+              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25' 
+              : 'bg-red-500/15 text-red-400 border-red-500/30 hover:bg-red-500/30'
+          }`}
+        >
+          <span className={`w-1.5 h-1.5 rounded-full ${isActivo ? 'bg-emerald-400' : 'bg-red-400 animate-pulse'}`}></span>
+          {isActivo ? "Habilitado" : "Deshabilitado"}
+        </button>
+      </div>
       {/* Botón eliminar */}
       <button
         onClick={onDelete}
@@ -1387,6 +1476,7 @@ export default function TechniciansPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [vehiculoFilter, setVehiculoFilter] = useState<string>("all");
+  const [activoFilter, setActivoFilter] = useState<string>("all");
   const [selectedTech, setSelectedTech] = useState<Technician | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [coordinacionesCount, setCoordinacionesCount] = useState<Record<string, number>>({});
@@ -1415,6 +1505,7 @@ export default function TechniciansPage() {
             whatsapp: dt.whatsapp || dt.phone2 || '',
             email: dt.email || t.email || '',
             licencia: dt.licencia || '',
+            activo: dt.activo !== undefined ? dt.activo : true,
             
             patente: dt.patente || '',
             tipoVehiculo: dt.tipoVehiculo || '',
@@ -1494,8 +1585,11 @@ export default function TechniciansPage() {
 
     const matchStatus = statusFilter === "all" || t.status === statusFilter;
     const matchVehiculo = vehiculoFilter === "all" || (t.tipoVehiculo || "").toUpperCase().includes(vehiculoFilter.toUpperCase());
+    const matchActivo = activoFilter === "all"
+      || (activoFilter === "habilitados" && t.activo !== false)
+      || (activoFilter === "deshabilitados" && t.activo === false);
     
-    return matchSearch && matchStatus && matchVehiculo;
+    return matchSearch && matchStatus && matchVehiculo && matchActivo;
   });
 
   const getStatsForTipo = (tipo: string) => {
@@ -1514,6 +1608,7 @@ export default function TechniciansPage() {
       "PPU": t.patente || "",
       "CONDUCTOR": t.name || "",
       "RUT": t.rut || "",
+      "HABILITACIÓN": t.activo !== false ? "HABILITADO" : "DESHABILITADO",
       "CELULAR": t.phone || "",
       "WHATSAPP": t.phone2 || t.whatsapp || "",
       "MAIL CONDUCTOR": t.email || "",
@@ -1563,6 +1658,30 @@ export default function TechniciansPage() {
     }
     setTechnicians(prev => prev.filter(t => t.id !== id));
     setSelectedTech(null);
+  };
+
+  const handleToggleActivo = async (tech: Technician, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const newActivo = tech.activo === false ? true : false;
+    const actionLabel = newActivo ? "habilitar" : "deshabilitar";
+    
+    const updated = { ...tech, activo: newActivo };
+    setTechnicians(prev => prev.map(t => t.id === tech.id ? updated : t));
+    if (selectedTech && selectedTech.id === tech.id) {
+      setSelectedTech(updated);
+    }
+    
+    try {
+      const { error } = await supabase.from('tecnicos').update({ data: updated }).eq('id', tech.id);
+      if (error) throw error;
+    } catch (err: any) {
+      console.error(err);
+      alert(`Error al ${actionLabel} chofer: ` + err.message);
+      setTechnicians(prev => prev.map(t => t.id === tech.id ? tech : t));
+      if (selectedTech && selectedTech.id === tech.id) {
+        setSelectedTech(tech);
+      }
+    }
   };
 
   const handleUpdateStatus = async (id: string, newStatus: TechnicianStatus) => {
@@ -1679,6 +1798,7 @@ export default function TechniciansPage() {
               tech={tech}
               onClick={() => setSelectedTech(tech)}
               onDelete={(e) => { e.stopPropagation(); if (confirm(`¿Eliminar a ${tech.name}? Esta acción no se puede deshacer.`)) handleDelete(tech.id); }}
+              onToggleActivo={(e) => handleToggleActivo(tech, e)}
             />
           ))}
         </div>
@@ -1691,6 +1811,7 @@ export default function TechniciansPage() {
           onUpdateStatus={handleUpdateStatus}
           onEdit={() => setEditingTech(selectedTech)}
           onDelete={() => handleDelete(selectedTech.id)}
+          onToggleActivo={handleToggleActivo}
         />
       )}
       {editingTech && (

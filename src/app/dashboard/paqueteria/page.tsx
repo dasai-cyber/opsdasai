@@ -76,7 +76,7 @@ export interface TarifaZonaInfo {
   zona: string;
 }
 
-export const getTarifaByVehiculoYComuna = (vehiculo?: string, comuna?: string): TarifaZonaInfo => {
+const getTarifaByVehiculoYComuna = (vehiculo?: string, comuna?: string): TarifaZonaInfo => {
   if (!vehiculo) {
     return { tarifa: "", segundaVuelta: "", zona: "" };
   }

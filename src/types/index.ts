@@ -72,6 +72,7 @@ export interface TechnicalEvent {
 
 export interface Technician {
   id: string;
+  activo?: boolean;
   techNumber?: string;
   name: string;
   rut: string;

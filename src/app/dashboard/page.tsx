@@ -16,7 +16,7 @@ import { supabase } from "@/lib/supabase";
 // ─── Interfaces ─────────────────────────────────────────────────────────────
 interface NormalizedRow {
   id: string;
-  category: "coordinacion" | "paqueteria" | "dhl" | "falabella" | "programacion" | "otro";
+  category: string;
   categoryLabel: string;
   patente: string;
   fecha: string;
@@ -90,7 +90,7 @@ const normalizeRow = (r: any): NormalizedRow => {
   };
 };
 
-const CATEGORY_META = {
+const CATEGORY_META: Record<string, { label: string; color: string; href: string; icon: any; bg: string; border: string }> = {
   coordinacion: { label: "Supermercado", color: "#3b82f6", href: "/dashboard/coordinacion", icon: ShoppingCart, bg: "rgba(59,130,246,0.12)", border: "rgba(59,130,246,0.3)" },
   paqueteria:   { label: "Paquetería",   color: "#72b01d", href: "/dashboard/paqueteria",   icon: Package,  bg: "rgba(114,176,29,0.12)", border: "rgba(114,176,29,0.3)" },
   dhl:          { label: "DHL",          color: "#f59e0b", href: "/dashboard/dhl",          icon: Send,     bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.3)" },
