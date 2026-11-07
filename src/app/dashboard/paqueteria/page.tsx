@@ -34,10 +34,32 @@ const LOCALES_LIST = [
   "DHL",
 ];
 
+const getTarifaByLocal = (local: string): string => {
+  if (!local || !local.trim()) return "";
+  const norm = local.trim().toUpperCase();
+  if (norm.includes("L41") || norm.includes("HUECHURABA")) {
+    return "75.000";
+  }
+  return "70.000";
+};
+
 const LOCALES_VALOR_MAP: Record<string, string> = {
   "L41 HUECHURABA": "75.000",
   "L45 MAIPU": "70.000",
   "L95 LA REINA": "70.000",
+  "L32 GRAN AVENIDA": "70.000",
+  "L48 CORDILLERA": "70.000",
+  "L76 DEPARTAMENTAL": "70.000",
+  "L83 LA FLORIDA": "70.000",
+  "L73 PUENTE ALTO": "70.000",
+  "L682 HI SAN JOAQUIN": "70.000",
+  "L693 LA PINTANA": "70.000",
+  "L87 SANTA ROSA": "70.000",
+  "L54 VICUÑA MACKENNA": "70.000",
+  "L80 LOS MORROS": "70.000",
+  "L798 SAN BERNARDO": "70.000",
+  "WALMART PAQUETERIA": "70.000",
+  "DHL": "70.000",
 };
 
 interface PaqueteriaRow {
@@ -852,12 +874,28 @@ export default function PaqueteriaPage() {
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Local</label>
                   <select
                     value={form.local || "WALMART PAQUETERIA"}
-                    onChange={(e) => setForm({...form, local: e.target.value})}
+                    onChange={(e) => {
+                      const selectedLocal = e.target.value;
+                      const autoPrice = LOCALES_VALOR_MAP[selectedLocal] || (selectedLocal ? getTarifaByLocal(selectedLocal) : "");
+                      setForm({
+                        ...form,
+                        local: selectedLocal,
+                        ...(autoPrice ? { valorDia: autoPrice } : {}),
+                      });
+                    }}
                     className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-slate-200 outline-none focus:border-brand-500 cursor-pointer"
                   >
-                    <option value="WALMART PAQUETERIA" className="bg-[#1e293b] text-white">
-                      WALMART PAQUETERIA
-                    </option>
+                    <option value="">Seleccionar local...</option>
+                    {LOCALES_LIST.map((loc) => (
+                      <option key={loc} value={loc} className="bg-[#1e293b] text-white">
+                        {loc}
+                      </option>
+                    ))}
+                    {form.local && !LOCALES_LIST.includes(form.local) && (
+                      <option value={form.local} className="bg-[#1e293b] text-white">
+                        {form.local}
+                      </option>
+                    )}
                   </select>
                 </div>
 

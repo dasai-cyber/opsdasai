@@ -34,10 +34,32 @@ const LOCALES_LIST = [
   "DHL",
 ];
 
+const getTarifaByLocal = (local: string): string => {
+  if (!local || !local.trim()) return "";
+  const norm = local.trim().toUpperCase();
+  if (norm.includes("L41") || norm.includes("HUECHURABA")) {
+    return "75.000";
+  }
+  return "70.000";
+};
+
 const LOCALES_VALOR_MAP: Record<string, string> = {
   "L41 HUECHURABA": "75.000",
   "L45 MAIPU": "70.000",
   "L95 LA REINA": "70.000",
+  "L32 GRAN AVENIDA": "70.000",
+  "L48 CORDILLERA": "70.000",
+  "L76 DEPARTAMENTAL": "70.000",
+  "L83 LA FLORIDA": "70.000",
+  "L73 PUENTE ALTO": "70.000",
+  "L682 HI SAN JOAQUIN": "70.000",
+  "L693 LA PINTANA": "70.000",
+  "L87 SANTA ROSA": "70.000",
+  "L54 VICUÑA MACKENNA": "70.000",
+  "L80 LOS MORROS": "70.000",
+  "L798 SAN BERNARDO": "70.000",
+  "WALMART PAQUETERIA": "70.000",
+  "DHL": "70.000",
 };
 
 interface DhlRow {
@@ -720,7 +742,7 @@ export default function DhlPage() {
                     value={form.local || ""}
                     onChange={(e) => {
                       const selectedLocal = e.target.value;
-                      const autoPrice = LOCALES_VALOR_MAP[selectedLocal];
+                      const autoPrice = LOCALES_VALOR_MAP[selectedLocal] || (selectedLocal ? getTarifaByLocal(selectedLocal) : "");
                       setForm({
                         ...form,
                         local: selectedLocal,
