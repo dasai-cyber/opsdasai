@@ -171,7 +171,6 @@ export default function DashboardPage() {
       { name: "Supermercado", value: counts.coordinacion, color: "#3b82f6" },
       { name: "Paquetería",   value: counts.paqueteria,   color: "#72b01d" },
       { name: "DHL",          value: counts.dhl,          color: "#f59e0b" },
-      { name: "Falabella",    value: counts.falabella,    color: "#10b981" },
     ];
   }, [counts]);
 
@@ -243,7 +242,7 @@ export default function DashboardPage() {
         <div>
           <h2 className="section-title text-2xl font-bold" style={{ color: "#f8fafc" }}>Dashboard General</h2>
           <p className="section-subtitle text-sm" style={{ color: "#94a3b8" }}>
-            Monitoreo en tiempo real de Supermercado, Paquetería, DHL y Falabella
+            Monitoreo en tiempo real de Supermercado, Paquetería y DHL
           </p>
         </div>
         <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold" style={{ background: "rgba(255,90,172,0.1)", border: "1px solid rgba(255,90,172,0.3)", color: "#ff5aac" }}>
@@ -257,7 +256,7 @@ export default function DashboardPage() {
       ) : (
         <>
           {/* Top KPIs Principales */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatWidget 
               title="Total Operaciones" 
               value={counts.total} 
@@ -292,15 +291,6 @@ export default function DashboardPage() {
               color="#f59e0b" 
               glow="0 0 20px rgba(245,158,11,0.12)" 
               href="/dashboard/dhl"
-            />
-            <StatWidget 
-              title="Falabella" 
-              value={counts.falabella} 
-              sub="Rutas Falabella" 
-              icon={ShoppingBag} 
-              color="#10b981" 
-              glow="0 0 20px rgba(16,185,129,0.12)" 
-              href="/dashboard/falabella"
             />
           </div>
 
@@ -454,18 +444,6 @@ export default function DashboardPage() {
                   <ChevronRight size={14} className="text-slate-600" />
                 </Link>
 
-                <Link href="/dashboard/falabella" className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/5 transition-colors border border-white/5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-500/15 text-emerald-400">
-                      <ShoppingBag size={16} />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-200">Falabella</div>
-                      <div className="text-[10px] text-slate-500">Entregas Falabella</div>
-                    </div>
-                  </div>
-                  <ChevronRight size={14} className="text-slate-600" />
-                </Link>
 
                 <Link href="/dashboard/technicians" className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/5 transition-colors border border-white/5">
                   <div className="flex items-center gap-3">

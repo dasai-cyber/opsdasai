@@ -27,10 +27,8 @@ const navItems = [
   { href: "/dashboard/technicians",  icon: Users,           label: "Chofer",            badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/autos",        icon: Truck,           label: "Doc. Autos",        badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/coordinacion", icon: ShoppingCart,    label: "Supermercado",      badge: null,  roles: ['administrador','supervisor','operaria'] },
-  { href: "/dashboard/control",      icon: MapPin,          label: "Control Vueltas",   badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/paqueteria",   icon: Package,         label: "Paquetería",        badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/dhl",          icon: Send,            label: "DHL",               badge: null,  roles: ['administrador','supervisor','operaria'] },
-  { href: "/dashboard/falabella",    icon: ShoppingBag,     label: "Falabella",         badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/programacion", icon: CalendarDays,    label: "Programación",      badge: null,  roles: ['administrador','supervisor','operaria'] },
 ];
 
