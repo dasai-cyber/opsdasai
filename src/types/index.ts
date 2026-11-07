@@ -124,6 +124,13 @@ export interface Technician {
     soap?: string;
     padron?: string;
   };
+  autoFechasVencimiento?: {
+    revisionTecnica?: string;
+    gases?: string;
+    permisoCirculacion?: string;
+    soap?: string;
+    padron?: string;
+  };
   status: TechnicianStatus;
   avatar?: string;
   completedOrders: number;

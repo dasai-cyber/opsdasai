@@ -1541,6 +1541,7 @@ export default function TechniciansPage() {
             rating: dt.rating || 0,
             documentos: dt.documentos || {},
             autoDocumentos: dt.autoDocumentos || {},
+            autoFechasVencimiento: dt.autoFechasVencimiento || {},
           };
         }));
       }
