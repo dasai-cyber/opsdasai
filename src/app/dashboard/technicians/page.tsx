@@ -70,26 +70,26 @@ function AddTechModal({
     phone: "",
     phone2: "",
     email: "",
-    gpsCccs: "SI",
+    gpsCccs: "",
     beetrack: "",
-    induccion: "SI",
-    carpeta: "SI",
-    contrato: "FIRMADO",
+    induccion: "",
+    carpeta: "",
+    contrato: "",
     anexo: "",
     duenoFurgon: "",
-    tipoVehiculo: "FURGON SIMPLE",
-    facturacion: "COMODATO",
+    tipoVehiculo: "",
+    facturacion: "",
     nombreEmpresa: "",
     rutEmpresa: "",
-    banco: "ESTADO",
-    tipoCuenta: "CORRIENTE",
+    banco: "",
+    tipoCuenta: "",
     numeroCuenta: "",
     comuna: "",
     direccion: "",
-    licencia: "B",
-    gps: "NO",
-    seguro: "NO",
-    status: "disponible" as TechnicianStatus,
+    licencia: "",
+    gps: "",
+    seguro: "",
+    status: "" as TechnicianStatus,
   });
 
   const confirmClose = () => {
@@ -261,6 +261,7 @@ function AddTechModal({
               <div>
                 <label style={labelStyle}>GPS CCCS</label>
                 <select style={inputStyle} value={form.gpsCccs} onChange={set("gpsCccs")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SI">SI</option>
                   <option value="NO">NO</option>
                 </select>
@@ -276,6 +277,7 @@ function AddTechModal({
               <div>
                 <label style={labelStyle}>INDUCCION</label>
                 <select style={inputStyle} value={form.induccion} onChange={set("induccion")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SI">SI</option>
                   <option value="NO">NO</option>
                 </select>
@@ -285,6 +287,7 @@ function AddTechModal({
               <div>
                 <label style={labelStyle}>CARPETA</label>
                 <select style={inputStyle} value={form.carpeta} onChange={set("carpeta")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SI">SI</option>
                   <option value="NO">NO</option>
                 </select>
@@ -294,6 +297,7 @@ function AddTechModal({
               <div>
                 <label style={labelStyle}>CONTRATO</label>
                 <select style={inputStyle} value={form.contrato} onChange={set("contrato")}>
+                  <option value="">Seleccionar...</option>
                   <option value="FIRMADO">FIRMADO</option>
                   <option value="FALTA FIRMAR">FALTA FIRMAR</option>
                   <option value="PENDIENTE">PENDIENTE</option>
@@ -317,6 +321,7 @@ function AddTechModal({
               <div>
                 <label style={labelStyle}>TIPO VEHIC</label>
                 <select style={inputStyle} value={form.tipoVehiculo} onChange={set("tipoVehiculo")}>
+                  <option value="">Seleccionar...</option>
                   <option value="FURGON SIMPLE">FURGON SIMPLE</option>
                   <option value="FURGON MEDIO">FURGON MEDIO</option>
                   <option value="FURGON GRANDE">FURGON GRANDE</option>
@@ -329,6 +334,7 @@ function AddTechModal({
               <div>
                 <label style={labelStyle}>FACTURACION</label>
                 <select style={inputStyle} value={form.facturacion} onChange={set("facturacion")}>
+                  <option value="">Seleccionar...</option>
                   <option value="COMODATO">COMODATO</option>
                   <option value="EMPRESA">EMPRESA</option>
                   <option value="HONORARIOS">HONORARIOS</option>
@@ -352,6 +358,7 @@ function AddTechModal({
               <div>
                 <label style={labelStyle}>BANCO</label>
                 <select style={inputStyle} value={form.banco} onChange={set("banco")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SANTANDER">SANTANDER</option>
                   <option value="ESTADO">BANCO ESTADO</option>
                   <option value="BCI">BCI</option>
@@ -370,6 +377,7 @@ function AddTechModal({
               <div>
                 <label style={labelStyle}>TIPO CUENTA</label>
                 <select style={inputStyle} value={form.tipoCuenta} onChange={set("tipoCuenta")}>
+                  <option value="">Seleccionar...</option>
                   <option value="CORRIENTE">CORRIENTE</option>
                   <option value="VISTA">VISTA / CUENTA RUT</option>
                   <option value="CHEQUERA ELECTRONICA">CHEQUERA ELECTRÓNICA</option>
@@ -405,6 +413,7 @@ function AddTechModal({
               <div>
                 <label style={labelStyle}>GPS</label>
                 <select style={inputStyle} value={form.gps} onChange={set("gps")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SI">SI</option>
                   <option value="NO">NO</option>
                 </select>
@@ -414,6 +423,7 @@ function AddTechModal({
               <div>
                 <label style={labelStyle}>SEGURO</label>
                 <select style={inputStyle} value={form.seguro} onChange={set("seguro")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SI">SI</option>
                   <option value="NO">NO</option>
                 </select>
@@ -459,6 +469,7 @@ function AddTechModal({
                 value={form.status}
                 onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as TechnicianStatus }))}
               >
+                <option value="">Seleccionar...</option>
                 {STATUS_OPTS.map(s => (
                   <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
                 ))}
@@ -512,26 +523,26 @@ function EditTechModal({
     phone: tech.phone || "",
     phone2: tech.phone2 || tech.whatsapp || "",
     email: tech.email || "",
-    gpsCccs: tech.gpsCccs || "SI",
+    gpsCccs: tech.gpsCccs || "",
     beetrack: tech.beetrack || "",
-    induccion: tech.induccion || "SI",
-    carpeta: tech.carpeta || "SI",
-    contrato: tech.contrato || "FIRMADO",
+    induccion: tech.induccion || "",
+    carpeta: tech.carpeta || "",
+    contrato: tech.contrato || "",
     anexo: tech.anexo || "",
     duenoFurgon: tech.duenoFurgon || "",
-    tipoVehiculo: tech.tipoVehiculo || "FURGON SIMPLE",
-    facturacion: tech.facturacion || "COMODATO",
+    tipoVehiculo: tech.tipoVehiculo || "",
+    facturacion: tech.facturacion || "",
     nombreEmpresa: tech.nombreEmpresa || "",
     rutEmpresa: tech.rutEmpresa || "",
-    banco: tech.banco || "ESTADO",
-    tipoCuenta: tech.tipoCuenta || "CORRIENTE",
+    banco: tech.banco || "",
+    tipoCuenta: tech.tipoCuenta || "",
     numeroCuenta: tech.numeroCuenta || "",
     comuna: tech.comuna || "",
     direccion: tech.direccion || "",
-    licencia: tech.licencia || "B",
-    gps: tech.gps || "NO",
-    seguro: tech.seguro || "NO",
-    status: tech.status,
+    licencia: tech.licencia || "",
+    gps: tech.gps || "",
+    seguro: tech.seguro || "",
+    status: tech.status || ("" as TechnicianStatus),
   });
 
   const [saving, setSaving] = useState(false);
@@ -651,6 +662,7 @@ function EditTechModal({
               <div>
                 <label style={labelStyle}>GPS CCCS</label>
                 <select style={inputStyle} value={form.gpsCccs} onChange={set("gpsCccs")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SI">SI</option>
                   <option value="NO">NO</option>
                 </select>
@@ -666,6 +678,7 @@ function EditTechModal({
               <div>
                 <label style={labelStyle}>INDUCCION</label>
                 <select style={inputStyle} value={form.induccion} onChange={set("induccion")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SI">SI</option>
                   <option value="NO">NO</option>
                 </select>
@@ -675,6 +688,7 @@ function EditTechModal({
               <div>
                 <label style={labelStyle}>CARPETA</label>
                 <select style={inputStyle} value={form.carpeta} onChange={set("carpeta")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SI">SI</option>
                   <option value="NO">NO</option>
                 </select>
@@ -684,6 +698,7 @@ function EditTechModal({
               <div>
                 <label style={labelStyle}>CONTRATO</label>
                 <select style={inputStyle} value={form.contrato} onChange={set("contrato")}>
+                  <option value="">Seleccionar...</option>
                   <option value="FIRMADO">FIRMADO</option>
                   <option value="FALTA FIRMAR">FALTA FIRMAR</option>
                   <option value="PENDIENTE">PENDIENTE</option>
@@ -707,6 +722,7 @@ function EditTechModal({
               <div>
                 <label style={labelStyle}>TIPO VEHIC</label>
                 <select style={inputStyle} value={form.tipoVehiculo} onChange={set("tipoVehiculo")}>
+                  <option value="">Seleccionar...</option>
                   <option value="FURGON SIMPLE">FURGON SIMPLE</option>
                   <option value="FURGON MEDIO">FURGON MEDIO</option>
                   <option value="FURGON GRANDE">FURGON GRANDE</option>
@@ -719,6 +735,7 @@ function EditTechModal({
               <div>
                 <label style={labelStyle}>FACTURACION</label>
                 <select style={inputStyle} value={form.facturacion} onChange={set("facturacion")}>
+                  <option value="">Seleccionar...</option>
                   <option value="COMODATO">COMODATO</option>
                   <option value="EMPRESA">EMPRESA</option>
                   <option value="HONORARIOS">HONORARIOS</option>
@@ -742,6 +759,7 @@ function EditTechModal({
               <div>
                 <label style={labelStyle}>BANCO</label>
                 <select style={inputStyle} value={form.banco} onChange={set("banco")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SANTANDER">SANTANDER</option>
                   <option value="ESTADO">BANCO ESTADO</option>
                   <option value="BCI">BCI</option>
@@ -760,6 +778,7 @@ function EditTechModal({
               <div>
                 <label style={labelStyle}>TIPO CUENTA</label>
                 <select style={inputStyle} value={form.tipoCuenta} onChange={set("tipoCuenta")}>
+                  <option value="">Seleccionar...</option>
                   <option value="CORRIENTE">CORRIENTE</option>
                   <option value="VISTA">VISTA / CUENTA RUT</option>
                   <option value="CHEQUERA ELECTRONICA">CHEQUERA ELECTRÓNICA</option>
@@ -795,6 +814,7 @@ function EditTechModal({
               <div>
                 <label style={labelStyle}>GPS</label>
                 <select style={inputStyle} value={form.gps} onChange={set("gps")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SI">SI</option>
                   <option value="NO">NO</option>
                 </select>
@@ -804,6 +824,7 @@ function EditTechModal({
               <div>
                 <label style={labelStyle}>SEGURO</label>
                 <select style={inputStyle} value={form.seguro} onChange={set("seguro")}>
+                  <option value="">Seleccionar...</option>
                   <option value="SI">SI</option>
                   <option value="NO">NO</option>
                 </select>
@@ -845,6 +866,7 @@ function EditTechModal({
             <div className="pt-2">
               <label style={labelStyle}>Estado</label>
               <select style={{ ...inputStyle, cursor: "pointer", maxWidth: 260 }} value={form.status} onChange={set("status")}>
+                <option value="">Seleccionar...</option>
                 <option value="disponible">Disponible</option>
                 <option value="en ruta">En ruta</option>
                 <option value="trabajando">Libre</option>
