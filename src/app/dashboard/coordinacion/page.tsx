@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Plus, Save, X, Edit, Trash2, CalendarDays } from "lucide-react";
+import { Search, Plus, Save, X, Edit, Trash2, CalendarDays, Calendar } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import * as XLSX from "xlsx";
 import { CHILE_REGIONS } from "@/data/chileData";
@@ -64,6 +64,8 @@ export default function CoordinacionPage() {
   const [data, setData] = useState<CoordinacionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [fechaDesde, setFechaDesde] = useState("");
+  const [fechaHasta, setFechaHasta] = useState("");
   
   // Choferes list
   const [choferes, setChoferes] = useState<Array<{name: string, patente: string}>>([]);
@@ -234,9 +236,31 @@ export default function CoordinacionPage() {
     fetchData();
   };
 
-  const filtered = data.filter(d => 
-    JSON.stringify(d).toLowerCase().includes(search.toLowerCase())
-  );
+  const normalizeDate = (dStr: string) => {
+    if (!dStr) return "";
+    const trimmed = String(dStr).trim();
+    const parts = trimmed.split(/[-/]/);
+    if (parts.length === 3) {
+      if (parts[0].length === 2 && parts[2].length === 4) {
+        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+      }
+      if (parts[0].length === 4) {
+        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+      }
+    }
+    return trimmed;
+  };
+
+  const filtered = data.filter(d => {
+    const matchesSearch = !search || JSON.stringify(d).toLowerCase().includes(search.toLowerCase());
+    if (!matchesSearch) return false;
+
+    const rowDate = normalizeDate(d.fecha);
+    if (fechaDesde && rowDate && rowDate < fechaDesde) return false;
+    if (fechaHasta && rowDate && rowDate > fechaHasta) return false;
+
+    return true;
+  });
 
   const exportExcel = () => {
     const formattedData = filtered.map(d => ({
@@ -346,10 +370,10 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
           </div>
         </div>
 
-        {/* Búsqueda */}
-        <div className="mt-6">
-          <div className="flex items-center px-4 py-2.5 rounded-xl border" style={{ background: "rgba(0,0,0,0.2)", borderColor: "rgba(255,255,255,0.1)" }}>
-            <Search size={18} style={{ color: "#64748b" }} className="mr-3" />
+        {/* Búsqueda y Filtros de Fecha */}
+        <div className="mt-6 flex flex-col md:flex-row items-stretch md:items-center gap-3">
+          <div className="flex-1 flex items-center px-4 py-2.5 rounded-xl border" style={{ background: "rgba(0,0,0,0.2)", borderColor: "rgba(255,255,255,0.1)" }}>
+            <Search size={18} style={{ color: "#64748b" }} className="mr-3 shrink-0" />
             <input
               type="text"
               placeholder="Buscar PPU, chofer, local, etc..."
@@ -358,7 +382,44 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
               className="bg-transparent border-none text-sm focus:outline-none w-full"
               style={{ color: "#f1f5f9" }}
             />
+            {search && (
+              <button onClick={() => setSearch("")} className="text-slate-500 hover:text-slate-300 ml-2">
+                <X size={15} />
+              </button>
+            )}
           </div>
+
+          <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border shrink-0" style={{ background: "rgba(0,0,0,0.2)", borderColor: "rgba(255,255,255,0.1)" }}>
+            <Calendar size={15} className="text-brand-400 shrink-0" />
+            <span className="text-xs text-slate-400 font-medium">Desde:</span>
+            <input
+              type="date"
+              value={fechaDesde}
+              onChange={(e) => setFechaDesde(e.target.value)}
+              className="bg-transparent border-none text-xs text-slate-200 focus:outline-none cursor-pointer [color-scheme:dark]"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border shrink-0" style={{ background: "rgba(0,0,0,0.2)", borderColor: "rgba(255,255,255,0.1)" }}>
+            <Calendar size={15} className="text-brand-400 shrink-0" />
+            <span className="text-xs text-slate-400 font-medium">Hasta:</span>
+            <input
+              type="date"
+              value={fechaHasta}
+              onChange={(e) => setFechaHasta(e.target.value)}
+              className="bg-transparent border-none text-xs text-slate-200 focus:outline-none cursor-pointer [color-scheme:dark]"
+            />
+          </div>
+
+          {(fechaDesde || fechaHasta || search) && (
+            <button
+              onClick={() => { setFechaDesde(""); setFechaHasta(""); setSearch(""); }}
+              className="px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-colors border border-white/10 shrink-0"
+              title="Limpiar filtros"
+            >
+              Limpiar
+            </button>
+          )}
         </div>
       </div>
 
