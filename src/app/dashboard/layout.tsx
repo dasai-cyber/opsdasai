@@ -7,7 +7,7 @@ import {
   Cpu, LayoutDashboard, ClipboardList, Monitor, Users, MapPin,
   Package, FileText, FolderOpen, BarChart3, ScrollText, Settings,
   Bell, Search, ChevronDown, LogOut, Menu, X, Circle, Zap, CalendarDays, ShieldCheck, Truck, FileSpreadsheet, Calculator,
-  Key, Heart, Send, ShoppingBag, ShoppingCart,
+  Key, Heart, Send, ShoppingBag, ShoppingCart, Database,
 } from "lucide-react";
 import { CONFIG } from "@/lib/config";
 import { supabase } from "@/lib/supabase";
@@ -23,6 +23,7 @@ interface UserProfile {
 // Menú completo con restricciones por rol
 const navItems = [
   { href: "/dashboard",              icon: LayoutDashboard, label: "Dashboard",           badge: null,  roles: ['administrador','supervisor','operaria'] },
+  { href: "/dashboard/maestro",      icon: Database,        label: "Maestro",             badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/calculadora-traslado", icon: Calculator, label: "Calculadora de Traslado", badge: null, roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/technicians",  icon: Users,           label: "Chofer",            badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/autos",        icon: Truck,           label: "Doc. Autos",        badge: null,  roles: ['administrador','supervisor','operaria'] },
