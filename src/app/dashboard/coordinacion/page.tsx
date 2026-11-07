@@ -323,7 +323,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
       <div className="p-6 border-b border-white/5" style={{ background: "rgba(255,255,255,0.02)" }}>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: "#f8fafc" }}>Coordinación</h1>
+            <h1 className="text-2xl font-bold" style={{ color: "#f8fafc" }}>Supermercado</h1>
             <p className="text-sm mt-1" style={{ color: "#94a3b8" }}>
               Gestión de vehículos, choferes y rutas
             </p>
@@ -341,7 +341,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
               className="px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg"
               style={{ background: "linear-gradient(135deg, #ff5aac 0%, #700ece 100%)", color: "white", border: "none", boxShadow: "0 4px 15px rgba(255,90,172,0.3)" }}
             >
-              <Plus size={16} /> Nueva Coordinación
+              <Plus size={16} /> Nuevo Supermercado
             </button>
           </div>
         </div>
@@ -455,7 +455,7 @@ const calculateAdicionalFromPuntos = (puntosVal: string | number | undefined): s
           <div className="w-full max-w-4xl rounded-2xl border border-white/10 flex flex-col max-h-[90vh]" style={{ background: "#1e293b", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}>
             <div className="flex items-center justify-between p-5 border-b border-white/10">
               <h2 className="text-lg font-bold" style={{ color: "#f8fafc" }}>
-                {editingRow ? "Editar Coordinación" : "Nueva Coordinación"}
+                {editingRow ? "Editar Supermercado" : "Nuevo Supermercado"}
               </h2>
               <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-white/10 rounded-lg text-slate-400">
                 <X size={20} />

@@ -6,7 +6,7 @@ import {
   CartesianGrid, Tooltip, PieChart, Pie, Cell
 } from "recharts";
 import {
-  Users, Calendar, Package, Send, ShoppingBag,
+  Users, Calendar, Package, Send, ShoppingBag, ShoppingCart,
   TrendingUp, TrendingDown, Activity, ChevronRight,
   Layers, MapPin, Hash, Sparkles
 } from "lucide-react";
@@ -49,7 +49,7 @@ const normalizeRow = (r: any): NormalizedRow => {
   const type = String(dt.type || dt.categoria || r.type || "").toLowerCase();
   
   let category: NormalizedRow["category"] = "coordinacion";
-  let categoryLabel = "Coordinación";
+  let categoryLabel = "Supermercado";
 
   if (id.startsWith("paq-") || type === "paqueteria") {
     category = "paqueteria";
@@ -65,7 +65,7 @@ const normalizeRow = (r: any): NormalizedRow => {
     categoryLabel = "Programación";
   } else {
     category = "coordinacion";
-    categoryLabel = "Coordinación";
+    categoryLabel = "Supermercado";
   }
 
   const valorDiaNum = parseMoney(dt.valorDia || dt.descuento || r.valorDia);
@@ -91,7 +91,7 @@ const normalizeRow = (r: any): NormalizedRow => {
 };
 
 const CATEGORY_META = {
-  coordinacion: { label: "Coordinación", color: "#3b82f6", href: "/dashboard/coordinacion", icon: Calendar, bg: "rgba(59,130,246,0.12)", border: "rgba(59,130,246,0.3)" },
+  coordinacion: { label: "Supermercado", color: "#3b82f6", href: "/dashboard/coordinacion", icon: ShoppingCart, bg: "rgba(59,130,246,0.12)", border: "rgba(59,130,246,0.3)" },
   paqueteria:   { label: "Paquetería",   color: "#72b01d", href: "/dashboard/paqueteria",   icon: Package,  bg: "rgba(114,176,29,0.12)", border: "rgba(114,176,29,0.3)" },
   dhl:          { label: "DHL",          color: "#f59e0b", href: "/dashboard/dhl",          icon: Send,     bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.3)" },
   falabella:    { label: "Falabella",    color: "#10b981", href: "/dashboard/falabella",    icon: ShoppingBag, bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.3)" },
@@ -168,7 +168,7 @@ export default function DashboardPage() {
   // ─── Distribución por Categoría (Gráfico) ──────────────────────────────────
   const categoryChartData = useMemo(() => {
     return [
-      { name: "Coordinación", value: counts.coordinacion, color: "#3b82f6" },
+      { name: "Supermercado", value: counts.coordinacion, color: "#3b82f6" },
       { name: "Paquetería",   value: counts.paqueteria,   color: "#72b01d" },
       { name: "DHL",          value: counts.dhl,          color: "#f59e0b" },
       { name: "Falabella",    value: counts.falabella,    color: "#10b981" },
@@ -243,7 +243,7 @@ export default function DashboardPage() {
         <div>
           <h2 className="section-title text-2xl font-bold" style={{ color: "#f8fafc" }}>Dashboard General</h2>
           <p className="section-subtitle text-sm" style={{ color: "#94a3b8" }}>
-            Monitoreo en tiempo real de Coordinación, Paquetería, DHL y Falabella
+            Monitoreo en tiempo real de Supermercado, Paquetería, DHL y Falabella
           </p>
         </div>
         <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold" style={{ background: "rgba(255,90,172,0.1)", border: "1px solid rgba(255,90,172,0.3)", color: "#ff5aac" }}>
@@ -267,9 +267,9 @@ export default function DashboardPage() {
               glow="0 0 20px rgba(99,102,241,0.12)" 
             />
             <StatWidget 
-              title="Coordinación" 
+              title="Supermercado" 
               value={counts.coordinacion} 
-              sub="Rutas generales" 
+              sub="Rutas y locales" 
               icon={Calendar} 
               color="#3b82f6" 
               glow="0 0 20px rgba(59,130,246,0.12)" 
@@ -421,7 +421,7 @@ export default function DashboardPage() {
                       <Calendar size={16} />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-slate-200">Coordinación</div>
+                      <div className="text-xs font-bold text-slate-200">Supermercado</div>
                       <div className="text-[10px] text-slate-500">Rutas y vehículos</div>
                     </div>
                   </div>

@@ -7,7 +7,7 @@ import {
   Cpu, LayoutDashboard, ClipboardList, Monitor, Users, MapPin,
   Package, FileText, FolderOpen, BarChart3, ScrollText, Settings,
   Bell, Search, ChevronDown, LogOut, Menu, X, Circle, Zap, CalendarDays, ShieldCheck, Truck, FileSpreadsheet, Calculator,
-  Key, Heart, Send, ShoppingBag,
+  Key, Heart, Send, ShoppingBag, ShoppingCart,
 } from "lucide-react";
 import { CONFIG } from "@/lib/config";
 import { supabase } from "@/lib/supabase";
@@ -26,7 +26,7 @@ const navItems = [
   { href: "/dashboard/calculadora-traslado", icon: Calculator, label: "Calculadora de Traslado", badge: null, roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/technicians",  icon: Users,           label: "Chofer",            badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/autos",        icon: Truck,           label: "Doc. Autos",        badge: null,  roles: ['administrador','supervisor','operaria'] },
-  { href: "/dashboard/coordinacion", icon: CalendarDays,    label: "Coordinación",      badge: null,  roles: ['administrador','supervisor','operaria'] },
+  { href: "/dashboard/coordinacion", icon: ShoppingCart,    label: "Supermercado",      badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/control",      icon: MapPin,          label: "Control Vueltas",   badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/paqueteria",   icon: Package,         label: "Paquetería",        badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/dhl",          icon: Send,            label: "DHL",               badge: null,  roles: ['administrador','supervisor','operaria'] },
