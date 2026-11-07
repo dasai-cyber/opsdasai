@@ -1005,9 +1005,9 @@ export default function PaqueteriaPage() {
               {/* Extras Row */}
               <div className="mt-6 p-4 rounded-xl border border-white/5" style={{ background: "rgba(255,255,255,0.02)" }}>
                 <div className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>Opciones Adicionales</div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 items-end">
                   <div>
-                    <div className="flex items-center justify-between mb-1.5">
+                    <div className="h-6 flex items-center justify-between mb-1.5">
                       <label className="block text-xs font-semibold text-purple-400">Tarifa</label>
                       {form.vehiculo && (
                         <span className="text-[10px] font-bold text-purple-300 bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20 truncate max-w-[120px]" title={getTarifaByVehiculoYComuna(form.vehiculo, form.comuna).zona}>
@@ -1019,12 +1019,12 @@ export default function PaqueteriaPage() {
                       type="text"
                       value={form.valorDia}
                       onChange={(e) => setForm({...form, valorDia: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg border border-purple-500/20 bg-purple-500/5 text-sm text-slate-200 outline-none focus:border-purple-500"
+                      className="w-full h-10 px-3 py-2 rounded-lg border border-purple-500/20 bg-purple-500/5 text-sm text-slate-200 outline-none focus:border-purple-500"
                       placeholder="$0"
                     />
                   </div>
                   <div>
-                    <div className="flex items-center justify-between mb-1.5">
+                    <div className="h-6 flex items-center justify-between mb-1.5">
                       <label className="block text-xs font-semibold text-green-400">Segunda vuelta</label>
                       {form.vehiculo && (
                         <button
@@ -1044,22 +1044,24 @@ export default function PaqueteriaPage() {
                       type="text"
                       value={form.adicional}
                       onChange={(e) => setForm({...form, adicional: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg border border-green-500/20 bg-green-500/5 text-sm text-slate-200 outline-none focus:border-green-500"
+                      className="w-full h-10 px-3 py-2 rounded-lg border border-green-500/20 bg-green-500/5 text-sm text-slate-200 outline-none focus:border-green-500"
                       placeholder="$0"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold mb-1.5 text-blue-400">Bono</label>
+                    <div className="h-6 flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-semibold text-blue-400">Bono</label>
+                    </div>
                     <input
                       type="text"
                       value={form.vueltas}
                       onChange={(e) => setForm({...form, vueltas: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg border border-blue-500/20 bg-blue-500/5 text-sm text-slate-200 outline-none focus:border-blue-500"
+                      className="w-full h-10 px-3 py-2 rounded-lg border border-blue-500/20 bg-blue-500/5 text-sm text-slate-200 outline-none focus:border-blue-500"
                       placeholder="$0"
                     />
                   </div>
                   <div>
-                    <div className="flex items-center justify-between mb-1.5">
+                    <div className="h-6 flex items-center justify-between mb-1.5">
                       <label className="block text-xs font-semibold text-emerald-400">Total</label>
                       <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
                         Auto (Suma)
@@ -1073,17 +1075,19 @@ export default function PaqueteriaPage() {
                           ? `$ ${(parseMoneyValue(form.valorDia) + parseMoneyValue(form.adicional) + parseMoneyValue(form.vueltas)).toLocaleString("es-CL")}`
                           : "$0"
                       }
-                      className="w-full px-3 py-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none select-none cursor-default"
+                      className="w-full h-10 px-3 py-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-sm font-bold text-emerald-300 outline-none select-none cursor-default"
                       placeholder="$0"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold mb-1.5 text-pink-400">Comisión Dasai</label>
+                    <div className="h-6 flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-semibold text-pink-400">Comisión Dasai</label>
+                    </div>
                     <input
                       type="text"
                       value={form.comisionDasai || ""}
                       onChange={(e) => setForm({...form, comisionDasai: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg border border-pink-500/20 bg-pink-500/5 text-sm text-slate-200 outline-none focus:border-pink-500"
+                      className="w-full h-10 px-3 py-2 rounded-lg border border-pink-500/20 bg-pink-500/5 text-sm text-slate-200 outline-none focus:border-pink-500"
                       placeholder="$0"
                     />
                   </div>
