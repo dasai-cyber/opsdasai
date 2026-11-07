@@ -29,7 +29,6 @@ const navItems = [
   { href: "/dashboard/coordinacion", icon: ShoppingCart,    label: "Supermercado",      badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/paqueteria",   icon: Package,         label: "Paquetería",        badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/dhl",          icon: Send,            label: "DHL",               badge: null,  roles: ['administrador','supervisor','operaria'] },
-  { href: "/dashboard/programacion", icon: CalendarDays,    label: "Programación",      badge: null,  roles: ['administrador','supervisor','operaria'] },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

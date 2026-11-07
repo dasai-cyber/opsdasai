@@ -94,8 +94,6 @@ const CATEGORY_META = {
   coordinacion: { label: "Supermercado", color: "#3b82f6", href: "/dashboard/coordinacion", icon: ShoppingCart, bg: "rgba(59,130,246,0.12)", border: "rgba(59,130,246,0.3)" },
   paqueteria:   { label: "Paquetería",   color: "#72b01d", href: "/dashboard/paqueteria",   icon: Package,  bg: "rgba(114,176,29,0.12)", border: "rgba(114,176,29,0.3)" },
   dhl:          { label: "DHL",          color: "#f59e0b", href: "/dashboard/dhl",          icon: Send,     bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.3)" },
-  falabella:    { label: "Falabella",    color: "#10b981", href: "/dashboard/falabella",    icon: ShoppingBag, bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.3)" },
-  programacion: { label: "Programación", color: "#8b5cf6", href: "/dashboard/programacion", icon: Calendar, bg: "rgba(139,92,246,0.12)", border: "rgba(139,92,246,0.3)" },
   otro:         { label: "Otros",        color: "#64748b", href: "/dashboard/coordinacion", icon: Layers,   bg: "rgba(100,116,139,0.12)", border: "rgba(100,116,139,0.3)" }
 };
 
