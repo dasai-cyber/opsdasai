@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { formatDate } from "@/lib/utils";
 
 // ─── Interfaces ─────────────────────────────────────────────────────────────
 interface NormalizedRow {
@@ -506,7 +507,7 @@ export default function DashboardPage() {
                           </td>
                           <td className="px-4 py-3 font-mono text-xs font-bold text-slate-300">{r.patente || "—"}</td>
                           <td className="px-4 py-3 text-xs">{r.asignadoA}</td>
-                          <td className="px-4 py-3 text-xs text-slate-400">{r.fecha || "—"}</td>
+                          <td className="px-4 py-3 text-xs text-slate-400">{formatDate(r.fecha) || "—"}</td>
                           <td className="px-4 py-3 text-xs font-medium text-slate-300">{r.local}</td>
                           <td className="px-4 py-3 text-xs font-bold text-amber-400">{r.puntos > 0 ? r.puntos : "—"}</td>
                           <td className="px-4 py-3 text-right">

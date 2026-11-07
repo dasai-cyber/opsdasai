@@ -1,5 +1,6 @@
 "use client";
 
+import { formatDate } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { 
   Search, Plus, Save, X, Edit, Trash2, Calendar, 
@@ -332,7 +333,7 @@ export default function MaestroPage() {
       "Origen / Categoría": d.categoria === 'coordinacion' ? 'Supermercado' : d.categoria === 'paqueteria' ? 'Paquetería' : 'DHL',
       "PPU": d.patente,
       "Vehículo": d.vehiculo || "",
-      "Fecha": d.fecha,
+      "Fecha": formatDate(d.fecha),
       "Hora Inicio": d.horaInicio,
       "Hora Término": d.horaTermino,
       "Local": d.local,
@@ -608,7 +609,7 @@ export default function MaestroPage() {
                         )}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="font-medium">{row.fecha || "—"}</div>
+                        <div className="font-medium">{formatDate(row.fecha) || "—"}</div>
                         <div className="text-xs text-slate-500">{row.horaInicio || "—"} - {row.horaTermino || "—"}</div>
                       </td>
                       <td className="px-4 py-3">

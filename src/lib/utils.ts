@@ -5,31 +5,59 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: string | Date): string {
-  if (typeof date === 'string' && date.length === 10 && date.includes('-')) {
-    const parts = date.split('-');
-    if (parts.length === 3) {
-      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+export function formatDate(date: string | Date | null | undefined): string {
+  if (!date) return "";
+  if (typeof date === "string") {
+    const trimmed = date.trim();
+    if (!trimmed) return "";
+    
+    // YYYY-MM-DD or YYYY/MM/DD
+    const ymd = trimmed.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+    if (ymd) {
+      const year = ymd[1];
+      const month = ymd[2].padStart(2, "0");
+      const day = ymd[3].padStart(2, "0");
+      return `${day}/${month}/${year}`;
     }
+    
+    // DD-MM-YYYY or DD/MM/YYYY
+    const dmy = trimmed.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+    if (dmy) {
+      const day = dmy[1].padStart(2, "0");
+      const month = dmy[2].padStart(2, "0");
+      const year = dmy[3];
+      return `${day}/${month}/${year}`;
+    }
+
+    const d = new Date(trimmed);
+    if (!isNaN(d.getTime())) {
+      const day = String(d.getUTCDate()).padStart(2, "0");
+      const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+      const year = d.getUTCFullYear();
+      return `${day}/${month}/${year}`;
+    }
+    return trimmed;
   }
-  const d = new Date(date);
-  return d.toLocaleDateString("es-CL", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    timeZone: "UTC"
-  });
+  
+  if (date instanceof Date && !isNaN(date.getTime())) {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+  return "";
 }
 
-export function formatDateTime(date: string | Date): string {
-  const d = new Date(date);
-  return d.toLocaleString("es-CL", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+export function formatDateTime(date: string | Date | null | undefined): string {
+  if (!date) return "";
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (!d || isNaN(d.getTime())) return typeof date === "string" ? date : "";
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
 export function formatCurrency(amount: number): string {

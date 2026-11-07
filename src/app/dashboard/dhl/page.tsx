@@ -1,5 +1,6 @@
 "use client";
 
+import { formatDate } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { Search, Plus, Save, X, Edit, Trash2, Send, Calendar } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -275,7 +276,7 @@ export default function DhlPage() {
   const exportExcel = () => {
     const formattedData = filtered.map(d => ({
       "PPU": d.patente,
-      "Fecha": d.fecha,
+      "Fecha": formatDate(d.fecha),
       "Hora Inicio": d.horaInicio,
       "Hora Término": d.horaTermino,
       "Local": d.local,
@@ -448,7 +449,7 @@ export default function DhlPage() {
                   <tr key={row.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3 font-mono text-xs">{row.patente || "—"}</td>
                     <td className="px-4 py-3">
-                      <div>{row.fecha || "—"}</div>
+                      <div>{formatDate(row.fecha) || "—"}</div>
                       <div className="text-xs" style={{ color: "#64748b" }}>{row.horaInicio} - {row.horaTermino}</div>
                     </td>
                     <td className="px-4 py-3">
