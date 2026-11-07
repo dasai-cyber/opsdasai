@@ -98,12 +98,19 @@ const normalizeVehiculoType = (v?: string): string => {
   return v;
 };
 
+const hasPPU = (patente: string | null | undefined): boolean => {
+  if (!patente) return false;
+  const p = patente.trim().toLowerCase();
+  return p.length > 0 && p !== '-' && p !== 'sin ppu' && p !== 's/p' && p !== 'null' && p !== 'undefined';
+};
+
 export default function DhlPage() {
   const [data, setData] = useState<DhlRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [fechaDesde, setFechaDesde] = useState("");
   const [fechaHasta, setFechaHasta] = useState("");
+  const [filterPPU, setFilterPPU] = useState<"todos" | "con_ppu" | "sin_ppu">("todos");
   
   // Choferes list
   const [choferes, setChoferes] = useState<Array<{name: string, patente: string, vehiculo?: string}>>([]);
@@ -308,6 +315,9 @@ export default function DhlPage() {
     if (fechaDesde && rowDate && rowDate < fechaDesde) return false;
     if (fechaHasta && rowDate && rowDate > fechaHasta) return false;
 
+    if (filterPPU === "con_ppu" && !hasPPU(d.patente)) return false;
+    if (filterPPU === "sin_ppu" && hasPPU(d.patente)) return false;
+
     return true;
   });
 
@@ -447,9 +457,49 @@ export default function DhlPage() {
             />
           </div>
 
-          {(fechaDesde || fechaHasta || search) && (
+          {/* Filtro PPU */}
+          <div className="flex items-center gap-1.5 p-1 rounded-xl border border-white/10 bg-black/20 shrink-0">
+            <span className="text-[11px] font-semibold text-slate-400 pl-2 pr-1 hidden sm:inline">PPU:</span>
             <button
-              onClick={() => { setFechaDesde(""); setFechaHasta(""); setSearch(""); }}
+              type="button"
+              onClick={() => setFilterPPU("todos")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                filterPPU === "todos"
+                  ? "bg-white/15 text-white shadow-sm"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterPPU("con_ppu")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                filterPPU === "con_ppu"
+                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Con PPU
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterPPU("sin_ppu")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                filterPPU === "sin_ppu"
+                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+              Sin PPU
+            </button>
+          </div>
+
+          {(fechaDesde || fechaHasta || search || filterPPU !== "todos") && (
+            <button
+              onClick={() => { setFechaDesde(""); setFechaHasta(""); setSearch(""); setFilterPPU("todos"); }}
               className="px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-colors border border-white/10 shrink-0"
               title="Limpiar filtros"
             >
