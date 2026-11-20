@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
-import * as XLSX from "xlsx";
 import {
   Receipt, ShoppingCart, Package, Send, Calendar, Search, Filter,
   CheckSquare, Square, Download, Printer, RefreshCw, Eye, FileSpreadsheet,
@@ -407,89 +406,65 @@ export default function PrefacturaPage() {
     return { coord, paq, dhl, coordTotal, paqTotal, dhlTotal };
   }, [data]);
 
-  // Exportar a Excel con la estructura exacta de la plantilla oficial
-  const handleExportExcel = () => {
-    const aoa: any[][] = [];
-
-    // Fila 1 a 5: Cabecera Emisor y Prefactura
-    aoa.push(["", "", emisor.nombre, "", "", "", "", "", "", "", "", "", "", "", "", "PREFACTURA", "", ""]);
-    aoa.push(["", "", emisor.subtitulo, "", "", "", "", "", "", "", "", "", "", "", "", "N° prefactura", "", numPrefactura]);
-    aoa.push(["", "", `RUT empresa: ${emisor.rut}`, "", "", "", "", "", "", "", "", "", "", "", "", "Fecha emisión", "", formatDate(fechaEmision)]);
-    aoa.push(["", "", `Dirección: ${emisor.direccion}`, "", "", "", "", "", "", "", "", "", "", "", "", "Plazo de pago (días)", "", plazoDias]);
-    aoa.push(["", "", `Tel: ${emisor.telefono} · ${emisor.correo}`, "", "", "", "", "", "", "", "", "", "", "", "", "Fecha vencimiento", "", formatDate(fechaVencimiento)]);
-    aoa.push([]);
-
-    // Datos del Cliente
-    aoa.push(["DATOS DEL CLIENTE"]);
-    aoa.push(["Razón social", "", cliente.razonSocial]);
-    aoa.push(["RUT", "", cliente.rut]);
-    aoa.push(["Giro", "", cliente.giro]);
-    aoa.push(["Dirección", "", cliente.direccion]);
-    aoa.push(["Contacto", "", cliente.contacto]);
-    aoa.push([]);
-
-    // Detalle del Servicio
-    aoa.push(["DETALLE DEL SERVICIO"]);
-    aoa.push([
-      "PPU", "Fecha", "Hora Inicio", "Hora Término", "Local", "Puntos", "Asignado a",
-      "V1", "SG1", "V2", "SG2", "V3", "SG3", "V4", "SG4", "V5", "SG5",
-      "Valor Día", "Adicional", "Bono", "Total"
-    ]);
-
-    prefacturaRows.forEach(r => {
-      aoa.push([
-        r.patente,
-        formatDate(r.fecha),
-        r.horaInicio || "",
-        r.horaTermino || "",
-        r.local || "",
-        r.puntos || "",
-        r.asignadoA || "",
-        r.v1 || "",
-        r.sg1 || "",
-        r.v2 || "",
-        r.sg2 || "",
-        r.v3 || "",
-        r.sg3 || "",
-        r.v4 || "",
-        r.sg4 || "",
-        r.v5 || "",
-        r.sg5 || "",
-        parseMoneyValue(r.valorDia),
-        parseMoneyValue(r.adicional),
-        parseMoneyValue(r.vueltas),
-        r.totalCalculado
+  // Exportar usando la plantilla oficial de Dasai (mismo formato, logo, colores y fórmulas)
+  const [exporting, setExporting] = useState(false);
+  const handleExportExcel = async () => {
+    setExporting(true);
+    try {
+      const [{ default: ExcelJS }, { buildPrefacturaWorkbook }] = await Promise.all([
+        import("exceljs"),
+        import("@/lib/prefacturaExcel"),
       ]);
-    });
+      const res = await fetch("/Plantilla_Prefactura_Dasai.xlsx");
+      if (!res.ok) throw new Error("No se pudo cargar la plantilla de prefactura");
+      const tpl = await res.arrayBuffer();
 
-    // Totales
-    aoa.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "TOTAL", subtotalNeto]);
-    aoa.push([]);
-    aoa.push(["Observaciones:", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Subtotal neto", "", "", subtotalNeto]);
-    aoa.push([observaciones, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Descuento (%)", "", `${descuentoPct}%`, descuentoMonto]);
-    aoa.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Neto", "", "", neto]);
-    aoa.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "IVA (%)", "", "19%", iva]);
-    aoa.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "TOTAL A PAGAR", "", "", totalPagar]);
-    aoa.push([]);
+      const wb = await buildPrefacturaWorkbook(ExcelJS as any, tpl, {
+        emisor,
+        cliente,
+        transferencia,
+        numPrefactura,
+        fechaEmision,
+        plazoDias,
+        descuentoPct,
+        observaciones,
+        rows: prefacturaRows.map((r) => ({
+          patente: r.patente,
+          fecha: r.fecha,
+          horaInicio: r.horaInicio,
+          horaTermino: r.horaTermino,
+          local: r.local,
+          asignadoA: r.asignadoA,
+          v1: r.v1, sg1: r.sg1,
+          v2: r.v2, sg2: r.sg2,
+          v3: r.v3, sg3: r.sg3,
+          v4: r.v4, sg4: r.sg4,
+          v5: r.v5, sg5: r.sg5,
+          valorDia: parseMoneyValue(r.valorDia),
+          adicional: parseMoneyValue(r.adicional),
+          bono: parseMoneyValue(r.vueltas),
+        })),
+      });
 
-    // Datos de Transferencia
-    aoa.push(["DATOS DE TRANSFERENCIA"]);
-    aoa.push(["Banco", "", transferencia.banco]);
-    aoa.push(["Tipo de cuenta", "", transferencia.tipoCuenta]);
-    aoa.push(["N° de cuenta", "", transferencia.numCuenta]);
-    aoa.push(["Titular / RUT", "", `${transferencia.titular} · ${transferencia.rut}`]);
-    aoa.push(["Correo comprobante", "", transferencia.correo]);
-    aoa.push([]);
-
-    // Nota al pie
-    aoa.push(["Documento informativo, no válido como documento tributario. Los valores se facturarán electrónicamente según lo acordado."]);
-
-    const ws = XLSX.utils.aoa_to_sheet(aoa);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Prefactura");
-
-    const safeClient = cliente.razonSocial.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 20);
-    XLSX.writeFile(wb, `Prefactura_${numPrefactura}_${safeClient}_${fechaEmision}.xlsx`);
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const safeClient = cliente.razonSocial.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 20);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Prefactura_${numPrefactura}_${safeClient}_${fechaEmision}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e: any) {
+      console.error(e);
+      alert("Error al generar el Excel: " + (e?.message || e));
+    } finally {
+      setExporting(false);
+    }
   };
 
   const handlePrint = () => {
@@ -559,10 +534,11 @@ export default function PrefacturaPage() {
 
             <button
               onClick={handleExportExcel}
-              className="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all shadow"
+              disabled={exporting || prefacturaRows.length === 0}
+              className="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all shadow disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download size={15} />
-              Exportar Excel Oficial (.xlsx)
+              {exporting ? "Generando..." : "Exportar Excel Oficial (.xlsx)"}
             </button>
 
             <button
